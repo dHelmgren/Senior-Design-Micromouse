@@ -1,0 +1,24 @@
+Quick git Guide:
+
+if you need to get the master version from the server:
+
+
+git pull
+
+if you need to add files that weren't in the code when you started:
+
+git add .
+
+to commit changes to you've made to your branch:
+
+git commit -m "The comment about what you did"
+
+to create a branch and switch to it (branch makes a branch, checkout switches the repo):
+
+git branch nameOfYourBranch
+git checkout nameOfYourBranch
+
+To merge a branch to an existing branch
+
+git checkout branchToMergeInto
+git merge branchToBeMerged
