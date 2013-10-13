@@ -1,6 +1,10 @@
 #include "maze.h"
 
 Maze::Maze(){
+	// Set bottom left coordinates of maze
+	xCoord = - PIXELS_PER_SQUARE/2;
+	yCoord = - PIXELS_PER_SQUARE/2; 
+	
 	int i, j;
 	for(i = 0; i < DIMENSION; i++){
 		for(j = 0; j < DIMENSION; j++){
@@ -9,6 +13,60 @@ Maze::Maze(){
 		}
 	}
 	initMazeArray();
+}
+
+void Maze::updateMazeCoords(float currentTime, int angle){	
+	int sine = (int)sin((float)angle*PI/180);
+	int cose = (int)cos((float)angle*PI/180);
+
+	printf("angle sine %d\n", (int)sin((float)angle*PI/180));
+	printf("angle cosine %d\n", (int)cos((float)angle*PI/180));
+
+	//printf("Sine %df cose %f\n", sine, cose);
+
+	if(sine == 0 && cose == -1){
+		xCoord--;
+	}
+	else if(sine == 1 && cose == 0){
+		yCoord--;
+	}
+	else if(cose == -1 && sine == 0){
+		xCoord++;
+	}
+	else if(cose == 0 && sine == -1){
+		yCoord++;
+	}
+	else{
+		printf("Well, Sine %d, cose %d\n", sine, cose);
+	}
+
+}
+
+void Maze::drawMaze(){
+	int i, j;
+
+	glPushMatrix();
+	glTranslatef(xCoord, yCoord, 0);
+	glColor3f(255,255,255);
+	glBegin(GL_LINES);
+
+	for(i = 0; i < DIMENSION; i++){
+		for(j = 0; j < DIMENSION; j++){
+			// Draw the top wall, if it exists
+			if(mazeArrayTop[i][j]){
+				glVertex2f(i*PIXELS_PER_SQUARE, j*PIXELS_PER_SQUARE);
+				glVertex2f((i+1)*PIXELS_PER_SQUARE, j*PIXELS_PER_SQUARE);
+			}
+
+			// Draw the left wall, if it exists
+			if(mazeArrayLeft[i][j]){
+				glVertex2f(i*PIXELS_PER_SQUARE, j*PIXELS_PER_SQUARE);
+				glVertex2f(i*PIXELS_PER_SQUARE, (j+1)*PIXELS_PER_SQUARE);
+			}
+		}//for
+	}//for
+	glEnd();
+	glPopMatrix();
 }
 
 void Maze::initMazeArray(){
@@ -218,26 +276,10 @@ void Maze::initMazeArray(){
 	mazeArrayLeft[2][15] = true;
 }
 
-void Maze::drawMaze(){
-	int i, j;
+int Maze::getXCoord(){
+	return xCoord;
+}
 
-	glColor3f(255,255,255);
-	glBegin(GL_LINES);
-
-	for(i = 0; i < DIMENSION; i++){
-		for(j = 0; j < DIMENSION; j++){
-			// Draw the top wall, if it exists
-			if(mazeArrayTop[i][j]){
-				glVertex2f(i*PIXELS_PER_SQUARE, j*PIXELS_PER_SQUARE);
-				glVertex2f((i+1)*PIXELS_PER_SQUARE, j*PIXELS_PER_SQUARE);
-			}
-
-			// Draw the left wall, if it exists
-			if(mazeArrayLeft[i][j]){
-				glVertex2f(i*PIXELS_PER_SQUARE, j*PIXELS_PER_SQUARE);
-				glVertex2f(i*PIXELS_PER_SQUARE, (j+1)*PIXELS_PER_SQUARE);
-			}
-		}//for
-	}//for
-	glEnd();
+int Maze::getYCoord(){
+	return yCoord;
 }

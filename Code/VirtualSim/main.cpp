@@ -32,6 +32,14 @@ void drawScene() {
 	// enter global transformation domain
 	glPushMatrix();
 
+	// Update the x and y coordinates of the maze according to 
+	// where the mouse is going
+	maze.updateMazeCoords(currentTime, mouseRobot.getAngle());
+
+	// "Undo" the translation of the maze to make it seem like the
+	// mouse is the thing moving in the global environment
+	glTranslatef(-maze.getXCoord(), -maze.getYCoord(), 0);
+
 	//********************************************************************************
 	//********* your modifications to the drawScene method should start here *********
 	// for now, just draw a single blue torus that is growing and shrinking
@@ -42,7 +50,7 @@ void drawScene() {
 	maze.drawMaze();
 
 	// Draw the mouse!
-	mouseRobot.drawMouse(currentTime);
+	mouseRobot.drawMouse();
 
 	//********************************************************************************
 	//********* your modifications to the drawScene method should end here *********
@@ -160,8 +168,6 @@ int main(int argc, char **argv) {
 
 	// start main processing
 	glutMainLoop();
-
-	
 
 	return 0;
 }
