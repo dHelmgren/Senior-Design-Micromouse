@@ -39,6 +39,13 @@ public:
 	int angle;
 	int gridLocX;
 	int gridLocY;
+	// Distance the mouse has moved (in grid units) since the last tuple
+	// has been created.
+	int deltaDistance;
+	// Used to calculate how far (in grid units) the mouse has moved
+	// since the last tuple
+	int prevDeltaX;
+	int prevDeltaY;
 
 	// Ctor
 	Mouse();
@@ -52,9 +59,15 @@ public:
 	void right();
 	// Keeps going straight
 	void straight();
+	// Go backward
+	void back();
 	// Returns the angle that the mouse is currently traveling at
 	int getAngle();
+	// Returns true if the mouse is exactly in the middle of a grid unit
+	bool isInCenterOfGrid(int mazeStartXCoord, int mazeStartYCoord);
 
 	int getGridLocX();
 	int getGridLocY();
+	int getDeltaDistance();
+	void resetDeltaDistance();
 };

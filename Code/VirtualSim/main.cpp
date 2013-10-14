@@ -1,5 +1,6 @@
 #include "maze.h"
 #include "mouse.h"
+#include "ai.h"
 
 // The number of distance units that are in our viewport
 #define VIEWSIZE 1500
@@ -15,14 +16,10 @@ GLfloat randUniform() {
 	return rand()/(GLfloat)RAND_MAX;
 }
 
-// The current spinning angle
-static GLfloat spinningAngle = 0.0;
-
-// boolean that tells whether we are spinning (initially false)
-static int spinning = 0;
-
+// Create our objects: maze, mouse, and AI
 Maze maze = Maze();
 Mouse mouseRobot = Mouse();
+AI ai = AI();
 
 // draws our scene
 void drawScene() {
@@ -44,25 +41,88 @@ void drawScene() {
 	maze.initMazeArray();
 	maze.drawMaze();
 
-	int prevX = mouseRobot.getGridLocX();
-	int prevY = mouseRobot.getGridLocY();
+	// Only process if the mouse is in the center of the grid
+	if(mouseRobot.isInCenterOfGrid(maze.getXCoord(), maze.getYCoord())){
+		int prevX = mouseRobot.getGridLocX();
+		int prevY = mouseRobot.getGridLocY();
 
-	// Update the maze location to determine if there is a tuple
-	mouseRobot.updateMouseLocation(maze.getXCoord(), maze.getYCoord());
+		// Update the maze location to determine if there is a tuple
+		mouseRobot.updateMouseLocation(maze.getXCoord(), maze.getYCoord());
 
-	int currX = mouseRobot.getGridLocX();
-	int currY = mouseRobot.getGridLocY();
+		int currX = mouseRobot.getGridLocX();
+		int currY = mouseRobot.getGridLocY();
 
-	// Only ask if there is a tuple if this is the first time the mouse had come into this grid coordinate
-	if(currX != prevX || currY != prevY){
-		// Ask if there is a tuple here
-		bool isMouseInTupleGrid = maze.isTupleDetected(mouseRobot.getGridLocX(), mouseRobot.getGridLocY());
+		// Only ask if there is a tuple if this is the first time the mouse has come into this grid coordinate
+		if((currX != prevX || currY != prevY)){
+			int gridX = mouseRobot.getGridLocX();
+			int gridY = mouseRobot.getGridLocY();
+			// Ask if there is a tuple here
+			bool isMouseInTupleGrid = maze.isTupleDetected(gridX, gridY);
+	
+			if(isMouseInTupleGrid){
+				int angle = mouseRobot.getAngle();
+				bool left = false;
+				bool straight = false;
+				bool right = false;
+				bool back = false;
+				// Straight is EAST
+				if(angle == 0){
+					straight = maze.isWallWNES[gridX][gridY][EAST];
+					left = maze.isWallWNES[gridX][gridY][NORTH];
+					back = maze.isWallWNES[gridX][gridY][WEST];
+					right = maze.isWallWNES[gridX][gridY][SOUTH];
+				}
+				// Straight is NORTH
+				else if(angle == 90){
+					straight = maze.isWallWNES[gridX][gridY][NORTH];
+					left = maze.isWallWNES[gridX][gridY][WEST];
+					back = maze.isWallWNES[gridX][gridY][SOUTH];
+					right = maze.isWallWNES[gridX][gridY][EAST];
+				}
+				// Straight is WEST
+				else if(angle == 180){
+					straight = maze.isWallWNES[gridX][gridY][WEST];
+					left = maze.isWallWNES[gridX][gridY][SOUTH];
+					back = maze.isWallWNES[gridX][gridY][EAST];
+					right = maze.isWallWNES[gridX][gridY][NORTH];
+				}
+				// Straight is SOUTH
+				else if(angle == 270){
+					straight = maze.isWallWNES[gridX][gridY][SOUTH];
+					left = maze.isWallWNES[gridX][gridY][EAST];
+					back = maze.isWallWNES[gridX][gridY][NORTH];
+					right = maze.isWallWNES[gridX][gridY][WEST];
+				}
+				else{
+					printf("Angle error. See main.cpp.\n");
+				}
 
-		if(isMouseInTupleGrid){
-			printf("Make decision !!\n");
-			//aiAgent.makeDecision();
-		}
-	}
+				//DEBUG
+				//printf("Tuple at WEST %d, NORTH %d, EAST %d, SOUTH %d\n", maze.isWallWNES[gridX][gridY][WEST], maze.isWallWNES[gridX][gridY][NORTH], maze.isWallWNES[gridX][gridY][EAST], maze.isWallWNES[gridX][gridY][SOUTH]);
+				//printf("Tuple at %d, %d\n", gridX, gridY);
+				printf("Angle %d, Left %d, straight %d, right %d, back %d\n", angle, left, straight, right, back);
+				//printf("Tuple's delta distance is %d\n", mouseRobot.getDeltaDistance());
+			
+				int decision = ai.makeDecision(mouseRobot.getDeltaDistance(), left, straight, right, back);
+					
+				// Now that we have made a decision, reset the delta distance
+				mouseRobot.resetDeltaDistance();
+
+				if(decision == AI_LEFT){
+					mouseRobot.left();
+				}
+				else if(decision == AI_STRAIGHT){
+					mouseRobot.straight();
+				}
+				else if(decision == AI_RIGHT){
+					mouseRobot.right();
+				}
+				else if(decision == AI_BACK){
+					mouseRobot.back();
+				}
+			}//if mouse is in a grid with a tuple
+		}//if
+	}//if
 
 	// Draw the mouse!
 	mouseRobot.drawMouse();

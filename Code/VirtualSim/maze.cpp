@@ -1,5 +1,7 @@
 #include "maze.h"
 
+#define PIXEL_INCR 2
+
 Maze::Maze(){
 	// Set bottom left coordinates of maze
 	xCoord = - PIXELS_PER_SQUARE/2;
@@ -19,17 +21,33 @@ void Maze::initIsTuple(){
 	// Bool array default is true, so set all to false
 	// Initialize isTuple to tell us whether or not there is a tuple in a certain square
 	// Also initialize the wall information per tuple
-	int i, j;
+	int i, j, k;
 	for(i = 0; i < DIMENSION - 1; i++){
-		for(j = 1; j < DIMENSION - 1; j++){
+		for(j = 0; j < DIMENSION - 1; j++){
 			// There is not a tuple if we are seeing only 2 parallel walls
-			if(mazeArrayTop[i][j] && mazeArrayTop[i][j+1] && !mazeArrayLeft[i][j] && mazeArrayLeft[i+1][j] ||
-				mazeArrayLeft[i][j] && mazeArrayLeft[i+1][j] && !mazeArrayTop[i][j] && !mazeArrayTop[i][j+1]){
+			if((mazeArrayTop[i][j] && mazeArrayTop[i][j+1] && !mazeArrayLeft[i][j] && !mazeArrayLeft[i+1][j]) ||
+				(mazeArrayLeft[i][j] && mazeArrayLeft[i+1][j] && !mazeArrayTop[i][j] && !mazeArrayTop[i][j+1])){
 				isTuple[i][j] = false;
 			}
 			// There is a tuple
 			else{
 				isTuple[i][j] = true;
+				//DEBUG
+				//printf("Tuple at %d, %d: WEST: %d, NORTH: %d, EAST: %d, SOUTH: %d\n", i, j, mazeArrayLeft[i][j], mazeArrayTop[i][j+1], mazeArrayLeft[i+1][j], mazeArrayTop[i][j]);
+			}
+			for(k = 0; k < 4; k++){
+				if(mazeArrayTop[i][j+1]){
+					isWallWNES[i][j][NORTH] = true;
+				}
+				if(mazeArrayTop[i][j]){
+					isWallWNES[i][j][SOUTH] = true;
+				}
+				if(mazeArrayLeft[i+1][j]){
+					isWallWNES[i][j][EAST] = true;
+				}
+				if(mazeArrayLeft[i][j]){
+					isWallWNES[i][j][WEST] = true;
+				}
 			}
 		}
 	}
@@ -46,17 +64,17 @@ void Maze::updateMazeCoords(float currentTime, int angle){
 	int sine = (int)sin((float)angle*PI/180);
 	int cose = (int)cos((float)angle*PI/180);
 
-	if(sine == 0 && cose == -1){
-		xCoord--;
+	if(sine == 0 && cose == 1){
+		xCoord -= PIXEL_INCR;
 	}
 	else if(sine == 1 && cose == 0){
-		yCoord--;
+		yCoord -= PIXEL_INCR;
 	}
-	else if(cose == -1 && sine == 0){
-		xCoord++;
+	else if(sine == 0 && cose == -1){
+		xCoord += PIXEL_INCR;
 	}
-	else if(cose == 0 && sine == -1){
-		yCoord++;
+	else if(sine == -1 && cose == 0){
+		yCoord += PIXEL_INCR;
 	}
 	else{
 		printf("Well, Sine %d, cose %d\n", sine, cose);
@@ -93,7 +111,7 @@ void Maze::drawMaze(){
 void Maze::initMazeArray(){
 	// Initialize all the walls on the sides of the maze
 	int i;
-	for(i = 0; i < DIMENSION - 1; i++){
+	for(i = 0; i < DIMENSION -1 ; i++){
 		mazeArrayTop[i][0] = true;
 		mazeArrayTop[i][DIMENSION-1] = true;
 		mazeArrayLeft[0][i] = true;

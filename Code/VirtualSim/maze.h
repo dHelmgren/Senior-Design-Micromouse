@@ -35,7 +35,6 @@
 #define EAST 2
 #define SOUTH 3
 
-
 class Maze {
 public:
 	bool mazeArrayTop[DIMENSION][DIMENSION];
