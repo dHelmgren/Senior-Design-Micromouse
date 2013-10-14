@@ -40,21 +40,32 @@ void drawScene() {
 	// mouse is the thing moving in the global environment
 	glTranslatef(-maze.getXCoord(), -maze.getYCoord(), 0);
 
-	//********************************************************************************
-	//********* your modifications to the drawScene method should start here *********
-	// for now, just draw a single blue torus that is growing and shrinking
-	//********************************************************************************
-
 	// Draw the maze!
 	maze.initMazeArray();
 	maze.drawMaze();
 
+	int prevX = mouseRobot.getGridLocX();
+	int prevY = mouseRobot.getGridLocY();
+
+	// Update the maze location to determine if there is a tuple
+	mouseRobot.updateMouseLocation(maze.getXCoord(), maze.getYCoord());
+
+	int currX = mouseRobot.getGridLocX();
+	int currY = mouseRobot.getGridLocY();
+
+	// Only ask if there is a tuple if this is the first time the mouse had come into this grid coordinate
+	if(currX != prevX || currY != prevY){
+		// Ask if there is a tuple here
+		bool isMouseInTupleGrid = maze.isTupleDetected(mouseRobot.getGridLocX(), mouseRobot.getGridLocY());
+
+		if(isMouseInTupleGrid){
+			printf("Make decision !!\n");
+			//aiAgent.makeDecision();
+		}
+	}
+
 	// Draw the mouse!
 	mouseRobot.drawMouse();
-
-	//********************************************************************************
-	//********* your modifications to the drawScene method should end here *********
-	//********************************************************************************
 
 	// exit local transformation domain
 	glPopMatrix();
@@ -76,7 +87,6 @@ void tick(int n) {
 	glTranslatef(-600,-500,0);
 	// draw the new scene
 	drawScene();
-	printf("Drawing new scene\n");
 
 	glPopMatrix();
 }
@@ -97,6 +107,9 @@ void myInit() {
 	glShadeModel(GL_SMOOTH);
 
 	glTranslatef(100,100,0);
+
+	// Initialize all the tuples (only has to be done once)
+	maze.initIsTuple();
 }
 
 // handles a mouse-press

@@ -3,7 +3,7 @@
 Maze::Maze(){
 	// Set bottom left coordinates of maze
 	xCoord = - PIXELS_PER_SQUARE/2;
-	yCoord = - PIXELS_PER_SQUARE/2; 
+	yCoord = - PIXELS_PER_SQUARE/2;
 	
 	int i, j;
 	for(i = 0; i < DIMENSION; i++){
@@ -15,14 +15,36 @@ Maze::Maze(){
 	initMazeArray();
 }
 
+void Maze::initIsTuple(){
+	// Bool array default is true, so set all to false
+	// Initialize isTuple to tell us whether or not there is a tuple in a certain square
+	// Also initialize the wall information per tuple
+	int i, j;
+	for(i = 0; i < DIMENSION - 1; i++){
+		for(j = 1; j < DIMENSION - 1; j++){
+			// There is not a tuple if we are seeing only 2 parallel walls
+			if(mazeArrayTop[i][j] && mazeArrayTop[i][j+1] && !mazeArrayLeft[i][j] && mazeArrayLeft[i+1][j] ||
+				mazeArrayLeft[i][j] && mazeArrayLeft[i+1][j] && !mazeArrayTop[i][j] && !mazeArrayTop[i][j+1]){
+				isTuple[i][j] = false;
+			}
+			// There is a tuple
+			else{
+				isTuple[i][j] = true;
+			}
+		}
+	}
+}
+
+bool Maze::isTupleDetected(int mouseXGrid, int mouseYGrid){
+	if(isTuple[mouseXGrid][mouseYGrid]){
+		return true;
+	}
+	return false;
+}
+
 void Maze::updateMazeCoords(float currentTime, int angle){	
 	int sine = (int)sin((float)angle*PI/180);
 	int cose = (int)cos((float)angle*PI/180);
-
-	printf("angle sine %d\n", (int)sin((float)angle*PI/180));
-	printf("angle cosine %d\n", (int)cos((float)angle*PI/180));
-
-	//printf("Sine %df cose %f\n", sine, cose);
 
 	if(sine == 0 && cose == -1){
 		xCoord--;
@@ -39,7 +61,6 @@ void Maze::updateMazeCoords(float currentTime, int angle){
 	else{
 		printf("Well, Sine %d, cose %d\n", sine, cose);
 	}
-
 }
 
 void Maze::drawMaze(){
@@ -78,6 +99,8 @@ void Maze::initMazeArray(){
 		mazeArrayLeft[0][i] = true;
 		mazeArrayLeft[DIMENSION-1][i] = true;
 	}
+
+	mazeArrayLeft[1][0] = true;
 
 	// Row 1
 	mazeArrayLeft[1][1] = true;

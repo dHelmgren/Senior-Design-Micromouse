@@ -11,6 +11,8 @@
 Mouse::Mouse(){
 	angle = 90;
 	direction = STRAIGHT;
+	gridLocX = 0;
+	gridLocY = 1;
 }
 
 void Mouse::left(){
@@ -39,6 +41,20 @@ void Mouse::drawMouse(){
 	glPopMatrix();
 }
 
+void Mouse::updateMouseLocation(int mazeXCoord, int mazeYCoord){
+	gridLocX = std::abs(mazeXCoord)/PIXELS_PER_SQUARE;
+	gridLocY = std::abs(mazeYCoord)/PIXELS_PER_SQUARE;
+	//printf("Mouse grid location: %d, %d\n", gridLocX, gridLocY);
+}
+
 int Mouse::getAngle(){
 	return angle;
+}
+
+int Mouse::getGridLocX(){
+	return gridLocX;
+}
+
+int Mouse::getGridLocY(){
+	return gridLocY;
 }

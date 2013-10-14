@@ -32,15 +32,20 @@
 #define LEFT 2
 #define BACK 3
 
+
 class Mouse {
 public:
 	int direction;
 	int angle;
+	int gridLocX;
+	int gridLocY;
 
 	// Ctor
 	Mouse();
 	// Draws the mouse as a blue square
 	void drawMouse();
+	// Determines where in the maze grid the mouse is currently located
+	void updateMouseLocation(int mazeXCoord, int mazeYCoord);
 	// Turns the mouse left and then keeps going straight
 	void left();
 	// Turns the mouse right and then keeps going straight
@@ -49,4 +54,7 @@ public:
 	void straight();
 	// Returns the angle that the mouse is currently traveling at
 	int getAngle();
+
+	int getGridLocX();
+	int getGridLocY();
 };

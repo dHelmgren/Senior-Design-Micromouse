@@ -30,6 +30,12 @@
 
 #define PI 3.14159265
 
+#define WEST 0
+#define NORTH 1
+#define EAST 2
+#define SOUTH 3
+
+
 class Maze {
 public:
 	bool mazeArrayTop[DIMENSION][DIMENSION];
@@ -39,12 +45,18 @@ public:
 	// the environment, not the origin)
 	int xCoord;
 	int yCoord;
-	//TupleSet tupleSet;
+	// Tuples for the maze
+	bool isTuple[DIMENSION-1][DIMENSION];
+	bool isWallWNES[DIMENSION-1][DIMENSION][4];
 
 	// Ctor
 	Maze();
 	// Initialize first configuration of maze by updating the 2D arrays
 	void initMazeArray();
+	// Initializes where tuples are located in the maze
+	void initIsTuple();
+	// Determines if the mouse had entered into a tuple zone
+	bool isTupleDetected(int mouseXGrid, int mouseYGrid);
 	void drawMaze();
 	void updateMazeCoords(float currentTime, int angle);
 	int getXCoord();
