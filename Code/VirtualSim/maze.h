@@ -57,7 +57,7 @@ public:
 	// Determines if the mouse had entered into a tuple zone
 	bool isTupleDetected(int mouseXGrid, int mouseYGrid);
 	void drawMaze();
-	void updateMazeCoords(float currentTime, int angle);
+	void updateMazeCoords(float currentTime, int angle, bool isMouseGoingFwd);
 	int getXCoord();
 	int getYCoord();
 };

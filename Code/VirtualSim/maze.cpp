@@ -1,6 +1,5 @@
 #include "maze.h"
-
-#define PIXEL_INCR 2
+#include "mouse.h"
 
 Maze::Maze(){
 	// Set bottom left coordinates of maze
@@ -60,21 +59,41 @@ bool Maze::isTupleDetected(int mouseXGrid, int mouseYGrid){
 	return false;
 }
 
-void Maze::updateMazeCoords(float currentTime, int angle){	
+void Maze::updateMazeCoords(float currentTime, int angle, bool isMouseGoingFwd){	
 	int sine = (int)sin((float)angle*PI/180);
 	int cose = (int)cos((float)angle*PI/180);
 
 	if(sine == 0 && cose == 1){
-		xCoord -= PIXEL_INCR;
+		if(isMouseGoingFwd){
+			xCoord -= PIXEL_INCR;
+		}
+		else{
+			xCoord += PIXEL_INCR;
+		}
 	}
 	else if(sine == 1 && cose == 0){
-		yCoord -= PIXEL_INCR;
+		if(isMouseGoingFwd){
+			yCoord -= PIXEL_INCR;
+		}
+		else{
+			yCoord += PIXEL_INCR;
+		}
 	}
 	else if(sine == 0 && cose == -1){
-		xCoord += PIXEL_INCR;
+		if(isMouseGoingFwd){
+			xCoord += PIXEL_INCR;
+		}
+		else{
+			xCoord -= PIXEL_INCR;
+		}
 	}
 	else if(sine == -1 && cose == 0){
-		yCoord += PIXEL_INCR;
+		if(isMouseGoingFwd){
+			yCoord += PIXEL_INCR;
+		}
+		else{
+			yCoord -= PIXEL_INCR;
+		}
 	}
 	else{
 		printf("Well, Sine %d, cose %d\n", sine, cose);

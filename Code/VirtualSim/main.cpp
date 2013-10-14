@@ -31,7 +31,7 @@ void drawScene() {
 
 	// Update the x and y coordinates of the maze according to 
 	// where the mouse is going
-	maze.updateMazeCoords(currentTime, mouseRobot.getAngle());
+	maze.updateMazeCoords(currentTime, mouseRobot.getAngle(), mouseRobot.getIsGoingForward());
 
 	// "Undo" the translation of the maze to make it seem like the
 	// mouse is the thing moving in the global environment
@@ -110,15 +110,19 @@ void drawScene() {
 
 				if(decision == AI_LEFT){
 					mouseRobot.left();
+					mouseRobot.updateIsGoingForward(true);
 				}
 				else if(decision == AI_STRAIGHT){
 					mouseRobot.straight();
+					mouseRobot.updateIsGoingForward(true);
 				}
 				else if(decision == AI_RIGHT){
 					mouseRobot.right();
+					mouseRobot.updateIsGoingForward(true);
 				}
 				else if(decision == AI_BACK){
 					mouseRobot.back();
+					mouseRobot.updateIsGoingForward(false);
 				}
 			}//if mouse is in a grid with a tuple
 		}//if

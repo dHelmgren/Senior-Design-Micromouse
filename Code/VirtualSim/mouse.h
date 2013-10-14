@@ -19,6 +19,10 @@
   #include <GL/glut.h>
 #endif
 
+// Determines how fast the mouse goes through the maze
+// Stick with numbers that divide PIXELS_PER_SQUARE evenly: 2, 3, 4, 6, 8, 9
+#define PIXEL_INCR 6
+
 #define PI 3.14159265
 
 #define MOUSE_WIDTH_CM 7	//centimeters
@@ -46,6 +50,9 @@ public:
 	// since the last tuple
 	int prevDeltaX;
 	int prevDeltaY;
+	// If going left, straight, or right, robot should be in "forward" 
+	// mode; else, the robot is going backward
+	bool isGoingForward;
 
 	// Ctor
 	Mouse();
@@ -65,9 +72,12 @@ public:
 	int getAngle();
 	// Returns true if the mouse is exactly in the middle of a grid unit
 	bool isInCenterOfGrid(int mazeStartXCoord, int mazeStartYCoord);
+	// Updates whether the robot is going forward or backward
+	void updateIsGoingForward(bool newIsGoingForward);
 
 	int getGridLocX();
 	int getGridLocY();
 	int getDeltaDistance();
+	bool getIsGoingForward();
 	void resetDeltaDistance();
 };

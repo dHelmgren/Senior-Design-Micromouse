@@ -3,7 +3,7 @@
 
 Mouse::Mouse(){
 	angle = 90;
-	direction = STRAIGHT;
+	isGoingForward = true;
 	gridLocX = 0;
 	gridLocY = 0;
 	deltaDistance = 0;
@@ -88,4 +88,12 @@ int Mouse::getDeltaDistance(){
 
 void Mouse::resetDeltaDistance(){
 	deltaDistance = 0;
+}
+
+void Mouse::updateIsGoingForward(bool newIsGoingForward){
+	isGoingForward = newIsGoingForward;
+}
+
+bool Mouse::getIsGoingForward(){
+	return isGoingForward;
 }
