@@ -20,7 +20,17 @@
 #define NODE_STRAIGHT 0
 #define NODE_RIGHT 1
 #define NODE_BACK 2
-#define NODE_LEFT
+#define NODE_LEFT 3
+typedef struct NavNode
+{
+	int rating;
+	int xOffset;
+	int yOffset;
+	NavNode *parent;
+	NavNode *left;
+	NavNode *forward;
+	NavNode *right;
+}NavNode;
 
 class AI{
 private:
@@ -29,6 +39,9 @@ private:
 	int dummyVar;
 
 public:
+
+	NavNode root;
+	NavNode currentNode;
 	// Default constructor; currently only initializes compass
 	AI();
 	// Devin, please implement this "make decision" code for your AI. We are

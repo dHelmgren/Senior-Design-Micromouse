@@ -1,25 +1,18 @@
 #include "ai.h"
+#include "stdlib.h"
 
 // See ai.h for comment
 AI::AI(){
 	compass = AI_NORTH;
 	dummyVar = 0;
-	//these are what I am using to store relevant information until we talk about what will actually happen
+	//these are what I am using to store relevant information until we talk about what will actually happenL
 	NavNode currentNode;
-	NavNode root = {14, -8,-8, AI_NORTH, NULL, NULL, NULL, NULL, 0};
+	//zero is used as 0 pointer
+	NavNode root = {14, -8,-8, 0, 0, 0, 0};
 	currentNode = root;
+	
 }
 
-typedef struct NavNode
-{
-	int rating;
-	int xOffset;
-	int yOffset;
-	NavNode *parent;
-	NavNode *left;
-	NavNode *forward;
-	NavNode *right;
-}NavNode;
 
 //TODO: We need to prune bad nodes!!
 // See ai.h for comment
@@ -30,9 +23,12 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	
 	int currX = currentNode.xOffset;
 	int currY = currentNode.yOffset;
+	int leftRating = 99;
+	int rightRating = 99;
+	int forwardRating = 99;
 		
 	//if we are coming back to this node, we don't re-invent the wheel
-	if(currentNode.left == NULL && currentNode.right == NULL && currentNode.forward == NULL)
+	if(currentNode.left == 0 && currentNode.right == 0 && currentNode.forward == 0)
 	{
 		if(compass == AI_NORTH)
 		{
@@ -69,20 +65,18 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 			currX -= deltaDist;
 		}
 		
-		int leftRating = 99;
-		int rightRating = 99;
-		int forwardRating = 99;
-		if(left == TRUE)
+		
+		if(left == true)
 		{		
 			currentNode.left = buildNode(NODE_LEFT, currX, currY);
 			leftRating = (*currentNode.left).rating;
 		}
-		if(right == TRUE)
+		if(right == true)
 		{
 			currentNode.right = buildNode(NODE_RIGHT, currX, currY);
 			rightRating = (*currentNode.right).rating;
 		}
-		if(straight == TRUE)
+		if(straight == true)
 		{
 			currentNode.forward = buildNode(NODE_STRAIGHT, currX, currY);
 			forwardRating = (*currentNode.forward).rating;
@@ -102,12 +96,12 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	else if(forwardRating < leftRating && forwardRating < rightRating)
 	{
 		currentNode = *(currentNode.forward);
-		return AI_FORWARD;
+		return AI_STRAIGHT;
 	}
 	else if(forwardRating == rightRating || forwardRating == leftRating)
 	{
 		currentNode = *(currentNode.forward);
-		return AI_FORWARD;
+		return AI_STRAIGHT;
 	}
 	else if(forwardRating == 99 && leftRating == 99 && rightRating == 99)
 	{
@@ -136,10 +130,10 @@ int AI::rateNode(int x, int y)
 
 NavNode* AI::buildNode(int turnDir, int currX, int currY)
 {
-	int newX = currNode.xOffset;
-	int newY = currNode.yOffset;
+	int newX = currentNode.xOffset;
+	int newY = currentNode.yOffset;
 	//Determine the location of this next node
-	turnDir = (turnDir+currentNode.heading) % 4;
+	turnDir = (turnDir+compass) % 4;
 	if(turnDir == NODE_STRAIGHT)
 		{
 			newX--;
@@ -172,6 +166,6 @@ NavNode* AI::buildNode(int turnDir, int currX, int currY)
 				newY = -1;
 			}
 		}
-	NavNode newNode = {rateNode(newX, newY), newX, newY, currentNode, NULL, NULL, NULL};
-	return newNode*;
+	NavNode newNode = {rateNode(newX, newY), newX, newY, &currentNode, 0, 0, 0};
+	return &newNode;
 }
