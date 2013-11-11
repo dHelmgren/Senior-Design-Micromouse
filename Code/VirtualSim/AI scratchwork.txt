@@ -1,0 +1,84 @@
+//Don't recreate the node if we know we've made a least two connections for it
+	if(currentNode.north != 0 && currentNode.east != 0 || currentNode.east != 0 && currentNode.south != 0
+		|| currentNode.south != 0 && currentNode.west != 0 || currentNode.west != 0 && currentNode.north != 0)
+	{
+		if(compass == AI_NORTH)
+		{
+			//deals with crossing the origin, as each square is measured by the outermost corner
+			if(currentNode.yOffset < 0 && deltaDist > -currentNode.yOffset)
+			{
+				//if we cross the origin, we modify the distance to skip zero
+				deltaDist++;
+			}
+			currY += deltaDist;
+		}
+		else if(compass == AI_SOUTH)
+		{
+			if(currentNode.yOffset > 0 && deltaDist > currentNode.yOffset)
+			{
+				deltaDist++;
+			}
+			currY -= deltaDist;
+		}
+		else if(compass == AI_WEST)
+		{
+			if(currentNode.xOffset < 0 && deltaDist > -currentNode.xOffset)
+			{
+				deltaDist++;
+			}
+			currX += deltaDist;
+		}
+		else if(compass == AI_SOUTH)
+		{
+			if(currentNode.xOffset > 0 && deltaDist > currentNode.xOffset)
+			{
+				deltaDist++;
+			}
+			currX -= deltaDist;
+		}
+		
+		
+		if(left == true)
+		{		
+			currentNode.left = buildNode(NODE_LEFT, currX, currY);
+			leftRating = (*currentNode.left).rating;
+		}
+		if(right == true)
+		{
+			currentNode.right = buildNode(NODE_RIGHT, currX, currY);
+			rightRating = (*currentNode.right).rating;
+		}
+		if(straight == true)
+		{
+			currentNode.forward = buildNode(NODE_STRAIGHT, currX, currY);
+			forwardRating = (*currentNode.forward).rating;
+		}
+	}
+	
+	if(leftRating < rightRating && leftRating < forwardRating)
+	{
+		currentNode = *(currentNode.left);
+		return AI_LEFT;
+	}
+	else if(rightRating < leftRating && rightRating < forwardRating)
+	{
+		currentNode = *(currentNode.right);
+		return AI_RIGHT;
+	}
+	else if(forwardRating < leftRating && forwardRating < rightRating)
+	{
+		currentNode = *(currentNode.forward);
+		return AI_STRAIGHT;
+	}
+	else if(forwardRating == rightRating || forwardRating == leftRating)
+	{
+		currentNode = *(currentNode.forward);
+		return AI_STRAIGHT;
+	}
+	else if(forwardRating == 99 && leftRating == 99 && rightRating == 99)
+	{
+		currentNode.rating = 99;
+		currentNode = *(currentNode.parent);
+		return AI_BACK;
+	}
+	

@@ -5,11 +5,13 @@
 AI::AI(){
 	compass = AI_NORTH;
 	dummyVar = 0;
+	NavNode mazeArray[16][16] = {0};
 	//these are what I am using to store relevant information until we talk about what will actually happenL
 	NavNode currentNode;
 	//zero is used as 0 pointer
 	NavNode root = {14, -8,-8, 0, 0, 0, 0};
 	currentNode = root;
+	mazeArray[0][0] = root;
 	
 }
 
@@ -27,9 +29,10 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	int rightRating = 99;
 	int forwardRating = 99;
 		
-	//if we are coming back to this node, we don't re-invent the wheel
-	if(currentNode.left == 0 && currentNode.right == 0 && currentNode.forward == 0)
-	{
+	//Stop me if I've seen this before
+	/*if(currentNode.north != 0 && currentNode.east != 0 || currentNode.east != 0 && currentNode.south != 0
+		|| currentNode.south != 0 && currentNode.west != 0 || currentNode.west != 0 && currentNode.north != 0)
+	*/{
 		if(compass == AI_NORTH)
 		{
 			//deals with crossing the origin, as each square is measured by the outermost corner
@@ -48,7 +51,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 			}
 			currY -= deltaDist;
 		}
-		else if(compass == AI_WEST)
+		else if(compass == AI_EAST)
 		{
 			if(currentNode.xOffset < 0 && deltaDist > -currentNode.xOffset)
 			{
@@ -56,7 +59,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 			}
 			currX += deltaDist;
 		}
-		else if(compass == AI_SOUTH)
+		else if(compass == AI_WEST)
 		{
 			if(currentNode.xOffset > 0 && deltaDist > currentNode.xOffset)
 			{
@@ -64,54 +67,129 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 			}
 			currX -= deltaDist;
 		}
+
+		//Fix the node's position to match its real world location and store it in the maze array.
+		currentNode.xOffset = currX;
+		currentNode.yOffset = currY;
+		mazeArray[currX+8][currY+8] = currentNode;
 		
-		
-		if(left == true)
-		{		
-			currentNode.left = buildNode(NODE_LEFT, currX, currY);
-			leftRating = (*currentNode.left).rating;
-		}
-		if(right == true)
+		if (!left)
 		{
-			currentNode.right = buildNode(NODE_RIGHT, currX, currY);
-			rightRating = (*currentNode.right).rating;
+			int nodePos = (compass + NODE_LEFT)%4;
+			if (nodePos == AI_WEST)
+			{
+				currentNode.west = buildNode(NODE_LEFT, currX, currY);
+				leftRating = (*currentNode.west).rating;
+			}
+			else if (nodePos == AI_NORTH)
+			{
+				currentNode.north = buildNode(NODE_LEFT, currX, currY);
+				leftRating = (*currentNode.north).rating;
+			}
+			else if (nodePos == AI_SOUTH)
+			{
+				currentNode.south = buildNode(NODE_LEFT, currX, currY);
+				leftRating = (*currentNode.south).rating;
+			}
+			else if (nodePos == AI_EAST)
+			{
+				currentNode.east = buildNode(NODE_LEFT, currX, currY);
+				leftRating = (*currentNode.east).rating;
+			}
 		}
-		if(straight == true)
+		else if (!straight)
 		{
-			currentNode.forward = buildNode(NODE_STRAIGHT, currX, currY);
-			forwardRating = (*currentNode.forward).rating;
+			int nodePos = (compass + NODE_STRAIGHT)%4;
+			if (nodePos == AI_WEST)
+			{
+				currentNode.west = buildNode(NODE_STRAIGHT, currX, currY);
+				forwardRating = (*currentNode.west).rating;
+			}
+			else if (nodePos == AI_NORTH)
+			{
+				currentNode.north = buildNode(NODE_STRAIGHT, currX, currY);
+				forwardRating = (*currentNode.north).rating;
+			}
+			else if (nodePos == AI_SOUTH)
+			{
+				currentNode.south = buildNode(NODE_STRAIGHT, currX, currY);
+				forwardRating = (*currentNode.south).rating;
+			}
+			else if (nodePos == AI_EAST)
+			{
+				currentNode.east = buildNode(NODE_STRAIGHT, currX, currY);
+				forwardRating = (*currentNode.east).rating;
+			}
+		}
+		else if (!right)
+		{
+			int nodePos = (compass + NODE_RIGHT)%4;
+			if (nodePos == AI_WEST)
+			{
+				currentNode.west = buildNode(NODE_RIGHT, currX, currY);
+				rightRating = (*currentNode.west).rating;
+			}
+			else if (nodePos == AI_NORTH)
+			{
+				currentNode.north = buildNode(NODE_RIGHT, currX, currY);
+				rightRating = (*currentNode.north).rating;
+			}
+			else if (nodePos == AI_SOUTH)
+			{
+				currentNode.south = buildNode(NODE_RIGHT, currX, currY);
+				rightRating = (*currentNode.south).rating;
+			}
+			else if (nodePos == AI_EAST)
+			{
+				currentNode.east = buildNode(NODE_RIGHT, currX, currY);
+				rightRating = (*currentNode.east).rating;
+			}
 		}
 	}
 	
-	if(leftRating < rightRating && leftRating < forwardRating)
+	int choice;
+	if((leftRating < rightRating) && (leftRating < forwardRating))
 	{
-		currentNode = *(currentNode.left);
-		return AI_LEFT;
+		choice = NODE_LEFT;
 	}
-	else if(rightRating < leftRating && rightRating < forwardRating)
+	else if((rightRating < leftRating) && (rightRating < forwardRating))
 	{
-		currentNode = *(currentNode.right);
-		return AI_RIGHT;
+		choice = NODE_RIGHT;
 	}
-	else if(forwardRating < leftRating && forwardRating < rightRating)
+	else if((forwardRating < leftRating) && (forwardRating < rightRating))
 	{
-		currentNode = *(currentNode.forward);
-		return AI_STRAIGHT;
+		choice = NODE_STRAIGHT;
 	}
-	else if(forwardRating == rightRating || forwardRating == leftRating)
+	else if((forwardRating == rightRating) || (forwardRating == leftRating))
 	{
-		currentNode = *(currentNode.forward);
-		return AI_STRAIGHT;
+		choice = NODE_STRAIGHT;
 	}
 	else if(forwardRating == 99 && leftRating == 99 && rightRating == 99)
 	{
 		currentNode.rating = 99;
-		currentNode = *(currentNode.parent);
-		return AI_BACK;
+		choice = NODE_BACK;
 	}
-	
-	
-	
+
+	//make the node I chose the current node
+	int picked = compass + choice;
+	if(picked == AI_WEST)
+	{
+		currentNode = *(currentNode.west);
+	}
+	else if(picked == AI_NORTH)
+	{
+		currentNode = *(currentNode.north);
+	}
+	else if(picked == AI_EAST)
+	{
+		currentNode = *(currentNode.east);
+	}
+	else if(picked == AI_SOUTH)
+	{
+		currentNode = *(currentNode.south);
+	}
+
+	return (choice +1)%4;
 	
 	
 	//Determine options, find best

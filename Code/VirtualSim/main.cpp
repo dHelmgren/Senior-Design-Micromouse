@@ -19,7 +19,8 @@ GLfloat randUniform() {
 // Create our objects: maze, mouse, and AI
 Maze maze = Maze();
 Mouse mouseRobot = Mouse();
-AI ai = AI();
+AI *aiPtr = new AI();
+AI ai = *(aiPtr);
 
 // draws our scene
 void drawScene() {

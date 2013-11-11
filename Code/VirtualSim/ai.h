@@ -26,10 +26,10 @@ typedef struct NavNode
 	int rating;
 	int xOffset;
 	int yOffset;
-	NavNode *parent;
-	NavNode *left;
-	NavNode *forward;
-	NavNode *right;
+	NavNode *west;
+	NavNode *north;
+	NavNode *east;
+	NavNode *south;
 }NavNode;
 
 class AI{
@@ -37,6 +37,7 @@ private:
 	// To keep track of what way is "forward" for the mouse
 	int compass;
 	int dummyVar;
+	NavNode mazeArray[16][16];
 
 public:
 
