@@ -5,13 +5,15 @@
 AI::AI(){
 	compass = AI_NORTH;
 	dummyVar = 0;
-	NavNode mazeArray[16][16] = {0};
+	//NavNode tempArray[16][16] = {0};
+	//mazeArray = tempArray;
 	//these are what I am using to store relevant information until we talk about what will actually happenL
-	NavNode currentNode;
+	currentNode;
 	//zero is used as 0 pointer
-	NavNode root = {14, -8,-8, 0, 0, 0, 0};
+	NavNode temp = {14, -8,-8, 0, 0, 0, 0};
+	root = temp;
 	currentNode = root;
-	mazeArray[0][0] = root;
+	//mazeArray[0][0] = root;
 	
 }
 
@@ -175,18 +177,22 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	if(picked == AI_WEST)
 	{
 		currentNode = *(currentNode.west);
+		compass = AI_WEST;
 	}
 	else if(picked == AI_NORTH)
 	{
 		currentNode = *(currentNode.north);
+		compass = AI_NORTH;
 	}
 	else if(picked == AI_EAST)
 	{
 		currentNode = *(currentNode.east);
+		compass = AI_EAST;
 	}
 	else if(picked == AI_SOUTH)
 	{
 		currentNode = *(currentNode.south);
+		compass = AI_SOUTH;
 	}
 
 	return (choice +1)%4;
