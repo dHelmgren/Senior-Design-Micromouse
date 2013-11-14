@@ -80,50 +80,50 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 			int nodePos = (compass + NODE_LEFT)%4;
 			if (nodePos == AI_WEST)
 			{
-				currentNode.west = buildNode(NODE_LEFT, currX, currY);
+				currentNode.west = buildNode(AI_WEST, currX, currY);
 				leftRating = (*currentNode.west).rating;
 			}
 			else if (nodePos == AI_NORTH)
 			{
-				currentNode.north = buildNode(NODE_LEFT, currX, currY);
+				currentNode.north = buildNode(AI_NORTH, currX, currY);
 				leftRating = (*currentNode.north).rating;
 			}
 			else if (nodePos == AI_SOUTH)
 			{
-				currentNode.south = buildNode(NODE_LEFT, currX, currY);
+				currentNode.south = buildNode(AI_SOUTH, currX, currY);
 				leftRating = (*currentNode.south).rating;
 			}
 			else if (nodePos == AI_EAST)
 			{
-				currentNode.east = buildNode(NODE_LEFT, currX, currY);
+				currentNode.east = buildNode(AI_EAST, currX, currY);
 				leftRating = (*currentNode.east).rating;
 			}
 		}
-		else if (!straight)
+		if (!straight)
 		{
 			int nodePos = (compass + NODE_STRAIGHT)%4;
 			if (nodePos == AI_WEST)
 			{
-				currentNode.west = buildNode(NODE_STRAIGHT, currX, currY);
+				currentNode.west = buildNode(AI_WEST, currX, currY);
 				forwardRating = (*currentNode.west).rating;
 			}
 			else if (nodePos == AI_NORTH)
 			{
-				currentNode.north = buildNode(NODE_STRAIGHT, currX, currY);
+				currentNode.north = buildNode(AI_NORTH, currX, currY);
 				forwardRating = (*currentNode.north).rating;
 			}
 			else if (nodePos == AI_SOUTH)
 			{
-				currentNode.south = buildNode(NODE_STRAIGHT, currX, currY);
+				currentNode.south = buildNode(AI_SOUTH, currX, currY);
 				forwardRating = (*currentNode.south).rating;
 			}
 			else if (nodePos == AI_EAST)
 			{
-				currentNode.east = buildNode(NODE_STRAIGHT, currX, currY);
+				currentNode.east = buildNode(AI_EAST, currX, currY);
 				forwardRating = (*currentNode.east).rating;
 			}
 		}
-		else if (!right)
+		if (!right)
 		{
 			int nodePos = (compass + NODE_RIGHT)%4;
 			if (nodePos == AI_WEST)
@@ -171,6 +171,10 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 		currentNode.rating = 99;
 		choice = NODE_BACK;
 	}
+	else
+	{
+		choice = NODE_RIGHT;
+	}
 
 	//make the node I chose the current node
 	int picked = compass + choice;
@@ -216,9 +220,7 @@ NavNode* AI::buildNode(int turnDir, int currX, int currY)
 {
 	int newX = currentNode.xOffset;
 	int newY = currentNode.yOffset;
-	//Determine the location of this next node
-	turnDir = (turnDir+compass) % 4;
-	if(turnDir == NODE_STRAIGHT)
+	if(turnDir == AI_WEST)
 		{
 			newX--;
 			if(newX == 0)
@@ -226,7 +228,7 @@ NavNode* AI::buildNode(int turnDir, int currX, int currY)
 				newX = -1;
 			}
 		}
-		else if(turnDir == NODE_RIGHT)
+		else if(turnDir == AI_NORTH)
 		{
 			newY++;
 			if(newY == 0)
@@ -234,7 +236,7 @@ NavNode* AI::buildNode(int turnDir, int currX, int currY)
 				newY = 1;
 			}
 		}
-		else if(turnDir == NODE_BACK)
+		else if(turnDir == AI_EAST)
 		{
 			newX++;
 			if(newX == 0)
@@ -242,7 +244,7 @@ NavNode* AI::buildNode(int turnDir, int currX, int currY)
 				newX = 1;
 			}
 		}
-		else if(turnDir == NODE_LEFT)
+		else if(turnDir == AI_SOUTH)
 		{
 			newY--;
 			if(newY == 0)
