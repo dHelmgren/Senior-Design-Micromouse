@@ -25,6 +25,11 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	
 	//I expect information as (leftIsWall, centerIsWall, rightIsWall, distFromLast)
 	
+	if(left && straight && right)
+	{
+		return AI_BACK;
+	}
+
 	int currX = currentNode.xOffset;
 	int currY = currentNode.yOffset;
 	int leftRating = 99;
@@ -128,22 +133,22 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 			int nodePos = (compass + NODE_RIGHT)%4;
 			if (nodePos == AI_WEST)
 			{
-				currentNode.west = buildNode(NODE_RIGHT, currX, currY);
+				currentNode.west = buildNode(AI_WEST, currX, currY);
 				rightRating = (*currentNode.west).rating;
 			}
 			else if (nodePos == AI_NORTH)
 			{
-				currentNode.north = buildNode(NODE_RIGHT, currX, currY);
+				currentNode.north = buildNode(AI_NORTH, currX, currY);
 				rightRating = (*currentNode.north).rating;
 			}
 			else if (nodePos == AI_SOUTH)
 			{
-				currentNode.south = buildNode(NODE_RIGHT, currX, currY);
+				currentNode.south = buildNode(AI_SOUTH, currX, currY);
 				rightRating = (*currentNode.south).rating;
 			}
 			else if (nodePos == AI_EAST)
 			{
-				currentNode.east = buildNode(NODE_RIGHT, currX, currY);
+				currentNode.east = buildNode(AI_EAST, currX, currY);
 				rightRating = (*currentNode.east).rating;
 			}
 		}
@@ -228,7 +233,7 @@ NavNode* AI::buildNode(int turnDir, int currX, int currY)
 				newX = -1;
 			}
 		}
-		else if(turnDir == AI_NORTH)
+	else if(turnDir == AI_NORTH)
 		{
 			newY++;
 			if(newY == 0)
@@ -236,7 +241,7 @@ NavNode* AI::buildNode(int turnDir, int currX, int currY)
 				newY = 1;
 			}
 		}
-		else if(turnDir == AI_EAST)
+	else if(turnDir == AI_EAST)
 		{
 			newX++;
 			if(newX == 0)
@@ -244,7 +249,7 @@ NavNode* AI::buildNode(int turnDir, int currX, int currY)
 				newX = 1;
 			}
 		}
-		else if(turnDir == AI_SOUTH)
+	else if(turnDir == AI_SOUTH)
 		{
 			newY--;
 			if(newY == 0)
