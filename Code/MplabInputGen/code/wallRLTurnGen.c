@@ -10,6 +10,8 @@
 
 #include "constants.h"
 
+#define RIGHT 0 //if RIGHT = 0, then the turn is a left turn
+
 int main(int argc, char* argv[]){
 
   float straightSensor = 17.4/CLICKS_PER_CM+3;
@@ -24,11 +26,16 @@ int main(int argc, char* argv[]){
     arrayCounter++;
   }
 
-  // We have noticed that there is no wall at right; keep moving straight
-  // until robot in center of unit
+  // We have noticed that there is no wall at either the right or left,
+  // depending on the macro above; keep moving straight until robot 
+  // is in center of unit
   while (straightSensor >= (17.4-12.5)/(2*CLICKS_PER_CM)){
     rightSensor = straightSensor*sqrt(2);
+#if (RIGHT == 1)
     printf("(%.3f,%.3f,%.3f)#", leftSensor, straightSensor, rightSensor);
+#else
+    printf("(%.3f,%.3f,%.3f)#", rightSensor, straightSensor, leftSensor);
+#endif
     straightSensor = straightSensor - .5;
     arrayCounter++;
   }
