@@ -6,11 +6,12 @@
  * mouse while in the maze.
  *
  * Key for click arrays:
- * "Only":               The only option is a given turn
- * "Perfect":            Microtaur assumed to navigate perfectly in the middle
- *                          of the walls and stops in middle of units
- * "Wall(S|R|L)[0-9]":   There is a wall straight, right, or left and some
- *                          number of units away.
+ * "Only":                   The only option is a given turn
+ * "Perfect":                Microtaur assumed to navigate perfectly in the middle
+ *                               of the walls and stops in middle of units
+ * "Wall(S|R|L)([0-9]|X)":   There is a wall straight, right, or left and some
+ *                               number of units away. "X" means that the sensor
+ *                               read is out of range (>= 41 clicks)
  */
 
 // Simple test input
