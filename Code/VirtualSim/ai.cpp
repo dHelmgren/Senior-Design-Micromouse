@@ -1,10 +1,12 @@
 #include "ai.h"
 #include "stdlib.h"
+#include "stdio.h"
 
 // See ai.h for comment
 AI::AI(){
 	compass = AI_NORTH;
 	dummyVar = 0;
+	memIndex = 0;
 	//NavNode tempArray[16][16] = {0};
 	//mazeArray = tempArray;
 	//these are what I am using to store relevant information until we talk about what will actually happenL
@@ -13,6 +15,12 @@ AI::AI(){
 	NavNode temp = {14, -8,-8, 0, 0, 0, 0};
 	root = temp;
 	currentNode = root;
+	int i = 0;
+	NavNode blank = {0,0,0,0,0,0,0};
+	for(i = 0; i < 100; i++)
+	{
+		emptyNodes[i] = blank;
+	}
 	//mazeArray[0][0] = root;
 	
 }
@@ -35,6 +43,11 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	int leftRating = 99;
 	int rightRating = 99;
 	int forwardRating = 99;
+
+	if(currX != -8 && currY != -8)
+	{
+		deltaDist--;
+	}
 		
 	//Stop me if I've seen this before
 	/*if(currentNode.north != 0 && currentNode.east != 0 || currentNode.east != 0 && currentNode.south != 0
@@ -155,6 +168,9 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	}
 	
 	int choice;
+
+	printf("left: %d right: %d forward: %d\n", leftRating, rightRating, forwardRating);
+
 	if((leftRating < rightRating) && (leftRating < forwardRating))
 	{
 		choice = NODE_LEFT;
@@ -257,6 +273,10 @@ NavNode* AI::buildNode(int turnDir, int currX, int currY)
 				newY = -1;
 			}
 		}
+
 	NavNode newNode = {rateNode(newX, newY), newX, newY, &currentNode, 0, 0, 0};
-	return &newNode;
+	emptyNodes[memIndex] = newNode;
+	NavNode* index = &emptyNodes[memIndex];
+	memIndex++;
+	return index;
 }
