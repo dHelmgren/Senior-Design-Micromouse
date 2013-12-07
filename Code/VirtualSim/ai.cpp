@@ -198,7 +198,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	}
 
 	//make the node I chose the current node
-	int picked = compass + choice;
+	int picked = (compass + choice)%4;
 	if(picked == AI_WEST)
 	{
 		currentNode = *(currentNode.west);
