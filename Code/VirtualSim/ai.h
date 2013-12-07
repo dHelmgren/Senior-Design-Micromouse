@@ -38,11 +38,13 @@ private:
 	int compass;
 	int dummyVar;
 	NavNode mazeArray[16][16];
+	int memIndex;
 
 public:
 
 	NavNode root;
 	NavNode currentNode;
+	NavNode emptyNodes[100];
 	// Default constructor; currently only initializes compass
 	AI();
 	// Devin, please implement this "make decision" code for your AI. We are
