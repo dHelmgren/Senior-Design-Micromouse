@@ -2,39 +2,121 @@
  * 
  * Describes the output of the IR sensors when we are turning left or
  * right in the "traditional turn" way. The turn looks like this:
- *
- *                CASE 0    |      CASE 1    |     CASE 2
- * _________________________|________________|_________________________
- *            |             |                |
- * WALL       |   ____      |       ____     |     _______
- * STRAIGHT 0 |   __  |     |      |  __     |     __   __
- *            |     | |     |      | |       |       | |
- *            |     | |     |      | |       |       | |
- *            |             |                |
- * ___________|_____________|________________|_________________________
- *            |             |                |
- * WALL       |             |                |
- * STRAIGHT 1 |     | |     |      | |       |       | |
- *            |  ___| |     |      | |___    |    ___| |___
- *            |  ___  |     |      |  ___    |    ___   ___
- *            |     | |     |      | |       |       | |
- *            |     | |     |      | |       |       | |
- *            |             |                |
- *            |             |                |
+ * 
+ *              WALL LEFT 0    WALL LEFT 1        WALL LEFT 0    WALL LEFT 1
+ *              WALL RIGHT 1   WALL RIGHT 0      WALL RIGHT 0    WALL RIGHT 1
+ * ___________|_____________|________________|_________________|________________
+ *            |             |                |                 |
+ * WALL       |   ____      |       ____     |     _______     |      _
+ * STRAIGHT 1 |   __  |     |      |  __     |     __   __     |     | |
+ *            |     | |     |      | |       |       | |       |     | |
+ *            |     | |     |      | |       |       | |       |     | |
+ *            |             |                |                 |   DEAD ENO
+ * ___________|_____________|________________|_________________|________________
+ *            |             |                |                 |
+ * WALL       |             |                |                 |
+ * STRAIGHT 0 |     | |     |      | |       |       | |       |     | |
+ *            |  ___| |     |      | |___    |    ___| |___    |     | |
+ *            |  ___  |     |      |  ___    |    ___   ___    |     | |
+ *            |     | |     |      | |       |       | |       |     | |
+ *            |     | |     |      | |       |       | |       |  DO NOT USE
+ * ___________|_____________|________________|_________________|________________
+ *            |             |                |                 |
  */
 
 #include "constants.h"
 
-
-// Determines left, right, or both
-#define CASE 3
-// Determines whether there is wall ahead or out of bounds
-#define WALL_STRAIGHT 0
-
-
-
+#define WALL_STRAIGHT 1
+#define WALL_LEFT 0
+#define WALL_RIGHT 1
 
 int main(int argc, char* argv[]){
+  // Loop iterator
+  float i = 0.0;
+
+  float sSen = SENSOR_TOO_FAR;
+  float lSen = LR_CONST_SENSOR_OUT;
+  float rSen = LR_CONST_SENSOR_OUT;
+
+  // Step 1: There are walls on both sides, and all seems normal
+  for(i = 0; i < START_END_CLICKS; i += INTERVAL){
+    printf("(%.3f,%.3f,%.3f)#", lSen, sSen, rSen);
+  }
+
+#if (WALL_STRAIGHT == 1)
+  sSen = LR_CONST_SENSOR_OUT;
+#endif
+
+#if (WALL_LEFT == 0)
+  lSen = SENSOR_TOO_FAR;
+#endif
+
+#if (WALL_RIGHT == 0)
+  rSen = SENSOR_TOO_FAR;
+#endif
+
+  // Step 2: We have recognized a tuple (change), and we read 20 more
+  // sensor inputs until we have gone as many clicks as necessary
+  for(i = 0; i < CENTERED_IN_TUPLE_UNIT; i += INTERVAL){
+    printf("(%.3f,%.3f,%.3f)#", lSen, sSen, rSen);
+  }
+
+  sSen = SENSOR_TOO_FAR;
+  lSen = LR_CONST_SENSOR_OUT;
+  rSen = LR_CONST_SENSOR_OUT;
+
+  // Step 3: Return to normalcy: walls on both sides
+  for(i = 0; i < START_END_CLICKS; i += INTERVAL){
+    printf("(%.3f,%.3f,%.3f)#", lSen, sSen, rSen);
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Determines left, right, or both
+// #define CASE 3
+// Determines whether there is wall ahead or out of bounds
+// #define WALL_STRAIGHT 0
+
+
+
+
+int main2(int argc, char* argv[]){
 
   // For loop iteration
   float i = 0.0;
@@ -50,11 +132,13 @@ int main(int argc, char* argv[]){
   float rightSensor = RIGHT_MIDDLE;
   int arrayCounter = 0;
 
-  printf("Clicks until centered: %.3f\n", CLICKS_FWD_UNTIL_CENTERED_IN_UNIT);
-  //printf("L sensor vertical lookahead: %.3f\n", LEFT_MIDDLE);
+  printf("Clicks until centered: %.3f\n", R_SENSOR_VERTICAL_LOOKAHEAD);
+  printf("L sensor vertical lookahead: %.3f\n", L_SENSOR_VERTICAL_LOOKAHEAD);
 
-  // We are going straight but there is still a wall on the right side
-  while(straightSensor > UNIT_ONE_WALL+VERTICAL_LOOKAHEAD){
+  // We are going straight until we hit either the R_SENSOR_VERTICAL_LOOKAHEAD
+  // or the L_SENSOR_VERTICAL_LOOKAHEAD boundaries
+  while((straightSensor > UNIT_ONE_WALL+R_SENSOR_VERTICAL_LOOKAHEAD) ||
+	straightSensor > UNIT_ONE_WALL+L_SENSOR_VERTICAL_LOOKAHEAD){
     printf("(%.3f,%.3f,%.3f)#", leftSensor, straightSensor, rightSensor);
     straightSensor = straightSensor - INTERVAL;
     arrayCounter++;
@@ -89,3 +173,4 @@ int main(int argc, char* argv[]){
   //  printf("%d\n", arrayCounter);
 
 }
+*/
