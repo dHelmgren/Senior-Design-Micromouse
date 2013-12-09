@@ -6,7 +6,7 @@
 #define WALL 0
 #define NO_WALL 1
 
-#define VERBOSE 0
+#define VERBOSE 1
 
 // Global variables
 unsigned int isMoving = 0;
