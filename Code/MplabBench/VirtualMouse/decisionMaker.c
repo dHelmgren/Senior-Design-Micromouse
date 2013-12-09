@@ -2,78 +2,119 @@
 #include "decisionMaker.h"
 #include "demo.h"
 
-#define ERROR_HALT_IMMEDIATELY 2
-#define WALL 0
-#define NO_WALL 1
-
+// Debugging output
 #define VERBOSE 1
 
+// Microtaur and environment macros
+#define ERROR_HALT_IMMEDIATELY 2
+#define WALL 0
+#define FALSE 0
+#define NO_WALL 1
+#define TRUE 1
+
+// IR sensor benchmark for seeing a wall vs. seeing no wall
+#define MAX_NO_TUPLE_READOUT 15.0
+
+// Communication with motors
+#define STOP 0
+#define FORWARD 1
+#define BACKWARD 2
+#define BRAKE 3
+
 // Global variables
-unsigned int isMoving = 0;
+unsigned int isMoving = STOP;
 unsigned int isTurning = 0;
+unsigned int centeredInUnit = FALSE;
 unsigned int leftIsTuple = WALL;
+unsigned int straightIsTuple = WALL;
 unsigned int rightIsTuple = WALL;
-unsigned float leftClicksTraveled = 0.0;
-unsigned float rightClicksTraveled = 0.0;
-unsigned float clicksTraveled = 0.0;
 unsigned float leSenCl = 0.0;
 unsigned float strSenCl = 0.0;
 unsigned float riSenCl = 0.0;
-rom unsigned float perfectMiddle = 5.628;
-rom unsigned float wallOneUnitAway = 19.796;
+// TODO: Determine how far Microtaur has moved
+unsigned float leftClicksTraveled = 0.0;
+unsigned float rightClicksTraveled = 0.0;
+unsigned float clicksTraveled = 0.0;
 
 /* setMove
  * Will communicate with hardware to actually move mouse.
  */
 void setMove(int move){
 	isMoving = move;
-	//printf("Microtaur isMoving = %d.\n", isMoving);
+	printf("Microtaur isMoving = %d.\n", isMoving);
 }
 
 /* printSensorInfo
- * Logging information.
+ * Logging information. Must convert the float values to ints
+ * because MPLAB's printf does not support %f (float) printing.
  */
 void printSensorInfo(float l, float s, float r){
-	printf("\nFlo: %d,", (int)(l*100));
+	printf("Flo: %d,", (int)(l*100));
 	printf("%d,", (int)(s*100));
-	printf("%d", (int)(r*100));
+	printf("%d\n", (int)(r*100));
 }
 
-/* isTuple
- * Checks the left and right sensor info to see if a tuple
- * needs to be created. The straight sensor is checked with
- * another method.
+/* interruptCenteredInUnit
+ * Now that Microtaur is centered in the tupled unit, then
+ * do the following:
+ *    1. BRAKE Microtaur
+ *    2. Gather information for agent
+ *    3. Call the agent function (ask where to go next)
+ *    4. Perform that action by telling the motors to move
+ *    5. Reset variables so that Microtaur expects walls to
+ *       the left and right, just like before created a tuple
+ *    6. Set Microtaur FORWARD again
  */
-int isTuple(float sides){
-	// Must check if the sides variable is in between the
-	// possible range of the sensor and 2 * perfectMiddle;
-	// If sides > 2 * perfectMiddle, we know that a wall 
-	// could not possibly exist there, since even our robot
-	// on the opposite end of the wall will trigger a tuple
+void interruptCenteredInUnit(){
+	centeredInUnit = TRUE;	
+
+	// Step 1
+	setMove(BRAKE);
+
+	// Step 2
+	if(strSenCl >= MAX_NO_TUPLE_READOUT){
+		straightIsTuple = NO_WALL;
+	}
 	
-	// Assume that max sensor range is 4 clicks
-	if(sides < 4){
-		return ERROR_HALT_IMMEDIATELY;
-	}
-	else if(sides > 2 * perfectMiddle){
-		// Yes, make a tuple
-		return NO_WALL;
-	}
-	else{
-		// No tuple necessary
-		return WALL;
-	}
+	printf("Left %d, straight %d, right %d\n", leftIsTuple, straightIsTuple, rightIsTuple);
+
+	// Step 3
+	// Put in dummy number of clicks traveled for now
+	makeDecision(18.0, leftIsTuple, straightIsTuple, rightIsTuple, NO_WALL);
+
+	// Step 4 (currently, this is implemented as part of
+	// makeDecision because we don't know how to communicate with
+	// encoders/drivers of motors yet
+	// TODO: insert Step 4 here
+
+	// Step 5
+	leftIsTuple = WALL;
+	straightIsTuple = WALL;
+	rightIsTuple = WALL;
+	
+	// Step 6
+	setMove(FORWARD);
 }
 
-/* minitaurMain
+/* main
  * Main controller for the mouse.
  */
-void main(void){//(float leSenCl, float strSenCl, float riSenCl){
-	setMove(1);
+void main(void){
+	setMove(FORWARD);
 
 	while(1){
+		// This line of code is for demo.c only
 		updateNextSensorOutputs();
 		
+		// If we have received the interrupt that we are centered in
+		// the unit, for the virtual environment's sake, we have to
+		// process the next set of sensor input, else leSenCl, strSenCl,
+		// and riSenCl will have the previous sensor readout values
+		if(centeredInUnit){
+			centeredInUnit = FALSE;
+			updateNextSensorOutputs();
+		}
+	
 		leSenCl = getLeftSensor();
 		strSenCl = getStraightSensor();
 		riSenCl = getRightSensor();
@@ -83,37 +124,14 @@ void main(void){//(float leSenCl, float strSenCl, float riSenCl){
 		printSensorInfo(leSenCl, strSenCl, riSenCl);
 		#endif
 
-		// Compare the current left sensor to the perfectMiddle
-		leftIsTuple = isTuple(leSenCl);
-		rightIsTuple = isTuple(riSenCl);
-
-		// Check if we are at the center of a tupled unit, so that
-		// we can ask the agent to do its data processing
-		// Currently, we know that the straight sensor has to be less
-		// than 3 clicks away
-		if(strSenCl <= 3){
-			makeDecision(clicksTraveled, leftIsTuple, NO_WALL, rightIsTuple, NO_WALL);
+		// Determine if the left and right sensors see no wall; if
+		// they don't see a wall, tell the encoders to move the motors
+		// forward to the center of the next unit
+		if((leSenCl >= MAX_NO_TUPLE_READOUT) && (leftIsTuple == WALL)){
+			leftIsTuple = NO_WALL;
 		}
-
-		//if(leftIsTuple || rightIsTuple){
-			// We know we need to get the number of clicks
-			// traveled and reset that value back to 0.0.
-			// Maybe we will move these two lines of code to
-			// outside of this if statement later because we
-			// would like to autocorrect units based on clicks
-			// traveled
-			//leftClicksTraveled = getLeftClicks();
-			//rightClicksTraveled = getRightClicks();
-
-			
-
-			// Tell the AI to return its decision to us
-			//	makeDecision(clicksTraveled, left, straight, right, back);
-			//}
-
-
-			// Set the _IsTuple variables back to zero
-			leftIsTuple = 0;
-			rightIsTuple = 0;
-	}
+		if((riSenCl >= MAX_NO_TUPLE_READOUT) && (rightIsTuple == WALL)){
+			rightIsTuple = NO_WALL;
+		}
+	}//while
 }
