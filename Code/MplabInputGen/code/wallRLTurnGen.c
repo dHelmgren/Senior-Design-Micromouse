@@ -28,7 +28,7 @@
 
 #define WALL_STRAIGHT 1
 #define WALL_LEFT 0
-#define WALL_RIGHT 1
+#define WALL_RIGHT 0
 
 int main(int argc, char* argv[]){
   // Loop iterator
@@ -60,6 +60,9 @@ int main(int argc, char* argv[]){
   for(i = 0; i < CENTERED_IN_TUPLE_UNIT; i += INTERVAL){
     printf("(%.3f,%.3f,%.3f)#", lSen, sSen, rSen);
   }
+  // Print a $ to symbolize interrupt from the encoders to tell the PIC
+  // that the mouse has already gone CENTERED_IN_TUPLE_UNIT clicks
+  printf("$#");
 
   sSen = SENSOR_TOO_FAR;
   lSen = LR_CONST_SENSOR_OUT;
@@ -71,106 +74,3 @@ int main(int argc, char* argv[]){
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Determines left, right, or both
-// #define CASE 3
-// Determines whether there is wall ahead or out of bounds
-// #define WALL_STRAIGHT 0
-
-
-
-
-int main2(int argc, char* argv[]){
-
-  // For loop iteration
-  float i = 0.0;
-
-  // Set initial sensor values
-  float straightSensor;
-#if (WALL_STRAIGHT == 0)
-  straightSensor = UNIT_ONE_WALL+VERTICAL_LOOKAHEAD+START_END_CLICKS;
-#else
-  straightSensor = OUT_OF_BOUNDS;
-#endif
-  float leftSensor = LEFT_MIDDLE;
-  float rightSensor = RIGHT_MIDDLE;
-  int arrayCounter = 0;
-
-  printf("Clicks until centered: %.3f\n", R_SENSOR_VERTICAL_LOOKAHEAD);
-  printf("L sensor vertical lookahead: %.3f\n", L_SENSOR_VERTICAL_LOOKAHEAD);
-
-  // We are going straight until we hit either the R_SENSOR_VERTICAL_LOOKAHEAD
-  // or the L_SENSOR_VERTICAL_LOOKAHEAD boundaries
-  while((straightSensor > UNIT_ONE_WALL+R_SENSOR_VERTICAL_LOOKAHEAD) ||
-	straightSensor > UNIT_ONE_WALL+L_SENSOR_VERTICAL_LOOKAHEAD){
-    printf("(%.3f,%.3f,%.3f)#", leftSensor, straightSensor, rightSensor);
-    straightSensor = straightSensor - INTERVAL;
-    arrayCounter++;
-  }
-
-  // We have noticed that there is no wall at either the right or left,
-  // depending on the macro above; keep moving straight until robot 
-  // is in center of unit
-  for(i=0.0; i < CLICKS_FWD_UNTIL_CENTERED_IN_UNIT; i += INTERVAL){
-    rightSensor = straightSensor*sqrt(2); // TODO correct this value
-#if (CASE == 1)
-    printf("(%.3f,%.3f,%.3f)#", leftSensor, straightSensor, rightSensor);
-#elif (CASE == 2)
-    printf("(%.3f,%.3f,%.3f)#", rightSensor, straightSensor, rightSensor);
-#else
-    printf("(%.3f,%.3f,%.3f)#", rightSensor, straightSensor, leftSensor);
-#endif
-    straightSensor = straightSensor - INTERVAL;
-    arrayCounter++;
-  }
-
-  // We have completed the turn, thus return to normalcy
-  straightSensor = OUT_OF_BOUNDS;
-  rightSensor = RIGHT_MIDDLE/CLICKS_PER_CM;
-
-  for(i = 0.0; i < (START_END_CLICKS/INTERVAL); i++){
-    printf("(%.3f,%.3f,%.3f)#", leftSensor, straightSensor, rightSensor);
-    straightSensor = straightSensor - INTERVAL;
-    arrayCounter++;
-  }
-
-  //  printf("%d\n", arrayCounter);
-
-}
-*/
