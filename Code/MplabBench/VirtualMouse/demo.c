@@ -6,10 +6,10 @@
 #include "decisionMaker.h"
 #include "demo.h"
 
-#define VERBOSE 1
+#define VERBOSE 0
 
 #pragma config XINST = OFF // Disable extended CPU mode configuration
-rom char * clickPtr = &rightTurnOnlyPerfectClickArray;
+rom char * clickPtr = &rightTurnPerfectClickArray;
 ram unsigned char len = 0;
 ram unsigned float left = 0.0;
 ram unsigned float straight = 0.0;
