@@ -62,9 +62,6 @@ int main(int argc, char* argv[]){
   whenTupleSeen = generateRandNum("whenTupleSeen");
 #endif
 
-  printf("When tuple seen %d\n", whenTupleSeen);
-  printf("Which tuple First %d\n", whichTupleFirst);
-
   float sSen = SENSOR_TOO_FAR;
   float lSen = LR_CONST_SENSOR_OUT;
   float rSen = LR_CONST_SENSOR_OUT;
@@ -93,15 +90,12 @@ int main(int argc, char* argv[]){
   for(i = 0; i < (int)(CENTERED_IN_TUPLE_UNIT/INTERVAL); i++){
     printf("(%.3f,%.3f,%.3f)#", lSen, sSen, rSen);
 
-    printf("i == %d\n", i == whenTupleSeen);
     if (WALL_LEFT == 0 && whichTupleFirst != LEFT && i == whenTupleSeen){
       lSen = SENSOR_TOO_FAR;
-      printf("left sensor: %.3f\n", lSen);
     }
 
     if (WALL_RIGHT == 0 && whichTupleFirst != RIGHT && i == whenTupleSeen){
       rSen = SENSOR_TOO_FAR;
-      printf("right sensor: %.3f\n", rSen);
     }
   }
 
@@ -118,5 +112,4 @@ int main(int argc, char* argv[]){
   for(i = 0; i < (int)(START_END_CLICKS/INTERVAL); i ++){
     printf("(%.3f,%.3f,%.3f)#", lSen, sSen, rSen);
   }
-
 }

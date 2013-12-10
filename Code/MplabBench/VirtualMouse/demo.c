@@ -9,7 +9,7 @@
 #define VERBOSE 0
 
 #pragma config XINST = OFF // Disable extended CPU mode configuration
-rom char * clickPtr = &leftStraightRightTurnPerfectClickArray;
+rom char * clickPtr = &leftStraightRightTurnUnsyncedClickArray;
 ram unsigned char len = 0;
 ram unsigned float left = 0.0;
 ram unsigned float straight = 0.0;
