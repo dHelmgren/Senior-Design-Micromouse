@@ -91,8 +91,20 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 		//Fix the node's position to match its real world location and store it in the maze array.
 		currentNode.xOffset = currX;
 		currentNode.yOffset = currY;
-		mazeArray[currX+8][currY+8] = currentNode;
-		
+
+		//Make adjustments to the index based on location
+		int indX = currX;
+		int indY = currY;
+		if (indX > 0)
+		{
+			indX--;
+		}
+		if (indY > 0)
+		{
+			indY--;
+		}
+		mazeArray[indX+8][indY+8] = currentNode;
+	
 		if (!left)
 		{
 			int nodePos = (compass + NODE_LEFT)%4;
@@ -169,9 +181,30 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	
 	int choice;
 
-	printf("left: %d right: %d forward: %d\n", leftRating, rightRating, forwardRating);
+	printf("left: %d right: %d forward: %d Compass:", leftRating, rightRating, forwardRating);
+	if (compass == AI_WEST)
+	{
+		printf(" west\n");
+	}
+	else if (compass == AI_NORTH)
+	{
+		printf(" north\n");
+	}
+	else if (compass == AI_EAST)
+	{
+		printf(" east\n");
+	}
+	else if (compass == AI_SOUTH)
+	{
+		printf(" south\n");
+	}
 
-	if((leftRating < rightRating) && (leftRating < forwardRating))
+	if(forwardRating == 99 && leftRating == 99 && rightRating == 99)
+	{
+		currentNode.rating = 99;
+		choice = NODE_BACK;
+	}
+	else if((leftRating < rightRating) && (leftRating < forwardRating))
 	{
 		choice = NODE_LEFT;
 	}
@@ -186,11 +219,6 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	else if((forwardRating == rightRating) || (forwardRating == leftRating))
 	{
 		choice = NODE_STRAIGHT;
-	}
-	else if(forwardRating == 99 && leftRating == 99 && rightRating == 99)
-	{
-		currentNode.rating = 99;
-		choice = NODE_BACK;
 	}
 	else
 	{
