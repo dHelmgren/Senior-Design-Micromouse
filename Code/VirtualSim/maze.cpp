@@ -23,7 +23,8 @@ void Maze::initIsTuple(){
 	int i, j, k;
 	for(i = 0; i < DIMENSION - 1; i++){
 		for(j = 0; j < DIMENSION - 1; j++){
-			// There is not a tuple if we are seeing only 2 parallel walls
+			// There is not a tuple if we are seeing only 2 parallel walls; IF we are seeing that the left and right
+			// walls are present but the front wall is not present (dead end), we still want to make a tuple.
 			if((mazeArrayTop[i][j] && mazeArrayTop[i][j+1] && !mazeArrayLeft[i][j] && !mazeArrayLeft[i+1][j]) ||
 				(mazeArrayLeft[i][j] && mazeArrayLeft[i+1][j] && !mazeArrayTop[i][j] && !mazeArrayTop[i][j+1])){
 				isTuple[i][j] = false;
@@ -50,6 +51,15 @@ void Maze::initIsTuple(){
 			}
 		}
 	}
+	// Debug print loop to verify tuples
+	// Was used in email to verify that each tupled unit is correctly idenitifed (screenshot)
+	/*for(int i = 0; i < DIMENSION - 1; i ++){
+		printf("%d:\t", i);
+		for(int j = 0; j < DIMENSION - 1; j++){
+			printf("%d ", isTuple[i][j]);
+		}
+		printf("\n");
+	}*/
 }
 
 bool Maze::isTupleDetected(int mouseXGrid, int mouseYGrid){

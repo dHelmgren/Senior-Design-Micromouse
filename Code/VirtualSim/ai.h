@@ -40,11 +40,15 @@ private:
 	NavNode mazeArray[16][16];
 	int memIndex;
 
+	// TEMPORARY dead end fix
+	bool sawDeadEndLastTime;
+	// End TEMPORARY
+
 public:
 
 	NavNode root;
 	NavNode currentNode;
-	NavNode emptyNodes[100];
+	NavNode emptyNodes[200];
 	// Default constructor; currently only initializes compass
 	AI();
 	// Devin, please implement this "make decision" code for your AI. We are
@@ -57,5 +61,4 @@ public:
 	int makeDecision(int deltaDist, bool left, bool straight, bool right, bool back);
 	int rateNode(int x, int y);
 	NavNode* buildNode(int turnDir, int currX, int currY);
-	
 };

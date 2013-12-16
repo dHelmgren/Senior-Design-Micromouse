@@ -61,6 +61,7 @@ void drawScene() {
 			bool isMouseInTupleGrid = maze.isTupleDetected(gridX, gridY);
 	
 			if(isMouseInTupleGrid){
+				printf("Mouse is in tupled grid: X = %d, Y = %d\n", gridX, gridY);
 				int angle = mouseRobot.getAngle();
 				bool left = false;
 				bool straight = false;
@@ -101,7 +102,7 @@ void drawScene() {
 				//DEBUG
 				//printf("Tuple at WEST %d, NORTH %d, EAST %d, SOUTH %d\n", maze.isWallWNES[gridX][gridY][WEST], maze.isWallWNES[gridX][gridY][NORTH], maze.isWallWNES[gridX][gridY][EAST], maze.isWallWNES[gridX][gridY][SOUTH]);
 				//printf("Tuple at %d, %d\n", gridX, gridY);
-				printf("Angle %d, Left %d, straight %d, right %d, back %d\n", angle, left, straight, right, back);
+				//printf("Mouse is in tupled unit! Angle %d, Left %d, straight %d, right %d, back %d\n", angle, left, straight, right, back);
 				//printf("Tuple's delta distance is %d\n", mouseRobot.getDeltaDistance());
 			
 				int decision = ai.makeDecision(mouseRobot.getDeltaDistance(), left, straight, right, back);

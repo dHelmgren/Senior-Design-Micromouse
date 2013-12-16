@@ -17,12 +17,16 @@ AI::AI(){
 	currentNode = root;
 	int i = 0;
 	NavNode blank = {0,0,0,0,0,0,0};
-	for(i = 0; i < 100; i++)
+	for(i = 0; i < 200; i++)
 	{
 		emptyNodes[i] = blank;
 	}
 	//mazeArray[0][0] = root;
 	
+
+	// TEMPORARY dead end fix
+	bool sawDeadEndLastTime = false;
+	// End TEMPORARY
 }
 
 
@@ -33,10 +37,31 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	
 	//I expect information as (leftIsWall, centerIsWall, rightIsWall, distFromLast)
 	
+	printf("Left: %s, straight: %s, right: %s, back: %s\n", left?"Wall":"No wall", straight?"Wall":"No wall", right?"Wall":"No wall", back?"Wall":"No wall");
+
 	if(left && straight && right)
 	{
+		// TEMPORARY dead end fix
+		sawDeadEndLastTime = true;
+		// End TEMPORARY
 		return AI_BACK;
 	}
+
+	// TEMPORARY dead end fix
+	if(sawDeadEndLastTime == true){
+		printf("Saw dead end last time!\n");
+		sawDeadEndLastTime = false;
+		if(!left){
+			return AI_LEFT;
+		}
+		else if(!right){
+			return AI_RIGHT;
+		}
+		else{
+			return AI_BACK;
+		}
+	}
+	// End TEMPORARY
 
 	int currX = currentNode.xOffset;
 	int currY = currentNode.yOffset;
@@ -169,7 +194,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	
 	int choice;
 
-	printf("left: %d right: %d forward: %d\n", leftRating, rightRating, forwardRating);
+	//printf("left: %d right: %d forward: %d\n", leftRating, rightRating, forwardRating);
 
 	if((leftRating < rightRating) && (leftRating < forwardRating))
 	{
