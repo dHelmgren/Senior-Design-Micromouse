@@ -76,9 +76,8 @@ void initTimers(void)
 {
 		_asm
 		// set up the proper ports to be inputs
-        BSF TRISC, 0,0                //RC0 is now an input
-    	BSF TRISC, 1,0                //RC1 is now an input		
-
+     	   	BSF TRISC, 0,0                //RC0 is now an input
+    		BSF TRISC, 1,0                //RC1 is now an input		
 		// clear the timers
 		CLRF TMR1L,0
 		CLRF TMR1H,0
@@ -88,7 +87,7 @@ void initTimers(void)
 		// RC0 == T1CKI, so no remapping is necessary
 		// RC1 != T3CKI && RC1 == RP12, so remap T3CKI to RP12
 		MOVLW 0b00001100			//setting RP12 as Timer3
-		MOVWF RPINR6,0				//remap. pg164
+		MOVWF RPINR6,0			
 
 		// initialize timer1
 		MOVLW 0b10000111

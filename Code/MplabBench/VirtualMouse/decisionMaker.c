@@ -14,6 +14,7 @@
 
 // IR sensor benchmark for seeing a wall vs. seeing no wall
 #define MAX_NO_TUPLE_READOUT 15.0
+#define MOVE_FORWARD 8.0
 
 // Communication with motors
 #define STOP 0
@@ -22,18 +23,35 @@
 #define BRAKE 3
 
 // Global variables
+
 unsigned int isMoving = STOP;
+
 unsigned int isTurning = 0;
+
 unsigned int centeredInUnit = FALSE;
+
 unsigned int leftIsTuple = WALL;
+
 unsigned int straightIsTuple = WALL;
+
 unsigned int rightIsTuple = WALL;
+
+// Whether or not we have already told the optical encoders
+// that there is a tuple and therefore the mouse is moving
+// to the center of the unit
+unsigned int isHeadingToCtrOfUnit = FALSE;
+
 unsigned float leSenCl = 0.0;
+
 unsigned float strSenCl = 0.0;
+
 unsigned float riSenCl = 0.0;
+
 // TODO: Determine how far Microtaur has moved
 unsigned float leftClicksTraveled = 0.0;
+
 unsigned float rightClicksTraveled = 0.0;
+
 unsigned float clicksTraveled = 0.0;
 
 /* setMove
@@ -63,10 +81,13 @@ void printSensorInfo(float l, float s, float r){
  *    4. Perform that action by telling the motors to move
  *    5. Reset variables so that Microtaur expects walls to
  *       the left and right, just like before created a tuple
- *    6. Set Microtaur FORWARD again
+ *    6. Set Microtaur FORWARD again and tell Microtaur to move
+ *       8 clicks so that it is guaranteed that Microtaur's left
+ *       and right sensors see the next unit.
  */
 void interruptCenteredInUnit(){
 	centeredInUnit = TRUE;	
+	isHeadingToCtrOfUnit = FALSE;
 
 	// Step 1
 	setMove(BRAKE);
@@ -92,8 +113,9 @@ void interruptCenteredInUnit(){
 	straightIsTuple = WALL;
 	rightIsTuple = WALL;
 	
-	// Step 6
+	// Step 6: TODO
 	setMove(FORWARD);
+	
 }
 
 /* main
@@ -127,11 +149,18 @@ void main(void){
 		// Determine if the left and right sensors see no wall; if
 		// they don't see a wall, tell the encoders to move the motors
 		// forward to the center of the next unit
-		if((leSenCl >= MAX_NO_TUPLE_READOUT) && (leftIsTuple == WALL)){
+		if((leSenCl >= MAX_NO_TUPLE_READOUT) && (leftIsTuple == WALL) &&
+			!isHeadingToCtrOfUnit){
 			leftIsTuple = NO_WALL;
+			// For now, this line of code tells the optical encoders to
+			// move the motors to the cneter of the unit; we still have
+			// to figure out how exactly this communication happens
+			isHeadingToCtrOfUnit = TRUE;
 		}
-		if((riSenCl >= MAX_NO_TUPLE_READOUT) && (rightIsTuple == WALL)){
+		if((riSenCl >= MAX_NO_TUPLE_READOUT) && (rightIsTuple == WALL) &&
+			!isHeadingToCtrOfUnit){
 			rightIsTuple = NO_WALL;
+			isHeadingToCtrOfUnit = TRUE;
 		}
 	}//while
 }
