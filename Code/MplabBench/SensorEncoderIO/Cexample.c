@@ -9,6 +9,8 @@
 #define RB4 PORTBbits.RB4
 #define true    1 
 #define false   0 
+#define W		0
+#define F		1
 ///end copy
 
 void initial(void);
@@ -18,6 +20,13 @@ void clearClicks(void);
 void pollClicks(void);
 void initIR1(void);
 void pollIR1(void);
+char clicksToUnits(char highByte, char lowByte);
+void fourStepPollingSequence(char firstConstant, char secondConstant, char thirdConstant, char fourthConstant, char numQuarterTurns);
+void checkAgainForWalls(void);
+void haltMinitaur(void);
+void initiateSpin(void);
+void tupleToAgent(void);
+		// note that the second step of the polling sequence does not require a constant.
 
 // NOTE: MPLAB seems to need its declared variables to come first
 /*
@@ -27,7 +36,12 @@ void pollIR1(void);
 	for Microtaur to function properly.
 */
 
+//TODO write four step polling sequence
+
 void main(void) {
+
+		char sampleParam = 5;
+		char numTurns = 2;
 
 		initial();
 		initTimers();
@@ -35,6 +49,8 @@ void main(void) {
 		pollClicks();
 		initIR1();
 		pollIR1();
+		clicksToUnits(1, sampleParam);
+		fourStepPollingSequence(sampleParam,sampleParam,sampleParam,sampleParam, numTurns);
 }
 
 //
@@ -74,7 +90,7 @@ void initial(void)
 */
 void initTimers(void)
 {
-		_asm
+		_asm//TODO: Consider rewriting in C.
 		// set up the proper ports to be inputs
         BSF TRISC, 0,0                //RC0 is now an input
     	BSF TRISC, 1,0                //RC1 is now an input		
@@ -85,6 +101,7 @@ void initTimers(void)
 		CLRF TMR3L,0
 		CLRF TMR3H,0
 
+		//TODO ensure mapping works.
 		// RC0 == T1CKI, so no remapping is necessary
 		// RC1 != T3CKI && RC1 == RP12, so remap T3CKI to RP12
 		MOVLW 0b00001100			//setting RP12 as Timer3
@@ -121,6 +138,7 @@ void getClicks(void)
 // which is likely hardcoded, before the next value is loaded to WREG.
 // Here we just override sampleAddress four times
 
+		//TODO insert proper variables
 		char sampleAddress = 0;
 
 		_asm
@@ -160,15 +178,16 @@ void clearClicks()
 	a pre-set value. Note that this code is only set to watch
 	the low byte of each timer.
 */
-void pollClicks(void)
+void pollClicks(void)//TODO this param should take a literal which will be the constant compared with.
 {
+//TODO consider polling on only one motor, or checking both simultaneously.
 		clearClicks();
 		_asm
 		MOVLW 25// some constant which will have to be determined by measurement
 L1:		CPFSGT TMR1L,0
-/*
+
 		BRA L1
-*/
+
 // we may choose to only moniter one of the encoders for simplicity, but both are coded here
 L2:		CPFSGT TMR3L,0
 /*
@@ -185,8 +204,11 @@ L2:		CPFSGT TMR3L,0
 void initIR1(void)
 {
 		_asm
+		BSF TRISA, 0,0          //RA0 is now an input
 		BSF TRISA, 1,0          //RA1 is now an input
-        MOVLW 0b11000101        //pg507 from text.
+		BSF TRISA, 2,0          //RA2 is now an input
+//TODO: complete the initialization for all of the IR sensors.
+//        MOVLW 0b00 000101        //pg368 from text.
                                 //internal RC used for clock source
                                 //CHAN0 selected
                                 //GO/DONE cleared to keep the process from starting.
@@ -213,4 +235,138 @@ WAIT:   BTFSC ADCON0, 1,0       //keep polling for end-of-conversion
         MOVFF ADRESL, dist0     
         MOVFF ADRESH, dist1               
 		_endasm
+
+		//TODO write four linear functions with if statements
+		// return char
 }
+
+char clicksToUnits(char highByte, char lowByte)// =)
+{
+		// given: 1 unit = 1 click
+		// assume: 1 click == 1 cm (truth: 1 cm == 0.98 clicks)
+
+		char numUnitSquares = 0;
+		
+		//NOTE: highByte will only be 0 or 1. If there is anything else, we have a problem!
+		//TODO: Emilia, print to console if:
+		//if (highbyte != 0 && highbyte != 1)
+
+		if (highByte == 1) {
+			numUnitSquares = numUnitSquares + 14;
+			lowByte = lowByte + 4;
+		}			
+		
+		// repeated subtraction
+		while (lowByte >= 18) {
+			lowByte = lowByte - 18;
+			numUnitSquares = numUnitSquares + 1;
+		}
+		
+		// round for the final value
+		if (lowByte < 7) return numUnitSquares;
+		return numUnitSquares + 1;
+}
+
+/*
+	Call this function when it is discovered that a tuple is ahead.
+*/
+void fourStepPollingSequence(char firstConstant, char secondConstant, char thirdConstant, char fourthConstant, char numQuarterTurns)
+{
+	// Step one: We have seen that a tuple is ahead. Drive a short distance and check for 
+	// walls/no_walls to ensure that the tuple will be made correctly.
+	// We are still sending the same instructions to the motors, so we just poll for the
+	// next distance. We will only check the encoder attached to TMR1.
+
+		char TMR1L_future;
+		char TMR1H_future = TMR1H;
+		char turnCount;// for use in Step 3
+
+		_asm
+		// set up the following:
+		// TMR1L_future = firstConstant + TMR1L
+		// TMR1H_future = TMR1H + carry
+		MOVF 	TMR1L,0xE8,0//0xE8 being WREG
+		// assuming unsigned
+		ADDWF 	firstConstant, 0xE8,0//WREG = firstConstant + TMR1L
+		BNC 	L1
+		INCF 	TMR1H_future, F,0// increase by one if carry
+L1:		MOVWF	TMR1L_future,0//TMR1L_future = WREG
+		_endasm
+
+		// now commence the actual polling.
+		while(1) if (TMR1L_future <= TMR1L) break;
+		while(1) if (TMR1H_future <= TMR1H) break;
+
+	// Step one is complete
+		checkAgainForWalls();
+	// Step two: continue to middle of next unit square
+		
+		TMR1H_future = TMR1H;
+
+		_asm
+		// set up the following:
+		// TMR1L_future = firstConstant + TMR1L
+		// TMR1H_future = TMR1H + carry
+		MOVF 	TMR1L,0xE8,0//0xE8 being WREG
+		// assuming unsigned
+		ADDWF 	secondConstant, 0xE8,0//WREG = firstConstant + TMR1L
+		BNC 	L2
+		INCF 	TMR1H_future, F,0// increase by one if carry
+L2:		MOVWF	TMR1L_future,0//TMR1L_future = WREG
+		_endasm
+
+		// now commence the actual polling.
+		while(1) if (TMR1L_future <= TMR1L) break;
+		while(1) if (TMR1H_future <= TMR1H) break;
+
+	// Step two is complete
+		haltMinitaur();		//NOTE: there will likely be other code in this area 
+		tupleToAgent();		//to pass around parameters and do any other necessary funtions.
+		initiateSpin();		//This is just a basic outline.
+	// Step three: poll for the spin.
+
+		turnCount = 0;
+		while(numQuarterTurns != turnCount) {// for turning either one or two times.
+			//TODO consider polling on only one motor, or checking both simultaneously.
+					clearClicks();// we start counting the clicks again from zero.
+					_asm
+					MOVF thirdConstant, W, 0
+L3:					CPFSGT TMR1L,0
+					BRA L3
+			
+			// we may choose to only moniter one of the encoders for simplicity, but both are coded here
+			/*
+			L4:		CPFSGT TMR3L,0
+					BRA L4
+			*/
+					_endasm	
+					// both of the timers are greater than the hardcoded constant
+					turnCount = turnCount + 1;
+		}// end while
+
+	// Step three is complete.
+		// no operations between the end of the third poll and the beginning of the fourth poll.
+	// Step four: drive forward a few clicks before we begin to read in the sensor data.
+
+		clearClicks();// we start counting the clicks again from zero.
+		_asm
+		MOVF thirdConstant, W, 0
+L5:		CPFSGT TMR1L,0
+		BRA L5
+		_endasm
+
+	// Step four complete.
+	// Return to buisiness as usual.
+}
+
+//TODO: Emilia fill. This function will scan the walls again and save the results to make the tuple later.
+void checkAgainForWalls(void){}
+
+//TODO: Janel fill. This function sends the commands to the motors to stop Minitaur.
+void haltMinitaur(void){}
+
+//TODO: Emilia fill. This function calles Devins agent. There will be parameters, but void for now.
+void tupleToAgent(void){}
+
+//TODO: Janel fill. This function sends the commands to the motors to spin Minitaur. Will likely have right/left parameters.
+void initiateSpin(void){}
