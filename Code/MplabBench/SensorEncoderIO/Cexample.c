@@ -242,7 +242,7 @@ WAIT:   BTFSC ADCON0, 1,0       //keep polling for end-of-conversion
 
 char clicksToUnits(char highByte, char lowByte)// =)
 {
-		// given: 1 unit = 1 click
+		// given: 1 unit = 18 clicks
 		// assume: 1 click == 1 cm (truth: 1 cm == 0.98 clicks)
 
 		char numUnitSquares = 0;
