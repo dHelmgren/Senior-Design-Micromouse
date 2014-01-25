@@ -21,7 +21,7 @@ AI::AI(){
 	{
 		emptyNodes[i] = blank;
 	}
-	//mazeArray[0][0] = root;
+	mazeArray[0][0] = root;
 	
 }
 
@@ -170,6 +170,30 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 			rightRating = (*currentNode.east).rating;
 		}
 	}
+
+	int backPos = (compass + NODE_BACK) %4;
+
+	if (backPos == AI_WEST)
+		{
+			currentNode.west = buildNode(AI_WEST, currX, currY);
+			rightRating = (*currentNode.west).rating;
+		}
+		else if (backPos == AI_NORTH)
+		{
+			currentNode.north = buildNode(AI_NORTH, currX, currY);
+			rightRating = (*currentNode.north).rating;
+		}
+		else if (backPos == AI_SOUTH)
+		{
+			currentNode.south = buildNode(AI_SOUTH, currX, currY);
+			rightRating = (*currentNode.south).rating;
+		}
+		else if (backPos == AI_EAST)
+		{
+			currentNode.east = buildNode(AI_EAST, currX, currY);
+			rightRating = (*currentNode.east).rating;
+		}
+
 	
 	
 	int choice;
