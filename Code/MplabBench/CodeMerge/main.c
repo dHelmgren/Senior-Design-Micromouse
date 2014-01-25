@@ -1,6 +1,10 @@
 #include <p18f27j13.h>
+
+/****** MACROS ******/
 #define true    1 
 #define false   0 
+#define left	1
+#define right	0
 #define FRONT_IR_SELECT 0b00000011
 #define LEFT_IR_SELECT 0b00000111
 #define RIGHT_IR_SELECT 0b00001011
@@ -9,19 +13,27 @@
 #define GO_RIGHT 0b11110101
 #define GO_FORWARD 0b11111001
 #define GO_BACKWARD 0b11110110
+#define BREAK_R_WHEEL 0b11111101
 #define BREAK 0b11111111
 #define DELAY 1000
+#define PULSES_PER_CM 53  // Was messing up in hex
+#define ONE_UNIT_CM 18
 
-
+/****** FUNCTION DEFINITIONS ******/
 void initial(void);
 void blinkTest(void);
 void driveTest(void);
 unsigned char adConvert(unsigned char channel);
 void msDelay(unsigned int time);
-void ninetyDegreeSpinTest(void);
+void ninetyDegreeTurnTest(unsigned char direction);
 void stopTest(void);
 char voltsToClicksTest(void);
+void goForwardTest(void);
 
+/****** GLOBAL VARIABLES ******/
+// Number of centimeters traveled since last time optical encoders
+// were cleared
+unsigned char cmTraveled = 0;
 
 #pragma code 
 
@@ -35,19 +47,27 @@ void main(void)
 	unsigned char tempR;
 	unsigned char leftIR;
 	unsigned char rightIR;
+
 	Nop();
 	initial();
 	blinkTest();
 	countA = 0;
 	countB = 0;
 
+
+
 	// initiate 90degree spin test
 	//ninetyDegreeSpinTest();
-	driveTest();
+	// driveTest();
 
 	// initiate stop test
 	// this should cause minitaur to stop when it sees a wall directly ahead.
 	//stopTest();
+
+	goForwardTest();
+	ninetyDegreeTurnTest(right);
+	cmTraveled = 0;
+	goForwardTest();
 
 	while(true)
 	{
@@ -170,7 +190,7 @@ void driveTest(void)
 	msDelay(DELAY);
 	msDelay(DELAY);
 	msDelay(DELAY);
-	ninetyDegreeSpinTest();
+	ninetyDegreeTurnTest(left);
 	msDelay(DELAY);
 	PORTB = GO_FORWARD; //Drive forward!
 	msDelay(DELAY);
@@ -236,21 +256,60 @@ void msDelay(unsigned int itime)
 	}
 }
 
-void ninetyDegreeSpinTest(void)
+void goForwardTest(void)
+{
+	TMR0L = 0;
+	TMR0H = 0;
+	TMR1L = 0;
+	TMR1H = 0;
+	PORTB=GO_FORWARD; //Drive forward
+	while(cmTraveled < ONE_UNIT_CM)
+	{
+		if(TMR0L >= PULSES_PER_CM){
+			cmTraveled++;
+			TMR0L = 0;
+		}
+
+		//PORTB=GO_FORWARD; //Drive forward
+		//countA = TMR0L;
+		//countB = TMR1L;
+		//PORTB = BREAK;
+	}
+
+	PORTB=BREAK; //stop the right wheel
+	//blinkTest();
+	Nop();
+	msDelay(1000);
+	//blinkTest();
+	TMR0L = 0;
+	TMR0H = 0;
+}
+
+void ninetyDegreeTurnTest(unsigned char direction)
 {
 	char countA = 0;
 	char countB = 0;
 
-	PORTB=GO_FORWARD; //Drive forward
-	msDelay(10000);
-	PORTB=BREAK; //break
-	msDelay(1000);
+	//PORTB=GO_FORWARD; //Drive forward
+	//msDelay(10000);
+	//PORTB=BREAK; //break
+	//msDelay(1000);
 
     TMR0L = 0;
 	TMR1L = 0;
 	TMR0H = 0;
 	TMR1H = 0;
-	PORTB=GO_LEFT; //spin in a circle
+
+	if(direction == left){
+		PORTB=GO_LEFT;
+	}
+	else if(direction == right){
+		PORTB=GO_RIGHT;
+	}
+	else{ // This case should never be reached
+		return;
+	}
+
 	while(countA < CLICKS_FOR_90 && countB < CLICKS_FOR_90) {
 		// check again and repeat.
 		countA = TMR0L;
@@ -268,6 +327,8 @@ void ninetyDegreeSpinTest(void)
 		countB = TMR1L;
 	}
 	PORTB=BREAK; //break
+
+	msDelay(1000);
 }
 
 char voltsToClicksTest(void)
