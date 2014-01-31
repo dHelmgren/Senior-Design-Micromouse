@@ -33,13 +33,13 @@ private:
 	// To keep track of what way is "forward" for the mouse
 	int compass;
 	int dummyVar;
-	NavNode mazeArray[16][16];
+	NavNode* mazeArray[16][16];
 	int memIndex;
 
 public:
 
 	NavNode root;
-	NavNode currentNode;
+	NavNode* currentNode;
 	NavNode emptyNodes[100];
 	// Default constructor; currently only initializes compass
 	AI();

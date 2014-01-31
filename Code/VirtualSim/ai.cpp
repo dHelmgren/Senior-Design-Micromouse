@@ -14,14 +14,14 @@ AI::AI(){
 	//zero is used as 0 pointer
 	NavNode temp = {14, -8,-8, 0, 0, 0, 0};
 	root = temp;
-	currentNode = root;
+	currentNode = &root;
 	int i = 0;
 	NavNode blank = {0,0,0,0,0,0,0};
 	for(i = 0; i < 100; i++)
 	{
 		emptyNodes[i] = blank;
 	}
-	mazeArray[0][0] = root;
+	mazeArray[0][0] = &root;
 	
 }
 
@@ -33,8 +33,8 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	//Grope for info (DONE)
 	
 	//I expect information as (leftIsWall, centerIsWall, rightIsWall, distFromLast)
-	int currX = currentNode.xOffset;
-	int currY = currentNode.yOffset;
+	int currX = (int) (*currentNode).xOffset;
+	int currY = (int) (*currentNode).yOffset;
 	int leftRating = 99;
 	int rightRating = 99;
 	int forwardRating = 99;
@@ -49,7 +49,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	if(compass == AI_NORTH)
 	{
 		//deals with crossing the origin, as each square is measured by the outermost corner
-		if(currentNode.yOffset < 0 && deltaDist > -currentNode.yOffset)
+		if((*currentNode).yOffset < 0 && deltaDist > -(*currentNode).yOffset)
 		{
 			//if we cross the origin, we modify the distance to skip zero
 			deltaDist++;
@@ -96,7 +96,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	{
 		indY--;
 	}
-	mazeArray[indX+8][indY+8] = currentNode;
+	mazeArray[indX+8][indY+8] = &currentNode;
 	
 	if (!left)
 	{
