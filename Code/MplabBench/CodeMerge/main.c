@@ -19,9 +19,17 @@
 #define BREAK_R_WHEEL 0b11111101
 #define BREAK 0b11111111
 #define DELAY 1000
-#define PULSES_PER_CM 53  // Was messing up in hex
+#define CLICKS_PER_CM 55  // Was messing up in hex
 #define ONE_UNIT_CM 18
 #define FRONT_IR_STOP 128
+
+// Poll 2: No wall means wall is farther than 11 cm
+#define NO_WALL 350
+
+// Poll 3: Move mouse forward 4 cm
+#define LEAVE_UNIT 4
+
+#define CONTINUE_TO_CENTER 14
 
 /****** FUNCTION DEFINITIONS ******/
 
@@ -30,10 +38,11 @@ void blinkTest(void);
 void driveTest(void);
 unsigned int adConvert(unsigned char channel);
 void msDelay(unsigned int time);
-void ninetyDegreeTurnTest(unsigned char direction);
+void turn(unsigned char direction); // Step 3
 void stopTest(void);
-char voltsToClicksTest(void);
-void goForwardTest(void);
+//char voltsToClicksTest(void);
+void goForward(int distance); // Step 2 of 4 step polling process
+void init4StepPoll(void);
 
 /****** GLOBAL VARIABLES ******/
 
@@ -48,55 +57,61 @@ unsigned char cmTraveled = 0;
 
 void main(void)
 {
-	unsigned char countA;
-	unsigned char countB;
+	// Initialization of constants
+	unsigned char countA = 0;
+	unsigned char countB = 0;
 	unsigned char frontIR;
 	unsigned char tempF;
 	unsigned char tempL;
 	unsigned char tempR;
 	unsigned char leftIR;
 	unsigned char rightIR;
-	int irConvert = 0;
+	int irCvtL = 0; // Ir converted left value
+	int irCvtR = 0;
+	int irCvtS = 0;
 
 	Nop();
 	initial();
-	blinkTest();
-	countA = 0;
-	countB = 0;
+	
 
-	// initiate 90degree spin test
-	//ninetyDegreeSpinTest();
-	// driveTest();
+	/**** BEGIN! ****/
 
-	// initiate stop test
-	// this should cause minitaur to stop when it sees a wall directly ahead.
-	//stopTest();
+	PORTB=GO_FORWARD;
 
+	while (true) {
 
-	PORTB=GO_FORWARD; //Drive forward
+		irCvtL = adConvert(LEFT_IR_SELECT);
+		irCvtR = adConvert(RIGHT_IR_SELECT);
 
-	while (irConvert <= 0x0040) {
-		//Nop();
-		PORTB = BREAK;
-		//msDelay(1);
-		irConvert = adConvert(FRONT_IR_SELECT);
-		//msDelay(1);
-		PORTB = GO_FORWARD;
-	}
-	PORTB = BREAK; //break
-	msDelay(DELAY);
+		// Determine if the L or R sensors have seen the absence of
+		// a wall. If they have, then initiate the 4-step polling process
+		if(irCvtL <= NO_WALL || irCvtR <= NO_WALL){
+			init4StepPoll();
+		}
 
-/*
-	goForwardTest();
-	ninetyDegreeTurnTest(right);
-	cmTraveled = 0;
-	goForwardTest();
-*/
-	while(true)
-	{
-		blinkTest();
-		msDelay(2000);
-	}
+	}//while(true)
+
+}//main
+
+void init4StepPoll(void){
+	// local variables
+	char decision;
+
+	// Step 2
+	goForward(CONTINUE_TO_CENTER);
+
+	// TODO: Call agent
+	decision = left;
+
+	// Step 3
+	// TODO: modify turn to also turn 180 degrees
+	turn(decision);
+
+	// Step 4: Continue a little past current unit
+	goForward(LEAVE_UNIT);
+
+	// Start polling process again
+	PORTB=GO_FORWARD;
 }
 
 void initial(void)
@@ -159,7 +174,7 @@ void driveTest(void)
 	msDelay(DELAY);
 	msDelay(DELAY);
 	msDelay(DELAY);
-	ninetyDegreeTurnTest(left);
+	turn(left);
 	msDelay(DELAY);
 	PORTB = GO_FORWARD; //Drive forward!
 	msDelay(DELAY);
@@ -196,7 +211,7 @@ unsigned int adConvert(unsigned char channel)
 	//instead waiting 10ms 
 			//Note: this timing can be played with to get a
 			//more accurate reading
-	msDelay(1000);
+	//msDelay(1);
 	//turn go on!
 	ADCON0 = (ADCON0 | 0x02); //or-ed with 2
 	//wait for the done bit to be cleared
@@ -231,40 +246,33 @@ void msDelay(unsigned int itime)
 	}
 }
 
-void goForwardTest(void)
+void goForward(int distance)
 {
 	TMR0L = 0;
 	TMR0H = 0;
 	TMR1L = 0;
 	TMR1H = 0;
 	PORTB=GO_FORWARD; //Drive forward
-	while(cmTraveled < ONE_UNIT_CM)
+	while(cmTraveled < distance)
 	{
-		if(TMR0L >= PULSES_PER_CM){
+		if(TMR0L >= CLICKS_PER_CM){
 			cmTraveled++;
 			TMR0L = 0;
 		}
 	}
 
 	PORTB=BREAK; //stop the right wheel
-	//blinkTest();
 	Nop();
 	msDelay(1000);
-	//blinkTest();
 	TMR0L = 0;
 	TMR0H = 0;
 }
 
-void ninetyDegreeTurnTest(unsigned char direction)
+void turn(unsigned char direction)
 {
+	// local variables
 	char countA = 0;
 	char countB = 0;
-
-	//PORTB=GO_FORWARD; //Drive forward
-	//msDelay(10000);
-	//PORTB=BREAK; //break
-	//msDelay(1000);
-
     TMR0L = 0;
 	TMR1L = 0;
 	TMR0H = 0;
@@ -297,11 +305,9 @@ void ninetyDegreeTurnTest(unsigned char direction)
 		countB = TMR1L;
 	}
 	PORTB=BREAK; //break
-
-	msDelay(1000);
 }
 
-char voltsToClicksTest(void)
+/*char voltsToClicksTest(void)
 {// for now we will just set it up for the front IR.
 // assume using 12 bits in adc, assume that the bits are right justified.
 // TODO Janel, see above.
@@ -328,4 +334,4 @@ char voltsToClicksTest(void)
 			return 7;
 		}
 		return 8;
-}
+}*/
