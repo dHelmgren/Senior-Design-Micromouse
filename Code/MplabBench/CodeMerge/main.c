@@ -1,13 +1,16 @@
 #include <p18f27j13.h>
+#include <timers.h>
+#include <adc.h>
 
 /****** MACROS ******/
+
 #define true    1 
 #define false   0 
 #define left	1
 #define right	0
-#define FRONT_IR_SELECT 0b00000011
-#define LEFT_IR_SELECT 0b00000111
-#define RIGHT_IR_SELECT 0b00001011
+#define FRONT_IR_SELECT 0b00000001
+#define LEFT_IR_SELECT 0b00000101
+#define RIGHT_IR_SELECT 0b00001001
 #define CLICKS_FOR_90 0xB7
 #define GO_LEFT 0b11101010
 #define GO_RIGHT 0b11110101
@@ -18,12 +21,14 @@
 #define DELAY 1000
 #define PULSES_PER_CM 53  // Was messing up in hex
 #define ONE_UNIT_CM 18
+#define FRONT_IR_STOP 128
 
 /****** FUNCTION DEFINITIONS ******/
+
 void initial(void);
 void blinkTest(void);
 void driveTest(void);
-unsigned char adConvert(unsigned char channel);
+unsigned int adConvert(unsigned char channel);
 void msDelay(unsigned int time);
 void ninetyDegreeTurnTest(unsigned char direction);
 void stopTest(void);
@@ -31,9 +36,13 @@ char voltsToClicksTest(void);
 void goForwardTest(void);
 
 /****** GLOBAL VARIABLES ******/
-// Number of centimeters traveled since last time optical encoders
-// were cleared
+
+/* Number of centimeters traveled since last time optical encoders
+ * were cleared
+ */
 unsigned char cmTraveled = 0;
+
+/****** CODE ******/
 
 #pragma code 
 
@@ -47,14 +56,13 @@ void main(void)
 	unsigned char tempR;
 	unsigned char leftIR;
 	unsigned char rightIR;
+	int irConvert = 0;
 
 	Nop();
 	initial();
 	blinkTest();
 	countA = 0;
 	countB = 0;
-
-
 
 	// initiate 90degree spin test
 	//ninetyDegreeSpinTest();
@@ -64,64 +72,31 @@ void main(void)
 	// this should cause minitaur to stop when it sees a wall directly ahead.
 	//stopTest();
 
+
+	PORTB=GO_FORWARD; //Drive forward
+
+	while (irConvert <= 0x0040) {
+		//Nop();
+		PORTB = BREAK;
+		//msDelay(1);
+		irConvert = adConvert(FRONT_IR_SELECT);
+		//msDelay(1);
+		PORTB = GO_FORWARD;
+	}
+	PORTB = BREAK; //break
+	msDelay(DELAY);
+
+/*
 	goForwardTest();
 	ninetyDegreeTurnTest(right);
 	cmTraveled = 0;
 	goForwardTest();
-
+*/
 	while(true)
 	{
 		blinkTest();
 		msDelay(2000);
 	}
-/*
-		//Test the encoders
-		blinkTest();
-		PORTB=0b11101010; //Drive forward
-		msDelay(2000);
-		PORTB = 0b11111111; //break
-		countA = TMR0L;
-		countB = TMR1L;
-		msDelay(100);
-		countA = TMR0L;
-		countB = TMR1L;
-		msDelay(100);
-		countA = TMR0L;
-		countB = TMR1L;
-		//Test the IR sensors
-		frontIR = 0;
-		leftIR = 0;
-		rightIR = 0;
-		tempF = 0;
-		tempL = 0;
-		tempR = 0;
-
-					//TODO: I am not getting consistant values off of the A/D conversion
-					//I keep getting different values stored in the frontIR and the temp variables
-					//Even though I know the value of the IR sensor isn't changing because I have 
-					//a voltage meter attached to it and it doesn't change.
-					//I don't know why it does this.
-					//It's behavior is that the first time around the front IR values stay at zero
-					//then the second time the low value sets to one value (0x1F) and the higher one sets
-					// to (0xC0), then the next time it runs the values swap, then the next time it swaps
-					// then it sets one to random value, then it sets back to the two constants and flips
-					//then for each loop through, even though the readout of the IR sensor on a volt meeter
-					//is constant.  Did I set a configure bit wronge?
-
-		frontIR = adConvert(FRONT_IR_SELECT);
-		tempF = ADRESL;
-		Nop();
-		leftIR = adConvert(LEFT_IR_SELECT);
-		tempL = ADRESL;
-		Nop();
-		rightIR = adConvert(RIGHT_IR_SELECT);
-		tempR = ADRESL;
-		Nop();
-*/
-	
-		
-
-	//blinkTest();
 }
 
 void initial(void)
@@ -180,12 +155,6 @@ void initial(void)
 
 void driveTest(void)
 {	
-	//PORTB = GO_LEFT; //Spin left
-	//msDelay(DELAY);
-	//PORTB = GO_RIGHT; //Spin right
-	//msDelay(DELAY);
-	//PORTB = GO_BACKWARD; //Drive backwards
-	//msDelay(DELAY);
 	PORTB = GO_FORWARD; //Drive forward!
 	msDelay(DELAY);
 	msDelay(DELAY);
@@ -215,33 +184,39 @@ void blinkTest(void)
 	
 }
 
-unsigned char adConvert(unsigned char channel)
+unsigned int adConvert(unsigned char channel)
 {
+	/*unsigned */int irValue;
 	//set's the Analog input channel to the given input
+	ADCON0 = 0;
+	ADCON1 = 0b10100001; //0xa1
 	ADCON0 = channel;
-	//Tells the A/D module to convert
-	ADCON0bits.GO = 1;
+	//CHARGE the CAPACITOR!!!
+	//must wait 2.45us
+	//instead waiting 10ms 
+			//Note: this timing can be played with to get a
+			//more accurate reading
+	msDelay(1000);
+	//turn go on!
+	ADCON0 = (ADCON0 | 0x02); //or-ed with 2
 	//wait for the done bit to be cleared
 	//meaning the conversion is done
 	while(ADCON0bits.NOT_DONE)
 	{
 		Nop();
 	}
-	//return the upper value 
-	return ADRESH;
+	//read in value to the variable
+	irValue = ReadADC();
+	//close the converter module
+	CloseADC();
+	return irValue;
+/*
+	irValue = irValue >>2;
+	char charVal = (char)irValue;
+	//return value
+	return charValue*/
 }
 
-void stopTest(void){
-	char frontIR;
-
-	// drive forward
-	PORTB=0b11101010; //Drive forward
-	frontIR = adConvert(FRONT_IR_SELECT);
-	while(frontIR < 2 && ADRESL < 100) {
-		frontIR = adConvert(FRONT_IR_SELECT);
-	}
-	blinkTest(); 
-}
 
 void msDelay(unsigned int itime)
 {
@@ -269,11 +244,6 @@ void goForwardTest(void)
 			cmTraveled++;
 			TMR0L = 0;
 		}
-
-		//PORTB=GO_FORWARD; //Drive forward
-		//countA = TMR0L;
-		//countB = TMR1L;
-		//PORTB = BREAK;
 	}
 
 	PORTB=BREAK; //stop the right wheel
