@@ -1,14 +1,17 @@
 #include <p18f27j13.h>
 #include <timers.h>
+#include <delays.h>
 #include <adc.h>
 
 /****** MACROS ******/
 
-#define true    1 
-#define false   0 
-#define left	1
-#define right	0
-#define FRONT_IR_SELECT 0b00000001
+#define true    	1 
+#define false   	0 
+#define left		1
+#define right		0
+#define straight 	2
+#define turnAround 	3
+#define STRAIGHT_IR_SELECT 0b00000001
 #define LEFT_IR_SELECT 0b00000101
 #define RIGHT_IR_SELECT 0b00001001
 #define CLICKS_FOR_90 0xB7
@@ -21,10 +24,10 @@
 #define DELAY 1000
 #define CLICKS_PER_CM 55  // Was messing up in hex
 #define ONE_UNIT_CM 18
-#define FRONT_IR_STOP 128
+#define STRAIGHT_IR_STOP 128
 
 // Poll 2: No wall means wall is farther than 11 cm
-#define NO_WALL 350
+#define NO_WALL 280
 
 // Poll 3: Move mouse forward 4 cm
 #define LEAVE_UNIT 4
@@ -43,13 +46,22 @@ void stopTest(void);
 //char voltsToClicksTest(void);
 void goForward(int distance); // Step 2 of 4 step polling process
 void init4StepPoll(void);
+unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
 
 /****** GLOBAL VARIABLES ******/
 
 /* Number of centimeters traveled since last time optical encoders
- * were cleared
- */
+ * were cleared */
 unsigned char cmTraveled = 0;
+
+/* Whether or not there is a wall on the left */
+unsigned char leftWall = true;
+
+/* Whether or not there is a wall on the right */
+unsigned char rightWall = true;
+
+/* Whether or not there is a wall straight ahead */
+unsigned char straightWall = true;
 
 /****** CODE ******/
 
@@ -60,7 +72,7 @@ void main(void)
 	// Initialization of constants
 	unsigned char countA = 0;
 	unsigned char countB = 0;
-	unsigned char frontIR;
+	unsigned char straightIR;
 	unsigned char tempF;
 	unsigned char tempL;
 	unsigned char tempR;
@@ -78,16 +90,33 @@ void main(void)
 
 	PORTB=GO_FORWARD;
 
-	while (true) {
+	while(true) {
 
 		irCvtL = adConvert(LEFT_IR_SELECT);
 		irCvtR = adConvert(RIGHT_IR_SELECT);
+		irCvtS = adConvert(STRAIGHT_IR_SELECT);
+
+		if(irCvtS >= 950){
+			PORTB=BREAK;
+			blinkTest();
+			msDelay(10000);
+			continue;
+		}
 
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
-		if(irCvtL <= NO_WALL || irCvtR <= NO_WALL){
+		if(irCvtL <= NO_WALL){
+			leftWall = false;
 			init4StepPoll();
 		}
+		if(irCvtR <= NO_WALL){
+			rightWall = false;
+			init4StepPoll();
+		}
+
+		leftWall = true;
+		rightWall = true;
+		straightWall = true;
 
 	}//while(true)
 
@@ -95,23 +124,50 @@ void main(void)
 
 void init4StepPoll(void){
 	// local variables
+	int irCvtS = 0;
 	char decision;
 
 	// Step 2
 	goForward(CONTINUE_TO_CENTER);
 
+	msDelay(5000);
+
+	irCvtS = adConvert(STRAIGHT_IR_SELECT);
+	if(irCvtS <= NO_WALL){
+		straightWall = false;
+	}
+
 	// TODO: Call agent
-	decision = left;
+	decision = makeDecision(leftWall, straightWall, rightWall);
 
 	// Step 3
 	// TODO: modify turn to also turn 180 degrees
 	turn(decision);
 
+	msDelay(5000);
+
 	// Step 4: Continue a little past current unit
 	goForward(LEAVE_UNIT);
 
+	msDelay(5000);
+
 	// Start polling process again
 	PORTB=GO_FORWARD;
+}
+
+unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
+	if(!leftWall){
+		return left;
+	}
+	else if(!rightWall){
+		return right;
+	}
+	else if(!straightWall){
+		return straight;
+	}
+	else{ // This case should never be reached for the time being
+		return turnAround;
+	}
 }
 
 void initial(void)
@@ -211,7 +267,7 @@ unsigned int adConvert(unsigned char channel)
 	//instead waiting 10ms 
 			//Note: this timing can be played with to get a
 			//more accurate reading
-	//msDelay(1);
+	Delay10TCYx(0.5);
 	//turn go on!
 	ADCON0 = (ADCON0 | 0x02); //or-ed with 2
 	//wait for the done bit to be cleared
@@ -225,11 +281,6 @@ unsigned int adConvert(unsigned char channel)
 	//close the converter module
 	CloseADC();
 	return irValue;
-/*
-	irValue = irValue >>2;
-	char charVal = (char)irValue;
-	//return value
-	return charValue*/
 }
 
 
@@ -253,6 +304,7 @@ void goForward(int distance)
 	TMR1L = 0;
 	TMR1H = 0;
 	PORTB=GO_FORWARD; //Drive forward
+	cmTraveled = 0;
 	while(cmTraveled < distance)
 	{
 		if(TMR0L >= CLICKS_PER_CM){
@@ -263,7 +315,7 @@ void goForward(int distance)
 
 	PORTB=BREAK; //stop the right wheel
 	Nop();
-	msDelay(1000);
+	//msDelay(10);
 	TMR0L = 0;
 	TMR0H = 0;
 }
@@ -308,24 +360,24 @@ void turn(unsigned char direction)
 }
 
 /*char voltsToClicksTest(void)
-{// for now we will just set it up for the front IR.
+{// for now we will just set it up for the straight IR.
 // assume using 12 bits in adc, assume that the bits are right justified.
 // TODO Janel, see above.
 // eventually we will want to make this pass in a param to determine the IR
 // THESE CONSTANTS WILL NEED TO BE TESTED AND REWRITTEN.
-		char frontIRH;
-		char frontIRL;
-		frontIRH = adConvert(FRONT_IR_SELECT);
-		frontIRL = ADRESL;
-		if(frontIRH > 8 && frontIRL > 100) {
+		char straightIRH;
+		char straightIRL;
+		straightIRH = adConvert(STRAIGHT_IR_SELECT);
+		straightIRL = ADRESL;
+		if(straightIRH > 8 && straightIRL > 100) {
 			//blinkTest();
 			return 4;
 		}
-		if(frontIRH > 4 && frontIRL > 100) {
+		if(straightIRH > 4 && straightIRL > 100) {
 			//blinkTest();
 			return 5;
 		}
-		if(frontIRH > 2 && frontIRL > 100) {
+		if(straightIRH > 2 && frontIRL > 100) {
 			//blinkTest();
 			return 6;
 		}
