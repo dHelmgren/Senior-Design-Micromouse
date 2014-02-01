@@ -15,12 +15,15 @@
 #define STRAIGHT_IR_SELECT 	0b00000001
 #define LEFT_IR_SELECT 		0b00000101
 #define RIGHT_IR_SELECT 	0b00001001
-#define CLICKS_FOR_NINETY 	0xB7
+#define CLICKS_FOR_NINETY 	0xB0
+#define CLICKS_FOR_AC_1		0x08	// Autocorrect
+#define CLICKS_FOR_AC_2		0x20	// Autocorrect
 #define GO_LEFT 			0b11101010
 #define GO_RIGHT 			0b11110101
 #define GO_STRAIGHT 		0b11111001
 #define GO_BACKWARD 		0b11110110
 #define BREAK_R_WHEEL 		0b11111101
+#define BREAK_L_WHEEL		0b11111011
 #define BREAK 				0b11111111
 
 #define DELAY 			1000
@@ -28,6 +31,8 @@
 #define ONE_UNIT_CM 	18
 #define STRAIGHT_IR_STOP 128
 #define IS_DEAD_END 	1
+#define ERROR_CORRECT_1	650	// Error correct when far from wall
+#define ERROR_CORRECT_2	850	// Error correct when close to wall
 
 // Poll 2: No wall means wall is farther than digital value 250
 // TODO: We may need to adjust this value lower, depending on testing
@@ -36,7 +41,7 @@
 // Poll 3: Move mouse forward 4 cm
 #define LEAVE_UNIT 4
 
-#define CONTINUE_TO_CENTER 14
+#define CONTINUE_TO_CENTER 13
 
 // Stop the mouse because it is about to run into the wall, since the
 // IR sensor readouts are too high and close to the 3 cm max readout
@@ -55,6 +60,7 @@ void stopTest(void);
 void goForward(int distance); // Step 2 of 4 step polling process
 void init4StepPoll(unsigned char isDeadEnd);
 unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
+void autocorrect(unsigned char direction, unsigned char clicks);
 
 /****** GLOBAL VARIABLES ******/
 
@@ -71,7 +77,7 @@ unsigned char rightWall = true;
 /* Whether or not there is a wall straight ahead */
 unsigned char straightWall = true;
 
-//unsigned int CLICKS_FOR_90 = 365;
+unsigned char dummy = true;
 
 /****** CODE ******/
 
@@ -98,6 +104,8 @@ void main(void)
 
 	/**** BEGIN! ****/
 
+	msDelay(5000); // For Devon's sanity :)
+
 	PORTB=GO_STRAIGHT;
 
 	while(true) {
@@ -106,9 +114,35 @@ void main(void)
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
 
+		// Determine if autocorrect is needed
+		if(irCvtL >= ERROR_CORRECT_1){
+			PORTB=BREAK;
+			if(irCvtL >= ERROR_CORRECT_2){
+				autocorrect(left, CLICKS_FOR_AC_2);
+			}
+			else{
+				autocorrect(left, CLICKS_FOR_AC_1);
+			}
+			irCvtL = adConvert(LEFT_IR_SELECT);
+			irCvtR = adConvert(RIGHT_IR_SELECT);
+			irCvtS = adConvert(STRAIGHT_IR_SELECT);
+		}
+		else if(irCvtR >= ERROR_CORRECT_1){
+			PORTB=BREAK;
+			if(irCvtL >= ERROR_CORRECT_2){
+				autocorrect(right, CLICKS_FOR_AC_2);
+			}
+			else{
+				autocorrect(right, CLICKS_FOR_AC_1);
+			}
+			irCvtL = adConvert(LEFT_IR_SELECT);
+			irCvtR = adConvert(RIGHT_IR_SELECT);
+			irCvtS = adConvert(STRAIGHT_IR_SELECT);
+		}
+
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
-		if(irCvtL <= NO_WALL){
+		if(irCvtL <= NO_WALL){ // TODO: Change NO_WALL to have different constants per IR sensor
 			leftWall = false;
 			init4StepPoll(!IS_DEAD_END);
 		}
@@ -129,6 +163,41 @@ void main(void)
 	}//while(true)
 
 }//main
+
+void autocorrect(unsigned char direction, unsigned char clicks){
+
+	unsigned int countA = 0;
+	unsigned int countB = 0;
+    TMR0L = 0;
+	TMR1L = 0;
+	TMR0H = 0;
+	TMR1H = 0;
+
+	if(direction == left){ // We need to turn a little right
+
+		PORTB=BREAK_R_WHEEL;
+
+		while(countA < clicks && countB < clicks) {
+			// check again and repeat.
+			countA = TMR0L;
+			countB = TMR1L;
+		}
+	}//if
+
+	else{ // direction == right; we need to turn left
+
+		PORTB=BREAK_L_WHEEL;
+
+		while(countA < clicks && countB < clicks) {
+			// check again and repeat.
+			countA = TMR0L;
+			countB = TMR1L;
+		}
+	}//else
+
+	PORTB=GO_STRAIGHT;
+
+}// autocorrect
 
 void init4StepPoll(unsigned char isDeadEnd){
 	// local variables
@@ -161,10 +230,12 @@ void init4StepPoll(unsigned char isDeadEnd){
 
 	msDelay(5000);
 
-	// Step 4: Continue a little past current unit
-	goForward(LEAVE_UNIT);
+	if(!isDeadEnd){
+		// Step 4: Continue a little past current unit
+		goForward(LEAVE_UNIT);
 
-	msDelay(5000);
+		msDelay(5000);
+	}
 
 	// Start polling process again
 	PORTB=GO_STRAIGHT;
@@ -270,7 +341,13 @@ void turn(unsigned char direction)
 	}
 	else if(direction == turnAround){
 		numTurns = 2;
-		PORTB=GO_RIGHT;
+		if(dummy){
+			PORTB=GO_RIGHT;
+		}
+		else{
+			PORTB=GO_LEFT;
+		}
+		dummy=!dummy;
 	}
 	else if(direction == straight){
 		PORTB=GO_STRAIGHT;
