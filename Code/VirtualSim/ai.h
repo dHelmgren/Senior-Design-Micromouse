@@ -41,11 +41,8 @@ public:
 	NavNode root;
 	NavNode* currentNode;
 	NavNode emptyNodes[100];
-	// Default constructor; currently only initializes compass
+	// Default constructor initializes all of the above variables. See ai.cpp for more info
 	AI();
-	// Devin, please implement this "make decision" code for your AI. We are
-	// handing you 5 parameters to work with: distance traveled since last tuple
-	// and whether there are walls left, straight, right, and back.
 	// TRUE = YES WALL
 	// FALSE = NO WALL
 	// Return: AI_LEFT, AI_STRAIGHT, AI_RIGHT, or AI_BACK
@@ -53,5 +50,6 @@ public:
 	int makeDecision(int deltaDist, bool left, bool straight, bool right, bool back);
 	int rateNode(int x, int y);
 	NavNode* buildNode(int turnDir, int currX, int currY);
+	int modFour(int val);
 	
 };
