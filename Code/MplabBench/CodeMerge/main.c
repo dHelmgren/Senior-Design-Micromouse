@@ -11,28 +11,36 @@
 #define right		0
 #define straight 	2
 #define turnAround 	3
-#define STRAIGHT_IR_SELECT 0b00000001
-#define LEFT_IR_SELECT 0b00000101
-#define RIGHT_IR_SELECT 0b00001001
-#define CLICKS_FOR_90 0xB7
-#define GO_LEFT 0b11101010
-#define GO_RIGHT 0b11110101
-#define GO_FORWARD 0b11111001
-#define GO_BACKWARD 0b11110110
-#define BREAK_R_WHEEL 0b11111101
-#define BREAK 0b11111111
-#define DELAY 1000
-#define CLICKS_PER_CM 55  // Was messing up in hex
-#define ONE_UNIT_CM 18
-#define STRAIGHT_IR_STOP 128
 
-// Poll 2: No wall means wall is farther than 11 cm
-#define NO_WALL 280
+#define STRAIGHT_IR_SELECT 	0b00000001
+#define LEFT_IR_SELECT 		0b00000101
+#define RIGHT_IR_SELECT 	0b00001001
+#define CLICKS_FOR_NINETY 	0xB7
+#define GO_LEFT 			0b11101010
+#define GO_RIGHT 			0b11110101
+#define GO_STRAIGHT 		0b11111001
+#define GO_BACKWARD 		0b11110110
+#define BREAK_R_WHEEL 		0b11111101
+#define BREAK 				0b11111111
+
+#define DELAY 			1000
+#define CLICKS_PER_CM 	55  // Was messing up in hex
+#define ONE_UNIT_CM 	18
+#define STRAIGHT_IR_STOP 128
+#define IS_DEAD_END 	1
+
+// Poll 2: No wall means wall is farther than digital value 250
+// TODO: We may need to adjust this value lower, depending on testing
+#define NO_WALL 250
 
 // Poll 3: Move mouse forward 4 cm
 #define LEAVE_UNIT 4
 
 #define CONTINUE_TO_CENTER 14
+
+// Stop the mouse because it is about to run into the wall, since the
+// IR sensor readouts are too high and close to the 3 cm max readout
+#define STOP 950
 
 /****** FUNCTION DEFINITIONS ******/
 
@@ -45,7 +53,7 @@ void turn(unsigned char direction); // Step 3
 void stopTest(void);
 //char voltsToClicksTest(void);
 void goForward(int distance); // Step 2 of 4 step polling process
-void init4StepPoll(void);
+void init4StepPoll(unsigned char isDeadEnd);
 unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
 
 /****** GLOBAL VARIABLES ******/
@@ -62,6 +70,8 @@ unsigned char rightWall = true;
 
 /* Whether or not there is a wall straight ahead */
 unsigned char straightWall = true;
+
+//unsigned int CLICKS_FOR_90 = 365;
 
 /****** CODE ******/
 
@@ -88,7 +98,7 @@ void main(void)
 
 	/**** BEGIN! ****/
 
-	PORTB=GO_FORWARD;
+	PORTB=GO_STRAIGHT;
 
 	while(true) {
 
@@ -96,22 +106,20 @@ void main(void)
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
 
-		if(irCvtS >= 950){
-			PORTB=BREAK;
-			blinkTest();
-			msDelay(10000);
-			continue;
-		}
-
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
 		if(irCvtL <= NO_WALL){
 			leftWall = false;
-			init4StepPoll();
+			init4StepPoll(!IS_DEAD_END);
 		}
-		if(irCvtR <= NO_WALL){
+		else if(irCvtR <= NO_WALL){
 			rightWall = false;
-			init4StepPoll();
+			init4StepPoll(!IS_DEAD_END);
+		}
+		else if(irCvtS >= STOP){
+			PORTB=BREAK;
+			straightWall = true;
+			init4StepPoll(IS_DEAD_END);
 		}
 
 		leftWall = true;
@@ -122,26 +130,33 @@ void main(void)
 
 }//main
 
-void init4StepPoll(void){
+void init4StepPoll(unsigned char isDeadEnd){
 	// local variables
 	int irCvtS = 0;
 	char decision;
 
-	// Step 2
-	goForward(CONTINUE_TO_CENTER);
+	if(!isDeadEnd){
 
-	msDelay(5000);
+		// Step 2
+		goForward(CONTINUE_TO_CENTER);
 
-	irCvtS = adConvert(STRAIGHT_IR_SELECT);
-	if(irCvtS <= NO_WALL){
-		straightWall = false;
+		msDelay(5000);
+
+		irCvtS = adConvert(STRAIGHT_IR_SELECT);
+		if(irCvtS <= NO_WALL){
+			straightWall = false;
+		}
+	}
+	// This if statement is just to be safe; it can be removed once
+	// this information is verified
+	if(isDeadEnd){
+		leftWall = true;
+		straightWall = true;
+		rightWall = true;
 	}
 
-	// TODO: Call agent
-	decision = makeDecision(leftWall, straightWall, rightWall);
-
 	// Step 3
-	// TODO: modify turn to also turn 180 degrees
+	decision = makeDecision(leftWall, straightWall, rightWall);
 	turn(decision);
 
 	msDelay(5000);
@@ -152,7 +167,7 @@ void init4StepPoll(void){
 	msDelay(5000);
 
 	// Start polling process again
-	PORTB=GO_FORWARD;
+	PORTB=GO_STRAIGHT;
 }
 
 unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
@@ -165,9 +180,141 @@ unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, u
 	else if(!straightWall){
 		return straight;
 	}
-	else{ // This case should never be reached for the time being
+	else{
 		return turnAround;
 	}
+}
+
+void driveTest(void)
+{	
+	PORTB = GO_STRAIGHT; //Drive forward!
+	msDelay(DELAY);
+	msDelay(DELAY);
+	msDelay(DELAY);
+	turn(left);
+	msDelay(DELAY);
+	PORTB = GO_STRAIGHT; //Drive forward!
+	msDelay(DELAY);
+	PORTB = BREAK; //break
+	msDelay(DELAY);
+}
+
+unsigned int adConvert(unsigned char channel)
+{
+	/*unsigned */int irValue;
+	//set's the Analog input channel to the given input
+	ADCON0 = 0;
+	ADCON1 = 0b10100001; //0xa1
+	ADCON0 = channel;
+	//CHARGE the CAPACITOR!!!
+	//must wait 2.45us
+	//instead waiting 10ms 
+			//Note: this timing can be played with to get a
+			//more accurate reading
+	Delay10TCYx(0.5);
+	//turn go on!
+	ADCON0 = (ADCON0 | 0x02); //or-ed with 2
+	//wait for the done bit to be cleared
+	//meaning the conversion is done
+	while(ADCON0bits.NOT_DONE)
+	{
+		Nop();
+	}
+	//read in value to the variable
+	irValue = ReadADC();
+	//close the converter module
+	CloseADC();
+	return irValue;
+}
+
+void goForward(int distance)
+{
+	TMR0L = 0;
+	TMR0H = 0;
+	TMR1L = 0;
+	TMR1H = 0;
+	PORTB=GO_STRAIGHT; //Drive forward
+	cmTraveled = 0;
+	while(cmTraveled < distance)
+	{
+		if(TMR0L >= CLICKS_PER_CM){
+			cmTraveled++;
+			TMR0L = 0;
+		}
+	}
+
+	PORTB=BREAK; //stop the right wheel
+	Nop();
+	//msDelay(10);
+	TMR0L = 0;
+	TMR0H = 0;
+}
+
+void turn(unsigned char direction)
+{
+	// local variables
+	unsigned char numTurns = 1;
+	unsigned char i = 0;
+	int countA = 0;
+	int countB = 0;
+    TMR0L = 0;
+	TMR1L = 0;
+	TMR0H = 0;
+	TMR1H = 0;
+
+	if(direction == left){
+		PORTB=GO_LEFT;
+	}
+	else if(direction == right){
+		PORTB=GO_RIGHT;
+	}
+	else if(direction == turnAround){
+		numTurns = 2;
+		PORTB=GO_RIGHT;
+	}
+	else if(direction == straight){
+		PORTB=GO_STRAIGHT;
+		return;
+	}
+	else{ // This case should never be reached
+		PORTB=BREAK;
+		while(1){blinkTest();}
+		return;
+	}
+
+	for(i = 0; i < numTurns; ++i){
+
+		Delay10TCYx(2000); //10ms delay
+
+		while(countA < CLICKS_FOR_NINETY && countB < CLICKS_FOR_NINETY) {
+			// check again and repeat.
+			countA = TMR0L;
+			countB = TMR1L;
+		}
+		countA = 0;
+		countB = 0;
+    	TMR0L = 0;
+		TMR1L = 0;
+		TMR0H = 0;
+		TMR1H = 0;
+
+		Delay10TCYx(2000); //10ms delay
+
+		while(countA < CLICKS_FOR_NINETY && countB < CLICKS_FOR_NINETY) {
+			// check again and repeat.
+			countA = TMR0L;
+			countB = TMR1L;
+		}
+
+		countA = 0;
+		countB = 0;
+    	TMR0L = 0;
+		TMR1L = 0;
+		TMR0H = 0;
+		TMR1H = 0;
+	}
+
+	PORTB=BREAK; //break
 }
 
 void initial(void)
@@ -224,20 +371,6 @@ void initial(void)
 	
 }
 
-void driveTest(void)
-{	
-	PORTB = GO_FORWARD; //Drive forward!
-	msDelay(DELAY);
-	msDelay(DELAY);
-	msDelay(DELAY);
-	turn(left);
-	msDelay(DELAY);
-	PORTB = GO_FORWARD; //Drive forward!
-	msDelay(DELAY);
-	PORTB = BREAK; //break
-	msDelay(DELAY);
-}
-
 void blinkTest(void)
 {
 		//Blink LEDs on
@@ -252,37 +385,7 @@ void blinkTest(void)
 		//Blink LEDs off
 		PORTA = 0b101000;
 		msDelay(500);
-	
 }
-
-unsigned int adConvert(unsigned char channel)
-{
-	/*unsigned */int irValue;
-	//set's the Analog input channel to the given input
-	ADCON0 = 0;
-	ADCON1 = 0b10100001; //0xa1
-	ADCON0 = channel;
-	//CHARGE the CAPACITOR!!!
-	//must wait 2.45us
-	//instead waiting 10ms 
-			//Note: this timing can be played with to get a
-			//more accurate reading
-	Delay10TCYx(0.5);
-	//turn go on!
-	ADCON0 = (ADCON0 | 0x02); //or-ed with 2
-	//wait for the done bit to be cleared
-	//meaning the conversion is done
-	while(ADCON0bits.NOT_DONE)
-	{
-		Nop();
-	}
-	//read in value to the variable
-	irValue = ReadADC();
-	//close the converter module
-	CloseADC();
-	return irValue;
-}
-
 
 void msDelay(unsigned int itime)
 {
@@ -295,68 +398,6 @@ void msDelay(unsigned int itime)
 			Nop();
 		}
 	}
-}
-
-void goForward(int distance)
-{
-	TMR0L = 0;
-	TMR0H = 0;
-	TMR1L = 0;
-	TMR1H = 0;
-	PORTB=GO_FORWARD; //Drive forward
-	cmTraveled = 0;
-	while(cmTraveled < distance)
-	{
-		if(TMR0L >= CLICKS_PER_CM){
-			cmTraveled++;
-			TMR0L = 0;
-		}
-	}
-
-	PORTB=BREAK; //stop the right wheel
-	Nop();
-	//msDelay(10);
-	TMR0L = 0;
-	TMR0H = 0;
-}
-
-void turn(unsigned char direction)
-{
-	// local variables
-	char countA = 0;
-	char countB = 0;
-    TMR0L = 0;
-	TMR1L = 0;
-	TMR0H = 0;
-	TMR1H = 0;
-
-	if(direction == left){
-		PORTB=GO_LEFT;
-	}
-	else if(direction == right){
-		PORTB=GO_RIGHT;
-	}
-	else{ // This case should never be reached
-		return;
-	}
-
-	while(countA < CLICKS_FOR_90 && countB < CLICKS_FOR_90) {
-		// check again and repeat.
-		countA = TMR0L;
-		countB = TMR1L;
-	}
-	countA = 0;
-	countB = 0;
-    TMR0L = 0;
-	TMR1L = 0;
-	TMR0H = 0;
-	TMR1H = 0;
-	while(countA < CLICKS_FOR_90 && countB < CLICKS_FOR_90) {
-		// check again and repeat.
-		countA = TMR0L;
-		countB = TMR1L;
-	}
-	PORTB=BREAK; //break
 }
 
 /*char voltsToClicksTest(void)
