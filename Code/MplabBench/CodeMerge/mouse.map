@@ -1,30 +1,30 @@
 MPLINK 4.48, Linker
-Linker Map File - Created Sat Feb 01 10:13:26 2014
+Linker Map File - Created Sun Feb 02 21:20:02 2014
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
                 ---------  ---------  ---------  ---------  ---------
                _entry_scn       code   0x000000    program   0x000006
                    .cinit    romdata   0x000006    program   0x00000e
-             .code_main.o       code   0x000014    program   0x000836
-               _cinit_scn       code   0x00084a    program   0x00009e
-                    .code       code   0x0008e8    program   0x000020
-             _startup_scn       code   0x000908    program   0x00001c
-              D10TCYXCODE       code   0x000924    program   0x000016
-          .code_adcread.o       code   0x00093a    program   0x000012
-         .code_adcclose.o       code   0x00094c    program   0x000006
-           .code___init.o       code   0x000952    program   0x000002
-          .idata_main.o_i    romdata   0x000954    program   0x000005
-          .romdata_main.o    romdata   0x000954    program   0x000000
-         .romdata_c018i.o    romdata   0x000954    program   0x000000
-        .romdata___init.o    romdata   0x000954    program   0x000000
-      .romdata_adcclose.o    romdata   0x000954    program   0x000000
-       .romdata_adcread.o    romdata   0x000954    program   0x000000
-        .idata___init.o_i    romdata   0x000959    program   0x000000
-       .idata_adcread.o_i    romdata   0x000959    program   0x000000
-      .idata_adcclose.o_i    romdata   0x000959    program   0x000000
-         .idata_c018i.o_i    romdata   0x000959    program   0x000000
-            .code_c018i.o       code   0x00095a    program   0x000000
+             .code_main.o       code   0x000014    program   0x000b10
+               _cinit_scn       code   0x000b24    program   0x00009e
+                    .code       code   0x000bc2    program   0x000020
+             _startup_scn       code   0x000be2    program   0x00001c
+              D10TCYXCODE       code   0x000bfe    program   0x000016
+          .code_adcread.o       code   0x000c14    program   0x000012
+         .code_adcclose.o       code   0x000c26    program   0x000006
+           .code___init.o       code   0x000c2c    program   0x000002
+          .idata_main.o_i    romdata   0x000c2e    program   0x000005
+          .romdata_main.o    romdata   0x000c2e    program   0x000000
+         .romdata_c018i.o    romdata   0x000c2e    program   0x000000
+        .romdata___init.o    romdata   0x000c2e    program   0x000000
+      .romdata_adcclose.o    romdata   0x000c2e    program   0x000000
+       .romdata_adcread.o    romdata   0x000c2e    program   0x000000
+        .idata___init.o_i    romdata   0x000c33    program   0x000000
+       .idata_adcread.o_i    romdata   0x000c33    program   0x000000
+      .idata_adcclose.o_i    romdata   0x000c33    program   0x000000
+         .idata_c018i.o_i    romdata   0x000c33    program   0x000000
+            .code_c018i.o       code   0x000c34    program   0x000000
                  .tmpdata      udata   0x000000       data   0x000008
                 MATH_DATA      udata   0x000008       data   0x000002
            .udata_c018i.o      udata   0x000060       data   0x00000a
@@ -55,81 +55,84 @@ Linker Map File - Created Sat Feb 01 10:13:26 2014
                               Program Memory Usage 
                                Start         End      
                            ---------   ---------      
-                            0x000000    0x000958      
-            2393 out of 131074 program addresses used, program memory utilization is 1%
+                            0x000000    0x000c32      
+            3123 out of 131074 program addresses used, program memory utilization is 2%
 
 
 
                               Symbols - Sorted by Name
                      Name    Address   Location    Storage File                     
                 ---------  ---------  ---------  --------- ---------                
-                 CloseADC   0x00094c    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcclose.c
-                    D10_1   0x000934    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-                     D10x   0x00092c    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-              Delay10TCYx   0x000924    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-                  ReadADC   0x00093a    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
-        _D10TCYXCODE_000A   0x00092e    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-        _D10TCYXCODE_000C   0x000930    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-        _D10TCYXCODE_000E   0x000932    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-         ___else_lbl00004   0x0000da    program     static                          
-         ___else_lbl00006   0x00016e    program     static                          
-         ___else_lbl00009   0x000126    program     static                          
-         ___else_lbl00012   0x000202    program     static                          
-         ___else_lbl00014   0x0001dc    program     static                          
-          ___for_lbl00069   0x00082c    program     static                          
-          ___for_lbl00070   0x000836    program     static                          
-          ___for_lbl00071   0x000826    program     static                          
-          ___for_lbl00072   0x00082c    program     static                          
-          ___for_lbl00073   0x00080c    program     static                          
-          ___for_lbl00074   0x0007ea    program     static                          
-           ___if_lbl00003   0x0000e8    program     static                          
-           ___if_lbl00005   0x00017a    program     static                          
-           ___if_lbl00007   0x0001b6    program     static                          
-           ___if_lbl00008   0x0001b6    program     static                          
-           ___if_lbl00010   0x00022e    program     static                          
-           ___if_lbl00011   0x00022e    program     static                          
-           ___if_lbl00013   0x00022e    program     static                          
-           ___if_lbl00043   0x000570    program     static                          
-       ___return_lbl00000   0x000242    program     static                          
+                 CloseADC   0x000c26    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcclose.c
+                    D10_1   0x000c0e    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                     D10x   0x000c06    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+              Delay10TCYx   0x000bfe    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                  ReadADC   0x000c14    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
+        _D10TCYXCODE_000A   0x000c08    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+        _D10TCYXCODE_000C   0x000c0a    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+        _D10TCYXCODE_000E   0x000c0c    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+         ___else_lbl00004   0x0000e4    program     static                          
+         ___else_lbl00006   0x000182    program     static                          
+         ___else_lbl00009   0x000136    program     static                          
+         ___else_lbl00012   0x00021c    program     static                          
+         ___else_lbl00014   0x0001f6    program     static                          
+         ___else_lbl00049   0x000600    program     static                          
+          ___for_lbl00090   0x000b06    program     static                          
+          ___for_lbl00091   0x000b10    program     static                          
+          ___for_lbl00092   0x000b00    program     static                          
+          ___for_lbl00093   0x000b06    program     static                          
+          ___for_lbl00094   0x000ae6    program     static                          
+          ___for_lbl00095   0x000ac4    program     static                          
+           ___if_lbl00003   0x0000f8    program     static                          
+           ___if_lbl00005   0x000194    program     static                          
+           ___if_lbl00007   0x0001d0    program     static                          
+           ___if_lbl00008   0x0001d0    program     static                          
+           ___if_lbl00010   0x000248    program     static                          
+           ___if_lbl00011   0x000248    program     static                          
+           ___if_lbl00013   0x000248    program     static                          
+           ___if_lbl00047   0x00062e    program     static                          
+           ___if_lbl00048   0x00062e    program     static                          
+           ___if_lbl00050   0x00062e    program     static                          
+       ___return_lbl00000   0x00025c    program     static                          
        ___return_lbl00000   0x000004    program     static                          
-       ___return_lbl00001   0x000922    program     static                          
-       ___return_lbl00002   0x0008e6    program     static                          
-       ___return_lbl00037   0x00050e    program     static                          
-       ___return_lbl00040   0x00057a    program     static                          
-       ___return_lbl00068   0x000836    program     static                          
-        ___while_lbl00001   0x000054    program     static                          
-        ___while_lbl00002   0x000242    program     static                          
-        ___while_lbl00038   0x0004e4    program     static                          
-        ___while_lbl00039   0x0004ec    program     static                          
-        ___while_lbl00041   0x00053a    program     static                          
-        ___while_lbl00042   0x000572    program     static                          
-                   __init   0x000952    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\stdclib\__init.c
-              __tmplbl_10   0x00055a    program     static                          
-            __zero_memory   0x0008e8    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                _do_cinit   0x00084a    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+       ___return_lbl00001   0x000bfc    program     static                          
+       ___return_lbl00002   0x000bc0    program     static                          
+       ___return_lbl00041   0x000540    program     static                          
+       ___return_lbl00044   0x000638    program     static                          
+       ___return_lbl00089   0x000b10    program     static                          
+        ___while_lbl00001   0x000058    program     static                          
+        ___while_lbl00002   0x00025c    program     static                          
+        ___while_lbl00042   0x000516    program     static                          
+        ___while_lbl00043   0x00051e    program     static                          
+        ___while_lbl00045   0x00057c    program     static                          
+        ___while_lbl00046   0x000630    program     static                          
+                   __init   0x000c2c    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\stdclib\__init.c
+              __tmplbl_18   0x00059c    program     static                          
+            __zero_memory   0x000bc2    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                _do_cinit   0x000b24    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                    _entry   0x000000    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-                 _startup   0x000908    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-                adConvert   0x0004be    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-              autocorrect   0x000256    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                blinkTest   0x000794    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                compare_l   0x0008fe    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                copy_loop   0x0008bc    program     static                          
-            copy_one_byte   0x0008c2    program     static                          
-                     done   0x0008e6    program     static                          
-             done_copying   0x0008d0    program     static                          
-                driveTest   0x000456    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                goForward   0x000522    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-            init4StepPoll   0x00034a    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  initial   0x000748    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                     loop   0x000918    program     static                          
-                   loop_h   0x0008f6    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   loop_l   0x000900    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                 _startup   0x000be2    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+                adConvert   0x0004f0    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              autocorrect   0x000270    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                blinkTest   0x000a6e    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                compare_l   0x000bd8    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                copy_loop   0x000b96    program     static                          
+            copy_one_byte   0x000b9c    program     static                          
+                     done   0x000bc0    program     static                          
+             done_copying   0x000baa    program     static                          
+                driveTest   0x000488    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                goForward   0x000554    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+            init4StepPoll   0x00037c    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  initial   0x000a22    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     loop   0x000bf2    program     static                          
+                   loop_h   0x000bd0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   loop_l   0x000bda    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      main   0x000014    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-             makeDecision   0x00041e    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  msDelay   0x0007da    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                     test   0x000864    program     static                          
-                     turn   0x000582    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-               zero_block   0x0008f6    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+             makeDecision   0x000450    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  msDelay   0x000ab4    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     test   0x000b3e    program     static                          
+                     turn   0x00064c    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+               zero_block   0x000bd0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    ADCON0   0x000fc2       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                ADCON0bits   0x000fc2       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    ADCON1   0x000fc1       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
@@ -575,70 +578,73 @@ Linker Map File - Created Sat Feb 01 10:13:26 2014
                    _entry   0x000000    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
        ___return_lbl00000   0x000004    program     static                          
                      main   0x000014    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-        ___while_lbl00001   0x000054    program     static                          
-         ___else_lbl00004   0x0000da    program     static                          
-           ___if_lbl00003   0x0000e8    program     static                          
-         ___else_lbl00009   0x000126    program     static                          
-         ___else_lbl00006   0x00016e    program     static                          
-           ___if_lbl00005   0x00017a    program     static                          
-           ___if_lbl00007   0x0001b6    program     static                          
-           ___if_lbl00008   0x0001b6    program     static                          
-         ___else_lbl00014   0x0001dc    program     static                          
-         ___else_lbl00012   0x000202    program     static                          
-           ___if_lbl00011   0x00022e    program     static                          
-           ___if_lbl00010   0x00022e    program     static                          
-           ___if_lbl00013   0x00022e    program     static                          
-        ___while_lbl00002   0x000242    program     static                          
-       ___return_lbl00000   0x000242    program     static                          
-              autocorrect   0x000256    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-            init4StepPoll   0x00034a    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-             makeDecision   0x00041e    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                driveTest   0x000456    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                adConvert   0x0004be    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-        ___while_lbl00038   0x0004e4    program     static                          
-        ___while_lbl00039   0x0004ec    program     static                          
-       ___return_lbl00037   0x00050e    program     static                          
-                goForward   0x000522    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-        ___while_lbl00041   0x00053a    program     static                          
-              __tmplbl_10   0x00055a    program     static                          
-           ___if_lbl00043   0x000570    program     static                          
-        ___while_lbl00042   0x000572    program     static                          
-       ___return_lbl00040   0x00057a    program     static                          
-                     turn   0x000582    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  initial   0x000748    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                blinkTest   0x000794    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  msDelay   0x0007da    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-          ___for_lbl00074   0x0007ea    program     static                          
-          ___for_lbl00073   0x00080c    program     static                          
-          ___for_lbl00071   0x000826    program     static                          
-          ___for_lbl00072   0x00082c    program     static                          
-          ___for_lbl00069   0x00082c    program     static                          
-       ___return_lbl00068   0x000836    program     static                          
-          ___for_lbl00070   0x000836    program     static                          
-                _do_cinit   0x00084a    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-                     test   0x000864    program     static                          
-                copy_loop   0x0008bc    program     static                          
-            copy_one_byte   0x0008c2    program     static                          
-             done_copying   0x0008d0    program     static                          
-                     done   0x0008e6    program     static                          
-       ___return_lbl00002   0x0008e6    program     static                          
-            __zero_memory   0x0008e8    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   loop_h   0x0008f6    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-               zero_block   0x0008f6    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                compare_l   0x0008fe    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   loop_l   0x000900    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                 _startup   0x000908    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-                     loop   0x000918    program     static                          
-       ___return_lbl00001   0x000922    program     static                          
-              Delay10TCYx   0x000924    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-                     D10x   0x00092c    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-        _D10TCYXCODE_000A   0x00092e    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-        _D10TCYXCODE_000C   0x000930    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-        _D10TCYXCODE_000E   0x000932    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-                    D10_1   0x000934    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-                  ReadADC   0x00093a    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
-                 CloseADC   0x00094c    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcclose.c
-                   __init   0x000952    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\stdclib\__init.c
+        ___while_lbl00001   0x000058    program     static                          
+         ___else_lbl00004   0x0000e4    program     static                          
+           ___if_lbl00003   0x0000f8    program     static                          
+         ___else_lbl00009   0x000136    program     static                          
+         ___else_lbl00006   0x000182    program     static                          
+           ___if_lbl00005   0x000194    program     static                          
+           ___if_lbl00008   0x0001d0    program     static                          
+           ___if_lbl00007   0x0001d0    program     static                          
+         ___else_lbl00014   0x0001f6    program     static                          
+         ___else_lbl00012   0x00021c    program     static                          
+           ___if_lbl00013   0x000248    program     static                          
+           ___if_lbl00011   0x000248    program     static                          
+           ___if_lbl00010   0x000248    program     static                          
+       ___return_lbl00000   0x00025c    program     static                          
+        ___while_lbl00002   0x00025c    program     static                          
+              autocorrect   0x000270    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+            init4StepPoll   0x00037c    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+             makeDecision   0x000450    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                driveTest   0x000488    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                adConvert   0x0004f0    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+        ___while_lbl00042   0x000516    program     static                          
+        ___while_lbl00043   0x00051e    program     static                          
+       ___return_lbl00041   0x000540    program     static                          
+                goForward   0x000554    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+        ___while_lbl00045   0x00057c    program     static                          
+              __tmplbl_18   0x00059c    program     static                          
+         ___else_lbl00049   0x000600    program     static                          
+           ___if_lbl00047   0x00062e    program     static                          
+           ___if_lbl00048   0x00062e    program     static                          
+           ___if_lbl00050   0x00062e    program     static                          
+        ___while_lbl00046   0x000630    program     static                          
+       ___return_lbl00044   0x000638    program     static                          
+                     turn   0x00064c    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  initial   0x000a22    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                blinkTest   0x000a6e    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  msDelay   0x000ab4    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+          ___for_lbl00095   0x000ac4    program     static                          
+          ___for_lbl00094   0x000ae6    program     static                          
+          ___for_lbl00092   0x000b00    program     static                          
+          ___for_lbl00093   0x000b06    program     static                          
+          ___for_lbl00090   0x000b06    program     static                          
+       ___return_lbl00089   0x000b10    program     static                          
+          ___for_lbl00091   0x000b10    program     static                          
+                _do_cinit   0x000b24    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+                     test   0x000b3e    program     static                          
+                copy_loop   0x000b96    program     static                          
+            copy_one_byte   0x000b9c    program     static                          
+             done_copying   0x000baa    program     static                          
+                     done   0x000bc0    program     static                          
+       ___return_lbl00002   0x000bc0    program     static                          
+            __zero_memory   0x000bc2    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   loop_h   0x000bd0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+               zero_block   0x000bd0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                compare_l   0x000bd8    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   loop_l   0x000bda    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                 _startup   0x000be2    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+                     loop   0x000bf2    program     static                          
+       ___return_lbl00001   0x000bfc    program     static                          
+              Delay10TCYx   0x000bfe    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                     D10x   0x000c06    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+        _D10TCYXCODE_000A   0x000c08    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+        _D10TCYXCODE_000C   0x000c0a    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+        _D10TCYXCODE_000E   0x000c0c    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                    D10_1   0x000c0e    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                  ReadADC   0x000c14    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
+                 CloseADC   0x000c26    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcclose.c
+                   __init   0x000c2c    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\stdclib\__init.c
                   __tmp_0   0x000000       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
                   __tmp_0   0x000000       data     static C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                      SIGN   0x000008       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\cmath18.asm
