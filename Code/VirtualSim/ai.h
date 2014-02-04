@@ -35,11 +35,13 @@ private:
 	int dummyVar;
 	NavNode* mazeArray[16][16];
 	int memIndex;
+	bool sawDeadEndLastTime;
 
 public:
 
 	NavNode root;
 	NavNode* currentNode;
+	NavNode* prevNode;
 	NavNode emptyNodes[100];
 	// Default constructor initializes all of the above variables. See ai.cpp for more info
 	AI();
@@ -51,5 +53,4 @@ public:
 	int rateNode(int x, int y);
 	NavNode* buildNode(int turnDir, int currX, int currY);
 	int modFour(int val);
-	
 };
