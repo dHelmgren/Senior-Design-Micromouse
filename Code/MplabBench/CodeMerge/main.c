@@ -18,7 +18,7 @@
 #define LEFT_IR_SELECT 		0b00000101
 #define RIGHT_IR_SELECT 	0b00001001
 #define CLICKS_FOR_NINETY 	0xB0
-#define CLICKS_FOR_AC_1		0x08	// Autocorrect
+#define CLICKS_FOR_AC_1		0x20	// Autocorrect
 #define CLICKS_FOR_AC_2		0x20	// Autocorrect
 #define GO_LEFT 			0b11101010
 #define GO_RIGHT 			0b11110101
@@ -35,9 +35,11 @@
 #define ONE_UNIT_CM 	18
 #define STRAIGHT_IR_STOP 128
 #define IS_DEAD_END 	1
-#define ERROR_CORRECT_1	550	// Slight correction needed
-#define ERROR_CORRECT_2	700	// Large correction needed
+#define ERROR_CORRECT_1	600	// Slight correction needed
+#define ERROR_CORRECT_2	750	// Large correction needed
 #define ERROR_CORRECT_CAP 340	// Ir sensor readout cap after turning; value < this constant means there is no wall
+#define LR_DIFF 		100
+#define TURN_AC_BUFFER	75
 
 // Poll 2: No wall means wall is farther than digital value 250
 // TODO: We may need to adjust this value lower, depending on testing
@@ -440,7 +442,7 @@ for(i = 0; i < 2; i++){
 	TMR1H = 0;
 
 	// If left IR sensor sees a wall and left wall is closer than right wall
-	if(irCvtL > ERROR_CORRECT_CAP && irCvtL > irCvtR){
+	if(irCvtL > ERROR_CORRECT_CAP && irCvtL > LR_DIFF+TURN_AC_BUFFER+irCvtR){
 		// Autocorrect by turning a smidge right
 		PORTB=GO_RIGHT;
 		while(countA < 10 && countB < 10) {
@@ -451,7 +453,7 @@ for(i = 0; i < 2; i++){
 		PORTB=BREAK; //break
 		msDelay(200);
 	}//if
-	else if(irCvtR > ERROR_CORRECT_CAP && irCvtR > irCvtL){
+	else if(irCvtR > ERROR_CORRECT_CAP && irCvtR > irCvtL-LR_DIFF+TURN_AC_BUFFER){
 		PORTB=GO_LEFT;
 		while(countA < 10 && countB < 10) {
 			// check again and repeat.
