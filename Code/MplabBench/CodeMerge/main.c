@@ -53,7 +53,7 @@
 
 // Stop the mouse because it is about to run into the wall, since the
 // IR sensor readouts are too high and close to the 3 cm max readout
-#define STOP 900
+#define STOP 950
 
 /****** FUNCTION DEFINITIONS ******/
 
@@ -66,7 +66,7 @@ void stopTest(void);
 //char voltsToClicksTest(void);
 void init4StepPoll(unsigned char isDeadEnd);
 unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
-void autocorrect(unsigned char direction, unsigned char clicks, unsigned char afterTurn);
+void autocorrect(unsigned char direction, unsigned char clicks, unsigned char howAutocorrect);
 void turn(unsigned char direction); // Step 3
 void goForward(int distance); // Step 2 & 4
 void autocorrectTurn(void);
@@ -124,61 +124,74 @@ void main(void)
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
 
+/* ADDED
+		// Determine if the L or R sensors have seen the absence of
+		// a wall. If they have, then initiate the 4-step polling process
+		if(irCvtL <= NO_WALL){ // TODO: Change NO_WALL to have different constants per IR sensor
+			leftWall = false;
+		}
+		if(irCvtR <= NO_WALL){
+			rightWall = false;
+		}
+
+		// Take out emergency stop because tuple stops us before then
+		if(irCvtS >= STOP && leftWall && rightWall){
+			PORTB=BREAK;
+			straightWall = true;
+			init4StepPoll(IS_DEAD_END);
+		}
+		else if(!leftWall || !rightWall){
+			init4StepPoll(!IS_DEAD_END);
+		}//else
+*///END ADDED
+
 		// Determine if autocorrect is needed
 		if(irCvtL >= ERROR_CORRECT_1){
 			PORTB=BREAK;
 			if(irCvtL >= ERROR_CORRECT_2){
 				PORTB=BREAK;
-				autocorrect(left, CLICKS_FOR_AC_2, backward);
+				//autocorrect(left, CLICKS_FOR_AC_2, backward);
 			}
 			else{
-				autocorrect(left, CLICKS_FOR_AC_1, forward);
+				//autocorrect(left, CLICKS_FOR_AC_1, forward);
 			}
 			continue;
-			//irCvtL = adConvert(LEFT_IR_SELECT);
-			//irCvtR = adConvert(RIGHT_IR_SELECT);
-			//irCvtS = adConvert(STRAIGHT_IR_SELECT);
 		}
 		else if(irCvtR >= ERROR_CORRECT_1){
 			if(irCvtR >= ERROR_CORRECT_2){
 				PORTB=BREAK;
-				autocorrect(right, CLICKS_FOR_AC_2, backward);
+				//autocorrect(right, CLICKS_FOR_AC_2, backward);
 			}
 			else{
-				autocorrect(right, CLICKS_FOR_AC_1, forward);
+				//autocorrect(right, CLICKS_FOR_AC_1, forward);
 			}
 			continue;
-			//irCvtL = adConvert(LEFT_IR_SELECT);
-			//irCvtR = adConvert(RIGHT_IR_SELECT);
-			//irCvtS = adConvert(STRAIGHT_IR_SELECT);
-		}
+		}//else if
 
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
 		if(irCvtL <= NO_WALL){ // TODO: Change NO_WALL to have different constants per IR sensor
 			leftWall = false;
-			init4StepPoll(!IS_DEAD_END);
 		}
-		else if(irCvtR <= NO_WALL){
+		if(irCvtR <= NO_WALL){
 			rightWall = false;
-			init4StepPoll(!IS_DEAD_END);
 		}
+
 		// Take out emergency stop because tuple stops us before then
-		else if(irCvtS >= STOP){
+		if(irCvtS >= STOP && leftWall && rightWall){
 			PORTB=BREAK;
 			straightWall = true;
 			init4StepPoll(IS_DEAD_END);
 		}
-
-		leftWall = true;
-		rightWall = true;
-		straightWall = true;
+		else if(!leftWall || !rightWall){
+			init4StepPoll(!IS_DEAD_END);
+		}//else
 
 	}//while(true)
 
 }//main
 
-void autocorrect(unsigned char direction, unsigned char clicks, unsigned char afterTurn){
+void autocorrect(unsigned char direction, unsigned char clicks, unsigned char howAutocorrect){
     TMR0L = 0;
 	TMR1L = 0;
 	TMR0H = 0;
@@ -188,7 +201,7 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char af
 
 	if(direction == left){ // We need to turn a little right
 
-		if(afterTurn == backward){
+		if(howAutocorrect == backward){
 			PORTB=BACKWARD_R_WHEEL;
 		}
 		else{
@@ -204,7 +217,7 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char af
 
 	else{ // direction == right; we need to turn left
 
-		if(afterTurn == forward){
+		if(howAutocorrect == backward){
 			PORTB=BACKWARD_L_WHEEL;
 		}
 		else{
@@ -228,17 +241,25 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char af
 void init4StepPoll(unsigned char isDeadEnd){
 	// local variables
 	char decision;
+	PORTB=BREAK;
 
 	if(!isDeadEnd){
 
 		// Step 2
+		PORTB=GO_STRAIGHT;
 		goForward(CONTINUE_TO_CENTER);
 
 		msDelay(5000);
 
+		// Once we have traveled to the middle of a tupled unit, then
+		// recheck the sensors to make sure we know that the agent is
+		// given the correct wall information.
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
 		if(irCvtS <= NO_WALL){
 			straightWall = false;
+		}
+		else{
+			straightWall = true;
 		}
 	}
 	// This if statement is just to be safe; it can be removed once
@@ -252,11 +273,18 @@ void init4StepPoll(unsigned char isDeadEnd){
 	// Step 3
 	decision = makeDecision(leftWall, straightWall, rightWall);
 	turn(decision);
-	autocorrectTurn();
 
-	msDelay(5000);
+	// We have finished our turn, and therefore we want to
+	// reset our L, R, S wall information
+	leftWall = true;
+	rightWall = true;
+	straightWall = false;
 
 	if(!isDeadEnd){
+		// Continuation of step 3
+		//autocorrectTurn();
+		msDelay(5000);
+
 		// Step 4: Continue a little past current unit
 		goForward(LEAVE_UNIT);
 
@@ -271,11 +299,11 @@ unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, u
 	if(!leftWall){
 		return left;
 	}
-	else if(!rightWall){
-		return right;
-	}
 	else if(!straightWall){
 		return straight;
+	}
+	else if(!rightWall){
+		return right;
 	}
 	else{
 		return turnAround;
@@ -326,6 +354,7 @@ unsigned int adConvert(unsigned char channel)
 
 void goForward(int distance)
 {
+	int prevIrCvtS = 0;
 	TMR0L = 0;
 	TMR0H = 0;
 	TMR1L = 0;
@@ -342,13 +371,45 @@ void goForward(int distance)
 			// to center after seeing a tuple
 			irCvtR = adConvert(RIGHT_IR_SELECT);
 			irCvtL = adConvert(LEFT_IR_SELECT);
-			if(irCvtR >= STOP){
+
+			// As we are moving forward to the middle of tupled unit, check
+			// if there is no wall to the left and right and adjust variables
+			// accordingly so we pass in the right into to the agent
+			//PORTB=BREAK; // For DEBUG
+			if(irCvtR <= NO_WALL){
+				rightWall = false;
+			}
+			if(irCvtL <= NO_WALL){
+				leftWall = false;
+			}
+			//PORTB=GO_STRAIGHT;	// FOR DEBUG
+
+			// We are are about to hit a wall, autocorrect backing up, so we
+			// don't it hit
+			/*if(irCvtR >= STOP){
 				autocorrect(right, 80, backward);
 			}
 			else if(irCvtL >= STOP){
 				autocorrect(left, 80, backward);
-			}
+			}*/
 		}
+	}
+	// We are continually moving closer to a wall, and haven't gotten too
+	// close yet. Therefore, keep going (using wall ahead as a marker) until
+	// we are in center of tupled unit.
+	irCvtS = adConvert(STRAIGHT_IR_SELECT);
+	//PORTB=BREAK;
+	if(irCvtS >= 250 && irCvtS - prevIrCvtS > 0){
+		PORTB=BREAK;
+		straightWall = true;
+		PORTB=GO_STRAIGHT;
+		while(irCvtS < STOP){
+			irCvtS = adConvert(STRAIGHT_IR_SELECT);
+		}
+	}
+	// This if statement should already be taken care of in init4StepPoll() method.
+	else if(irCvtS >= NO_WALL){
+		straightWall = false;
 	}
 
 	PORTB=BREAK; //stop the right wheel
@@ -411,7 +472,7 @@ void autocorrectTurn(void){
 	}
 	// Now that we've autocorrected for our turn, make sure there is not
 	// a wall in front of our nose (ie. less than 5 cm away)
-	if(adConvert(STRAIGHT_IR_SELECT) > 750){
+	if(adConvert(STRAIGHT_IR_SELECT) > 950){
 		PORTB = BREAK;
 		while(true){} // TODO: Just for now, so we can see errors
 	}
@@ -574,32 +635,3 @@ void msDelay(unsigned int itime)
 		}
 	}
 }
-
-/*char voltsToClicksTest(void)
-{// for now we will just set it up for the straight IR.
-// assume using 12 bits in adc, assume that the bits are right justified.
-// TODO Janel, see above.
-// eventually we will want to make this pass in a param to determine the IR
-// THESE CONSTANTS WILL NEED TO BE TESTED AND REWRITTEN.
-		char straightIRH;
-		char straightIRL;
-		straightIRH = adConvert(STRAIGHT_IR_SELECT);
-		straightIRL = ADRESL;
-		if(straightIRH > 8 && straightIRL > 100) {
-			//blinkTest();
-			return 4;
-		}
-		if(straightIRH > 4 && straightIRL > 100) {
-			//blinkTest();
-			return 5;
-		}
-		if(straightIRH > 2 && frontIRL > 100) {
-			//blinkTest();
-			return 6;
-		}
-		if(frontIRH > 1 && frontIRL > 100) {
-			//blinkTest();
-			return 7;
-		}
-		return 8;
-}*/
