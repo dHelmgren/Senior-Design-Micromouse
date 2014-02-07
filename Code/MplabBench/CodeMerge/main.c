@@ -17,9 +17,10 @@
 #define STRAIGHT_IR_SELECT 	0b00000001
 #define LEFT_IR_SELECT 		0b00000101
 #define RIGHT_IR_SELECT 	0b00001001
-#define CLICKS_FOR_NINETY 	0xB0
+#define CLICKS_FOR_NINETY 	0xA8
 #define CLICKS_FOR_AC_1		0x08	// Autocorrect
 #define CLICKS_FOR_AC_2		0x20	// Autocorrect
+#define POST_TURN_CORRECT	0x07
 #define GO_LEFT 			0b11101010
 #define GO_RIGHT 			0b11110101
 #define GO_STRAIGHT 		0b11111001
@@ -35,13 +36,17 @@
 #define ONE_UNIT_CM 	18
 #define STRAIGHT_IR_STOP 128
 #define IS_DEAD_END 	1
-#define ERROR_CORRECT_1	550	// Slight correction needed
-#define ERROR_CORRECT_2	700	// Large correction needed
-#define ERROR_CORRECT_CAP 340	// Ir sensor readout cap after turning; value < this constant means there is no wall
+#define LR_DIFF			0
+#define ERROR_CORRECT_L_1	600	// Slight correction needed
+#define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
+#define ERROR_CORRECT_L_2	550	// Large correction needed
+#define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
+#define ERROR_CORRECT_CAP_L 340	// Ir sensor readout cap after turning; value < this constant means there is no wall
+#define ERROR_CORRECT_CAP_R (ERROR_CORRECT_CAP_L - LR_DIFF)
 
 // Poll 2: No wall means wall is farther than digital value 250
 // TODO: We may need to adjust this value lower, depending on testing
-#define NO_WALL 250
+#define NO_WALL 220
 
 // Poll 3: Move mouse forward 4 cm
 #define LEAVE_UNIT 4
@@ -64,6 +69,7 @@ void stopTest(void);
 void init4StepPoll(unsigned char isDeadEnd);
 unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
 void autocorrect(unsigned char direction, unsigned char clicks, unsigned char afterTurn);
+void postTurnAutocorrect();
 void turn(unsigned char direction); // Step 3
 void goForward(int distance); // Step 2 & 4
 
@@ -84,6 +90,10 @@ unsigned char straightWall = true;
 
 unsigned char dummy = true;
 
+int irCvtL = 0; // Ir converted left value
+int irCvtR = 0;
+int irCvtS = 0;
+
 /****** CODE ******/
 
 #pragma code 
@@ -99,9 +109,6 @@ void main(void)
 	unsigned char tempR;
 	unsigned char leftIR;
 	unsigned char rightIR;
-	int irCvtL = 0; // Ir converted left value
-	int irCvtR = 0;
-	int irCvtS = 0;
 
 	Nop();
 	initial();
@@ -120,9 +127,9 @@ void main(void)
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
 
 		// Determine if autocorrect is needed
-		if(irCvtL >= ERROR_CORRECT_1){
+		if(irCvtL >= ERROR_CORRECT_L_1){
 			PORTB=BREAK;
-			if(irCvtL >= ERROR_CORRECT_2){
+			if(irCvtL >= ERROR_CORRECT_L_2){
 				PORTB=BREAK;
 				autocorrect(left, CLICKS_FOR_AC_2, backward);
 			}
@@ -133,8 +140,8 @@ void main(void)
 			irCvtR = adConvert(RIGHT_IR_SELECT);
 			irCvtS = adConvert(STRAIGHT_IR_SELECT);
 		}
-		else if(irCvtR >= ERROR_CORRECT_1){
-			if(irCvtR >= ERROR_CORRECT_2){
+		else if(irCvtR >= ERROR_CORRECT_R_1){
+			if(irCvtR >= ERROR_CORRECT_R_2){
 				PORTB=BREAK;
 				autocorrect(right, CLICKS_FOR_AC_2, backward);
 			}
@@ -218,7 +225,6 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char af
 
 void init4StepPoll(unsigned char isDeadEnd){
 	// local variables
-	int irCvtS = 0;
 	char decision;
 
 	if(!isDeadEnd){
@@ -244,6 +250,7 @@ void init4StepPoll(unsigned char isDeadEnd){
 	// Step 3
 	decision = makeDecision(leftWall, straightWall, rightWall);
 	turn(decision);
+	postTurnAutocorrect();
 
 	msDelay(5000);
 
@@ -256,6 +263,62 @@ void init4StepPoll(unsigned char isDeadEnd){
 
 	// Start polling process again
 	PORTB=GO_STRAIGHT;
+}
+
+void postTurnAutocorrect(void){
+	int i = 0;
+	unsigned int countA = 0;
+	unsigned int countB = 0;
+
+	for(i = 0; i < 1; i++){
+		// Determine if we need to autocorrect immediately after turn
+		irCvtL = adConvert(LEFT_IR_SELECT);
+		irCvtR = adConvert(RIGHT_IR_SELECT);
+		
+		countA = 0;
+		countB = 0;
+	   	TMR0L = 0;
+		TMR1L = 0;
+		TMR0H = 0;
+		TMR1H = 0;
+	
+		// If left IR sensor sees a wall and left wall is closer than right wall
+		if(irCvtL > ERROR_CORRECT_CAP_L && irCvtL > irCvtR){
+			// Autocorrect by turning a smidge right
+			PORTB=GO_RIGHT;
+			while(countA < POST_TURN_CORRECT && countB < POST_TURN_CORRECT) {
+				// check again and repeat.
+				countA = TMR0L;
+				countB = TMR1L;
+			}
+			PORTB=BREAK; //break
+			msDelay(200);
+		}//if
+		else if(irCvtR > ERROR_CORRECT_CAP_R && irCvtR > irCvtL){
+			PORTB=GO_LEFT;
+			while(countA < POST_TURN_CORRECT && countB < POST_TURN_CORRECT) {
+				// check again and repeat.
+				countA = TMR0L;
+				countB = TMR1L;
+			}
+			PORTB=BREAK; //break
+			msDelay(200);
+		}//else if
+	
+		countA = 0;
+		countB = 0;
+	   	TMR0L = 0;
+		TMR1L = 0;
+		TMR0H = 0;
+		TMR1H = 0;
+	}//for
+
+	// Now that we've autocorrected for our turn, make sure there is not
+	// a wall in front of our nose (ie. less than 5 cm away)
+	if(adConvert(STRAIGHT_IR_SELECT) > 750){
+		PORTB = BREAK;
+		while(true){} // TODO: Just for now, so we can see errors
+	}
 }
 
 unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
@@ -317,8 +380,6 @@ unsigned int adConvert(unsigned char channel)
 
 void goForward(int distance)
 {
-	int irCvtR = 0;
-	int irCvtL = 0;
 	TMR0L = 0;
 	TMR0H = 0;
 	TMR1L = 0;
@@ -354,8 +415,6 @@ void goForward(int distance)
 void turn(unsigned char direction)
 {
 	// local variables
-	int irCvtL = 0;
-	int irCvtR = 0;
 	unsigned char numTurns = 1;
 	unsigned char i = 0;
 	int countA = 0;
@@ -426,56 +485,6 @@ void turn(unsigned char direction)
 	PORTB=BREAK; //break
 
 	msDelay(500);
-
-for(i = 0; i < 2; i++){
-	// Determine if we need to autocorrect immediately after turn
-	irCvtL = adConvert(LEFT_IR_SELECT);
-	irCvtR = adConvert(RIGHT_IR_SELECT);
-	
-	countA = 0;
-	countB = 0;
-   	TMR0L = 0;
-	TMR1L = 0;
-	TMR0H = 0;
-	TMR1H = 0;
-
-	// If left IR sensor sees a wall and left wall is closer than right wall
-	if(irCvtL > ERROR_CORRECT_CAP && irCvtL > irCvtR){
-		// Autocorrect by turning a smidge right
-		PORTB=GO_RIGHT;
-		while(countA < 10 && countB < 10) {
-			// check again and repeat.
-			countA = TMR0L;
-			countB = TMR1L;
-		}
-		PORTB=BREAK; //break
-		msDelay(200);
-	}//if
-	else if(irCvtR > ERROR_CORRECT_CAP && irCvtR > irCvtL){
-		PORTB=GO_LEFT;
-		while(countA < 10 && countB < 10) {
-			// check again and repeat.
-			countA = TMR0L;
-			countB = TMR1L;
-		}
-		PORTB=BREAK; //break
-		msDelay(200);
-	}//else if
-
-	countA = 0;
-	countB = 0;
-   	TMR0L = 0;
-	TMR1L = 0;
-	TMR0H = 0;
-	TMR1H = 0;
-}
-
-	// Now that we've autocorrected for our turn, make sure there is not
-	// a wall in front of our nose (ie. less than 5 cm away)
-	if(adConvert(STRAIGHT_IR_SELECT) > 750){
-		PORTB = BREAK;
-		while(true){} // TODO: Just for now, so we can see errors
-	}
 }
 
 void initial(void)
