@@ -25,44 +25,13 @@ AI::AI(){
 
 	// TEMPORARY dead end fix
 	sawDeadEndLastTime = false;
-	// End TEMPORARY
 	
 }
 
 
 //TODO: We need to prune bad nodes
-//TODO: modularize code. A lot. Ask for help on this.
 // See ai.h for comment
 int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool back){
-	//Grope for info (DONE)
-
-/*	if(left && straight && right)
-	{
-		// TEMPORARY dead end fix
-		sawDeadEndLastTime = true;
-		// End TEMPORARY
-		return AI_BACK;
-	}
-
-	// TEMPORARY dead end fix
-	if(sawDeadEndLastTime == true){
-		printf("Saw dead end last time!\n");
-		sawDeadEndLastTime = false;
-		if(!left)
-		{
-			return AI_LEFT;
-		}
-		else if(!right)
-		{
-			return AI_RIGHT;
-		}
-		else
-		{
-			return AI_BACK;
-		}
-	}
-	// End TEMPORARY
-	*/
 	//I expect information as (leftIsWall, centerIsWall, rightIsWall, distFromLast)
 
 	int leftRating = 99;
@@ -333,7 +302,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	else if(picked == AI_SOUTH)
 	{
 		prevNode = currentNode;
-		currentNode = (*currentNode).south;
+		currentNode = (*currentNode).south;// dont do if backtracking
 		compass = AI_SOUTH;
 	}
 

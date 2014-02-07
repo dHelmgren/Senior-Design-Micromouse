@@ -29,7 +29,8 @@ void Mouse::straight(){
 }
 
 void Mouse::back(){
-	// Do nothing, for now
+	angle += 180;
+	angle = angle%360;
 }
 
 void Mouse::drawMouse(){
