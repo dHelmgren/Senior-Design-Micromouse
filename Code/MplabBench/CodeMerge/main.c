@@ -35,12 +35,15 @@
 #define ONE_UNIT_CM 	18
 #define STRAIGHT_IR_STOP 128
 #define IS_DEAD_END 	1
-#define ERROR_CORRECT_1	600	// Slight correction needed
-#define ERROR_CORRECT_2	750	// Large correction needed
-#define ERROR_CORRECT_CAP 340	// Ir sensor readout cap after turning; value < this constant means there is no wall
-#define LR_DIFF 		150 //was 120
+#define LR_DIFF			100
+#define ERROR_CORRECT_L_1	580	// Slight correction needed
+#define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
+#define ERROR_CORRECT_L_2	750	// Large correction needed: TODO: Was 550???
+#define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
+#define ERROR_CORRECT_CAP_L 340	// Ir sensor readout cap after turning; value < this constant means there is no wall
+#define ERROR_CORRECT_CAP_R (ERROR_CORRECT_CAP_L - LR_DIFF)
 #define TURN_AC_BUFFER	120
-#define RIGHT_BUFFER	50
+#define RIGHT_BUFFER	30
 
 // Poll 2: No wall means wall is farther than digital value 250
 // TODO: We may need to adjust this value lower, depending on testing
@@ -53,7 +56,7 @@
 
 // Stop the mouse because it is about to run into the wall, since the
 // IR sensor readouts are too high and close to the 3 cm max readout
-#define STOP 950
+#define STOP 900
 
 /****** FUNCTION DEFINITIONS ******/
 
@@ -124,7 +127,7 @@ void main(void)
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
 
-/* ADDED
+// ADDED
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
 		if(irCvtL <= NO_WALL){ // TODO: Change NO_WALL to have different constants per IR sensor
@@ -134,43 +137,42 @@ void main(void)
 			rightWall = false;
 		}
 
-		// Take out emergency stop because tuple stops us before then
-		if(irCvtS >= STOP && leftWall && rightWall){
+		if(!leftWall || !rightWall){
+			init4StepPoll(!IS_DEAD_END);
+		}
+		else if(irCvtS >= STOP){
 			PORTB=BREAK;
 			straightWall = true;
 			init4StepPoll(IS_DEAD_END);
-		}
-		else if(!leftWall || !rightWall){
-			init4StepPoll(!IS_DEAD_END);
-		}//else
-*///END ADDED
+		}//else if
+//END ADDED
 
 		// Determine if autocorrect is needed
-		if(irCvtL >= ERROR_CORRECT_1){
+		if(irCvtL >= ERROR_CORRECT_L_1){
 			PORTB=BREAK;
-			if(irCvtL >= ERROR_CORRECT_2){
+			if(irCvtL >= ERROR_CORRECT_L_2){
 				PORTB=BREAK;
-				//autocorrect(left, CLICKS_FOR_AC_2, backward);
+				autocorrect(left, CLICKS_FOR_AC_2, backward);
 			}
 			else{
-				//autocorrect(left, CLICKS_FOR_AC_1, forward);
+				autocorrect(left, CLICKS_FOR_AC_1, forward);
 			}
 			continue;
 		}
-		else if(irCvtR >= ERROR_CORRECT_1){
-			if(irCvtR >= ERROR_CORRECT_2){
+		else if(irCvtR >= ERROR_CORRECT_R_1){
+			if(irCvtR >= ERROR_CORRECT_R_2){
 				PORTB=BREAK;
-				//autocorrect(right, CLICKS_FOR_AC_2, backward);
+				autocorrect(right, CLICKS_FOR_AC_2, backward);
 			}
 			else{
-				//autocorrect(right, CLICKS_FOR_AC_1, forward);
+				autocorrect(right, CLICKS_FOR_AC_1, forward);
 			}
 			continue;
 		}//else if
 
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
-		if(irCvtL <= NO_WALL){ // TODO: Change NO_WALL to have different constants per IR sensor
+/*		if(irCvtL <= NO_WALL){ // TODO: Change NO_WALL to have different constants per IR sensor
 			leftWall = false;
 		}
 		if(irCvtR <= NO_WALL){
@@ -186,7 +188,7 @@ void main(void)
 		else if(!leftWall || !rightWall){
 			init4StepPoll(!IS_DEAD_END);
 		}//else
-
+*/
 	}//while(true)
 
 }//main
@@ -282,7 +284,7 @@ void init4StepPoll(unsigned char isDeadEnd){
 
 	if(!isDeadEnd){
 		// Continuation of step 3
-		//autocorrectTurn();
+		autocorrectTurn();
 		msDelay(5000);
 
 		// Step 4: Continue a little past current unit
@@ -359,8 +361,13 @@ void goForward(int distance)
 	TMR0H = 0;
 	TMR1L = 0;
 	TMR1H = 0;
-	PORTB=GO_STRAIGHT; //Drive forward
 	cmTraveled = 0;
+
+PORTB=BREAK;
+msDelay(5000);
+
+	PORTB=GO_STRAIGHT; //Drive forward
+
 	while(cmTraveled < distance)
 	{
 		if(TMR0L >= CLICKS_PER_CM){
@@ -386,12 +393,12 @@ void goForward(int distance)
 
 			// We are are about to hit a wall, autocorrect backing up, so we
 			// don't it hit
-			/*if(irCvtR >= STOP){
+			if(irCvtR >= STOP){
 				autocorrect(right, 80, backward);
 			}
 			else if(irCvtL >= STOP){
 				autocorrect(left, 80, backward);
-			}*/
+			}
 		}
 	}
 	// We are continually moving closer to a wall, and haven't gotten too
@@ -414,25 +421,26 @@ void goForward(int distance)
 
 	PORTB=BREAK; //stop the right wheel
 	Nop();
-	//msDelay(10);
 	TMR0L = 0;
 	TMR0H = 0;
+msDelay(5000);
 }
 
 void autocorrectTurn(void){
 	unsigned char i = 0;
+	unsigned char acCount = 9;
 	unsigned char isCorrectingLeft = 0;
 	unsigned char isCorrectingRight = 0;
 
-	for(i = 0; i < 3; i++){
+	for(i = 0; i < 0; i++){
 		msDelay(5000);
 
 		// Determine if we need to autocorrect immediately after turn
 		irCvtL = adConvert(LEFT_IR_SELECT);
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 		
-		isCorrectingLeft = irCvtR > ERROR_CORRECT_CAP && irCvtR > irCvtL-LR_DIFF+TURN_AC_BUFFER;
-		isCorrectingRight = irCvtL > ERROR_CORRECT_CAP && irCvtL > LR_DIFF+TURN_AC_BUFFER+irCvtR+RIGHT_BUFFER;
+		isCorrectingLeft = irCvtR > ERROR_CORRECT_CAP_R && irCvtR > irCvtL-LR_DIFF+TURN_AC_BUFFER;
+		isCorrectingRight = irCvtL > ERROR_CORRECT_CAP_L && irCvtL > LR_DIFF+TURN_AC_BUFFER+irCvtR+RIGHT_BUFFER;
 		countA = 0;
 		countB = 0;
 	   	TMR0L = 0;
@@ -443,7 +451,7 @@ void autocorrectTurn(void){
 		// If left IR sensor sees a wall and left wall is closer than right wall
 		if(isCorrectingLeft && !isCorrectingRight){
 			PORTB=GO_LEFT;
-			while(countA < 10 && countB < 10) {
+			while(countA < acCount && countB < acCount) {
 				// check again and repeat.
 				countA = TMR0L;
 				countB = TMR1L;
@@ -454,7 +462,7 @@ void autocorrectTurn(void){
 		else if(isCorrectingRight && !isCorrectingLeft){
 			// Autocorrect by turning a smidge right
 			PORTB=GO_RIGHT;
-			while(countA < 10 && countB < 10) {
+			while(countA < acCount && countB < acCount) {
 				// check again and repeat.
 				countA = TMR0L;
 				countB = TMR1L;
@@ -463,13 +471,16 @@ void autocorrectTurn(void){
 			msDelay(200);
 		}//else if
 	
+		// Adjust the mouse less and less each iteration
+		acCount-=3;
+
 		countA = 0;
 		countB = 0;
 	   	TMR0L = 0;
 		TMR1L = 0;
 		TMR0H = 0;
 		TMR1H = 0;
-	}
+	}//for
 	// Now that we've autocorrected for our turn, make sure there is not
 	// a wall in front of our nose (ie. less than 5 cm away)
 	if(adConvert(STRAIGHT_IR_SELECT) > 950){
@@ -507,7 +518,7 @@ void turn(unsigned char direction)
 		dummy=!dummy;
 	}
 	else if(direction == straight){
-		PORTB=GO_STRAIGHT;
+		PORTB=BREAK; // This is counterintuitive, but the robot must be halted in order to autocorrect turn
 		return;
 	}
 	else{ // This case should never be reached
