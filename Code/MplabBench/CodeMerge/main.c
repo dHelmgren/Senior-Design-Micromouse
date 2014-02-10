@@ -76,6 +76,9 @@ unsigned char straightWall = true;
 /* Can make tuple. This boolean is false if a tuiple is not allowed to be made at this time. */
 unsigned char canCallTuple = true;
 
+int irCvtL = 0;
+int irCvtR = 0;
+int irCvtS = 0;
 int irCvtLP1 = 0;
 int irCvtRP1 = 0;
 int irCvtLP2 = 0;
@@ -105,9 +108,9 @@ void main(void)
 	unsigned char tempR;
 	unsigned char leftIR;
 	unsigned char rightIR;
-	int irCvtL = 0; // Ir converted left value
-	int irCvtR = 0;
-	int irCvtS = 0;
+	//int irCvtL = 0; // Ir converted left value
+	//int irCvtR = 0;
+	//int irCvtS = 0;
 
 	Nop();
 	initial();
@@ -140,17 +143,13 @@ Delay10TCYx(1);
 				PORTB=GO_STRAIGHT;
 				leftWall = false;
 				init4StepPoll(!IS_DEAD_END);
-				//irRP4 = 0;
-				//irLP4 = 0;
 			}
 			else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= 250){
 				PORTB=BREAK;
 				blinkTest();
 				PORTB=GO_STRAIGHT;
 				rightWall = false;
-				init4StepPoll(!IS_DEAD_END);
-				//irRP4 = 0;
-				//irLP4 = 0;		
+				init4StepPoll(!IS_DEAD_END);		
 			}
 			else if(irCvtS >= (int)STOP){
 				PORTB=BREAK;
@@ -175,7 +174,7 @@ Delay10TCYx(1);
 
 void init4StepPoll(unsigned char isDeadEnd){
 	// local variables
-	int irCvtS = 0;
+	//int irCvtS = 0;
 	char decision;
 	unsigned char i = 0;
 
@@ -305,6 +304,30 @@ void goForward(int distance)
 	cmTraveled = 0;
 	while(cmTraveled < distance)
 	{
+		irCvtL = adConvert(LEFT_IR_SELECT);
+		irCvtR = adConvert(RIGHT_IR_SELECT);
+		if(cmTraveled <= 6){
+			if(irCvtL <= NO_WALL_LEFT && irCvtLP4 - irCvtL >= 250){
+				PORTB=BREAK;
+				blinkTest();
+				PORTB=GO_STRAIGHT;
+				leftWall = false;
+			}
+			else if(irCvtR <= NO_WALL_RIGHT && irCvtRP4 - irCvtR >= 250){
+				PORTB=BREAK;
+				blinkTest();
+				PORTB=GO_STRAIGHT;
+				rightWall = false;
+			}
+			irCvtLP4 = irCvtLP3;
+			irCvtRP4 = irCvtRP3;
+			irCvtLP3 = irCvtLP2;
+			irCvtRP3 = irCvtRP2;
+			irCvtLP2 = irCvtLP1;
+			irCvtRP2 = irCvtRP1;
+			irCvtLP1 = irCvtL;
+			irCvtRP1 = irCvtR;
+		}//if
 		if(TMR0L >= CLICKS_PER_CM){
 			cmTraveled++;
 			TMR0L = 0;
