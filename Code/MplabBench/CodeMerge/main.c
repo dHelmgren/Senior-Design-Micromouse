@@ -31,7 +31,9 @@
 
 // Poll 2: No wall means wall is farther than digital value 250
 // TODO: We may need to adjust this value lower, depending on testing
-#define NO_WALL 250
+#define NO_WALL_STRAIGHT 350
+#define NO_WALL_LEFT 250
+#define NO_WALL_RIGHT 175
 
 // Poll 3: Move mouse forward 4 cm
 #define LEAVE_UNIT 4
@@ -71,6 +73,21 @@ unsigned char rightWall = true;
 /* Whether or not there is a wall straight ahead */
 unsigned char straightWall = true;
 
+/* Can make tuple. This boolean is false if a tuiple is not allowed to be made at this time. */
+unsigned char canCallTuple = true;
+
+int irCvtLP1 = 0;
+int irCvtRP1 = 0;
+int irCvtLP2 = 0;
+int irCvtRP2 = 0;
+int irCvtLP3 = 0;
+int irCvtRP3 = 0;
+int irCvtLP4 = 0;
+int irCvtRP4 = 0;
+
+int noWallL = -1;
+int noWallR = -1;
+
 //unsigned int CLICKS_FOR_90 = 365;
 
 /****** CODE ******/
@@ -95,36 +112,62 @@ void main(void)
 	Nop();
 	initial();
 	
-
 	/**** BEGIN! ****/
-
+msDelay(5000);
 	PORTB=GO_STRAIGHT;
 
 	while(true) {
 
+//PORTB=BREAK;
+Delay10TCYx(1);
 		irCvtL = adConvert(LEFT_IR_SELECT);
+Delay10TCYx(1);
 		irCvtR = adConvert(RIGHT_IR_SELECT);
+Delay10TCYx(1);
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
+//PORTB=GO_STRAIGHT;
+//Delay10TCYx(5);
 
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
-		if(irCvtL <= NO_WALL){
-			leftWall = false;
-			init4StepPoll(!IS_DEAD_END);
+		if(irCvtLP4 !=0 && irCvtRP4 !=0) {
+			noWallL = NO_WALL_LEFT;
+			noWallR = NO_WALL_RIGHT;
 		}
-		else if(irCvtR <= NO_WALL){
-			rightWall = false;
-			init4StepPoll(!IS_DEAD_END);
-		}
-		else if(irCvtS >= STOP){
-			PORTB=BREAK;
-			straightWall = true;
-			init4StepPoll(IS_DEAD_END);
-		}
+			if(irCvtL <= noWallL||irCvtLP4-irCvtL >= 250){
+				PORTB=BREAK;
+				blinkTest();
+				PORTB=GO_STRAIGHT;
+				leftWall = false;
+				init4StepPoll(!IS_DEAD_END);
+				//irRP4 = 0;
+				//irLP4 = 0;
+			}
+			else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= 250){
+				PORTB=BREAK;
+				blinkTest();
+				PORTB=GO_STRAIGHT;
+				rightWall = false;
+				init4StepPoll(!IS_DEAD_END);
+				//irRP4 = 0;
+				//irLP4 = 0;		
+			}
+			else if(irCvtS >= (int)STOP){
+				PORTB=BREAK;
+				straightWall = true;
+				init4StepPoll(IS_DEAD_END);
+			}
+//PORTB=GO_STRAIGHT;
+//msDelay(50);
 
-		leftWall = true;
-		rightWall = true;
-		straightWall = true;
+		irCvtLP4 = irCvtLP3;
+		irCvtRP4 = irCvtRP3;
+		irCvtLP3 = irCvtLP2;
+		irCvtRP3 = irCvtRP2;
+		irCvtLP2 = irCvtLP1;
+		irCvtRP2 = irCvtRP1;
+		irCvtLP1 = irCvtL;
+		irCvtRP1 = irCvtR;
 
 	}//while(true)
 
@@ -134,19 +177,29 @@ void init4StepPoll(unsigned char isDeadEnd){
 	// local variables
 	int irCvtS = 0;
 	char decision;
+	unsigned char i = 0;
 
 	if(!isDeadEnd){
 
 		// Step 2
 		goForward(CONTINUE_TO_CENTER);
 
+PORTB=BREAK;
 		msDelay(5000);
-
-		irCvtS = adConvert(STRAIGHT_IR_SELECT);
-		if(irCvtS <= NO_WALL){
+PORTB=BREAK;
+		for(i=0;i<5;++i) {
+			Delay10TCYx(10);
+			irCvtS = adConvert(STRAIGHT_IR_SELECT);
+			irCvtS = irCvtS + 1;
+		}
+		if(irCvtS <= (int)NO_WALL_STRAIGHT){
 			straightWall = false;
 		}
+		else{
+			straightWall = true;
+		}
 	}
+PORTB=GO_STRAIGHT;
 	// This if statement is just to be safe; it can be removed once
 	// this information is verified
 	if(isDeadEnd){
@@ -159,26 +212,41 @@ void init4StepPoll(unsigned char isDeadEnd){
 	decision = makeDecision(leftWall, straightWall, rightWall);
 	turn(decision);
 
+	irCvtLP1 = 0;
+	irCvtRP1 = 0;
+	irCvtLP2 = 0;
+	irCvtRP2 = 0;
+	irCvtLP3 = 0;
+	irCvtRP3 = 0;
+	irCvtLP4 = 0;
+	irCvtRP4 = 0;
+	noWallL = -1;
+	noWallR = -1;
+
+	leftWall = true;
+	rightWall = true;
+	straightWall = false;
+PORTB=BREAK;
 	msDelay(5000);
 
 	// Step 4: Continue a little past current unit
-	goForward(LEAVE_UNIT);
+	//goForward(LEAVE_UNIT - 1);
 
-	msDelay(5000);
+	//msDelay(5000);
 
 	// Start polling process again
 	PORTB=GO_STRAIGHT;
 }
 
 unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
-	if(!leftWall){
-		return left;
+	if(!straightWall){
+		return straight;
 	}
 	else if(!rightWall){
 		return right;
 	}
-	else if(!straightWall){
-		return straight;
+	else if(!leftWall){
+		return left;
 	}
 	else{
 		return turnAround;
@@ -211,7 +279,7 @@ unsigned int adConvert(unsigned char channel)
 	//instead waiting 10ms 
 			//Note: this timing can be played with to get a
 			//more accurate reading
-	Delay10TCYx(0.5);
+	Delay10TCYx(10);
 	//turn go on!
 	ADCON0 = (ADCON0 | 0x02); //or-ed with 2
 	//wait for the done bit to be cleared
@@ -399,32 +467,3 @@ void msDelay(unsigned int itime)
 		}
 	}
 }
-
-/*char voltsToClicksTest(void)
-{// for now we will just set it up for the straight IR.
-// assume using 12 bits in adc, assume that the bits are right justified.
-// TODO Janel, see above.
-// eventually we will want to make this pass in a param to determine the IR
-// THESE CONSTANTS WILL NEED TO BE TESTED AND REWRITTEN.
-		char straightIRH;
-		char straightIRL;
-		straightIRH = adConvert(STRAIGHT_IR_SELECT);
-		straightIRL = ADRESL;
-		if(straightIRH > 8 && straightIRL > 100) {
-			//blinkTest();
-			return 4;
-		}
-		if(straightIRH > 4 && straightIRL > 100) {
-			//blinkTest();
-			return 5;
-		}
-		if(straightIRH > 2 && frontIRL > 100) {
-			//blinkTest();
-			return 6;
-		}
-		if(frontIRH > 1 && frontIRL > 100) {
-			//blinkTest();
-			return 7;
-		}
-		return 8;
-}*/
