@@ -11,17 +11,22 @@
 #define right		0
 #define straight 	2
 #define turnAround 	3
+#define backward	0
+#define forward		1
 
 #define STRAIGHT_IR_SELECT 	0b00000001
 #define LEFT_IR_SELECT 		0b00000101
 #define RIGHT_IR_SELECT 	0b00001001
-#define CLICKS_FOR_NINETY 	0xB7
+#define CLICKS_FOR_NINETY 	0xB0
 #define GO_LEFT 			0b11101010
 #define GO_RIGHT 			0b11110101
 #define GO_STRAIGHT 		0b11111001
 #define GO_BACKWARD 		0b11110110
 #define BREAK_R_WHEEL 		0b11111101
+#define BREAK_L_WHEEL		0b11111011
 #define BREAK 				0b11111111
+#define BACKWARD_L_WHEEL	0b11111110
+#define BACKWARD_R_WHEEL	0b11110111
 
 #define DELAY 			1000
 #define CLICKS_PER_CM 	55  // Was messing up in hex
@@ -42,21 +47,35 @@
 
 // Stop the mouse because it is about to run into the wall, since the
 // IR sensor readouts are too high and close to the 3 cm max readout
-#define STOP 950
+#define STOP 900
+
+// Constants to trigger autocorrect
+#define LR_DIFF				100
+#define ERROR_CORRECT_L_1	580
+#define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
+#define ERROR_CORRECT_L_2	750
+#define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
+#define ERROR_CORRECT_CAP_L	340
+#define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
+#define RIGHT_BUFFER		30
+
+// Constants to define how much to autocorrect
+#define CLICKS_FOR_AC_1		0x20
+#define CLICKS_FOR_AC_2		0x18
 
 /****** FUNCTION DEFINITIONS ******/
 
-void initial(void);
+unsigned int adConvert(unsigned char channel);
+void autocorrect(unsigned char direction, unsigned char clicks, unsigned char howAutocorrect);
 void blinkTest(void);
 void driveTest(void);
-unsigned int adConvert(unsigned char channel);
-void msDelay(unsigned int time);
-void turn(unsigned char direction); // Step 3
-void stopTest(void);
-//char voltsToClicksTest(void);
 void goForward(int distance); // Step 2 of 4 step polling process
+void initial(void);
 void init4StepPoll(unsigned char isDeadEnd);
 unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
+void msDelay(unsigned int time);
+void stopTest(void);
+void turn(unsigned char direction); // Step 3
 
 /****** GLOBAL VARIABLES ******/
 
@@ -91,8 +110,6 @@ int irCvtRP4 = 0;
 int noWallL = -1;
 int noWallR = -1;
 
-//unsigned int CLICKS_FOR_90 = 365;
-
 /****** CODE ******/
 
 #pragma code 
@@ -108,9 +125,6 @@ void main(void)
 	unsigned char tempR;
 	unsigned char leftIR;
 	unsigned char rightIR;
-	//int irCvtL = 0; // Ir converted left value
-	//int irCvtR = 0;
-	//int irCvtS = 0;
 
 	Nop();
 	initial();
@@ -121,15 +135,12 @@ msDelay(5000);
 
 	while(true) {
 
-//PORTB=BREAK;
 Delay10TCYx(1);
 		irCvtL = adConvert(LEFT_IR_SELECT);
 Delay10TCYx(1);
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 Delay10TCYx(1);
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
-//PORTB=GO_STRAIGHT;
-//Delay10TCYx(5);
 
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
@@ -156,8 +167,20 @@ Delay10TCYx(1);
 				straightWall = true;
 				init4StepPoll(IS_DEAD_END);
 			}
-//PORTB=GO_STRAIGHT;
-//msDelay(50);
+
+		// Determine if autocorrect is needed
+		if(irCvtL >= ERROR_CORRECT_L_1){
+			if(irCvtL >= ERROR_CORRECT_L_2){
+				autocorrect(left, CLICKS_FOR_AC_2, backward);
+			}
+			autocorrect(left, CLICKS_FOR_AC_1, forward);
+		}
+		else if(irCvtR >= ERROR_CORRECT_R_1){
+			if(irCvtR >= ERROR_CORRECT_R_2){
+				autocorrect(right, CLICKS_FOR_AC_2, backward);
+			}
+			autocorrect(right, CLICKS_FOR_AC_1, forward);
+		}
 
 		irCvtLP4 = irCvtLP3;
 		irCvtRP4 = irCvtRP3;
@@ -171,6 +194,46 @@ Delay10TCYx(1);
 	}//while(true)
 
 }//main
+
+void autocorrect(unsigned char direction, unsigned char clicks, unsigned char howAutocorrect){
+	TMR0L = 0;
+  	TMR1L = 0;
+  	TMR0H = 0;
+  	TMR1H = 0;
+  	//countA = 0;
+  	//countB = 0;
+  
+  	if(direction == left){ // We need to turn a little right
+  
+  		if(howAutocorrect == backward){
+  			PORTB=BACKWARD_R_WHEEL;
+  		}
+  		else{
+  			PORTB=BREAK_R_WHEEL;
+  		}
+  		
+		// Wait until the optical encoders reach at least "clicks"
+  		while(TMR0L < clicks && TMR1L < clicks) {}
+  	}//if
+  
+  	else{ // direction == right; we need to turn left
+  
+  		if(howAutocorrect == backward){
+  			PORTB=BACKWARD_L_WHEEL;
+  		}
+  		else{
+  			PORTB=BREAK_L_WHEEL;
+  		}
+  
+		// Wait until the optical encoders reach at least "clicks"
+  		while(TMR0L < clicks && TMR1L < clicks) {}
+  	}//else
+  
+  	PORTB=BREAK;
+  	msDelay(200);
+  
+  	PORTB=GO_STRAIGHT;
+}//autocorrect
 
 void init4StepPoll(unsigned char isDeadEnd){
 	// local variables
@@ -211,6 +274,8 @@ PORTB=GO_STRAIGHT;
 	decision = makeDecision(leftWall, straightWall, rightWall);
 	turn(decision);
 
+	// Reset all variables used in the main loop to prepare for the
+	// next tuple or autocorrect
 	irCvtLP1 = 0;
 	irCvtRP1 = 0;
 	irCvtLP2 = 0;
@@ -225,11 +290,21 @@ PORTB=GO_STRAIGHT;
 	leftWall = true;
 	rightWall = true;
 	straightWall = false;
+
+	TMR0L = 0;
+	TMR1L = 0;
+
 PORTB=BREAK;
 	msDelay(5000);
 
 	// Step 4: Continue a little past current unit
-	//goForward(LEAVE_UNIT - 1);
+	// TODO: Perhaps looking for another way to leave the tupled unit, since
+	// this sometimes take the robot too far and therefore it can't recognize
+	// the next tuple (at worst case, the robot just thinks it is in a dead end
+	// and turns 180 degrees around). Even LEAVE_UNIT-1 sometimes isn't enough
+	// for mouse to leave tupled unit, so it sees the current tupled unit again,
+	// but thinks it's the next tuple. Need to brainstorm ideas.
+	goForward(LEAVE_UNIT);
 
 	//msDelay(5000);
 
@@ -296,6 +371,7 @@ unsigned int adConvert(unsigned char channel)
 
 void goForward(int distance)
 {
+	int prevIrCvtS = 0;
 	TMR0L = 0;
 	TMR0H = 0;
 	TMR1L = 0;
@@ -331,8 +407,25 @@ void goForward(int distance)
 		if(TMR0L >= CLICKS_PER_CM){
 			cmTraveled++;
 			TMR0L = 0;
+			if(cmTraveled == distance){
+				prevIrCvtS = adConvert(STRAIGHT_IR_SELECT);
+			}
 		}
-	}
+	}//while
+
+	// We are continually moving closer to a wall, and haven't gotten too
+  	// close yet. Therefore, keep going (using wall ahead as a marker) until
+  	// we are in center of tupled unit.
+  	irCvtS = adConvert(STRAIGHT_IR_SELECT);
+  	//PORTB=BREAK;
+  	if(irCvtS >= 250 && irCvtS - prevIrCvtS > 0){
+  		PORTB=BREAK;
+  		straightWall = true;
+  		PORTB=GO_STRAIGHT;
+  		while(irCvtS < STOP){
+  			irCvtS = adConvert(STRAIGHT_IR_SELECT);
+  		}
+  	}//if
 
 	PORTB=BREAK; //stop the right wheel
 	Nop();
