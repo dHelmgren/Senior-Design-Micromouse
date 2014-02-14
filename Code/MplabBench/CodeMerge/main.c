@@ -49,7 +49,7 @@
 // IR sensor readouts are too high and close to the 3 cm max readout
 #define STOP 900
 
-// Constants to trigger autocorrect
+// Constants to trigger push autocorrect
 #define LR_DIFF				100
 #define ERROR_CORRECT_L_1	580
 #define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
@@ -58,6 +58,12 @@
 #define ERROR_CORRECT_CAP_L	340
 #define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
 #define RIGHT_BUFFER		30
+
+// Constants to trigger pull autocorrect
+#define PULL_CORRECT_L_1	580-100
+#define PULL_CORRECT_R_1	450-100
+#define PULL_CORRECT_L_2	440-100
+#define PULL_CORRECT_R_2	380-100
 
 // Constants to define how much to autocorrect
 #define CLICKS_FOR_AC_1		0x20
@@ -130,7 +136,15 @@ void main(void)
 	initial();
 	
 	/**** BEGIN! ****/
-msDelay(5000);
+msDelay(10000);
+//PORTB=BREAK;
+//while(true){
+//Delay10TCYx(1);
+//		irCvtL = adConvert(LEFT_IR_SELECT);
+//Delay10TCYx(1);
+//		irCvtR = adConvert(RIGHT_IR_SELECT);
+//}
+
 	PORTB=GO_STRAIGHT;
 
 	while(true) {
@@ -169,14 +183,16 @@ Delay10TCYx(1);
 			}
 
 		// Determine if autocorrect is needed
-		if(irCvtL >= ERROR_CORRECT_L_1){
-			if(irCvtL >= ERROR_CORRECT_L_2){
+		// If we're too close on the left side or too far on the right side
+		if(irCvtL >= ERROR_CORRECT_L_1 || irCvtR <= PULL_CORRECT_R_1){
+			if(irCvtL >= ERROR_CORRECT_L_2 || irCvtR <= PULL_CORRECT_R_2){
 				autocorrect(left, CLICKS_FOR_AC_2, backward);
 			}
 			autocorrect(left, CLICKS_FOR_AC_1, forward);
 		}
-		else if(irCvtR >= ERROR_CORRECT_R_1){
-			if(irCvtR >= ERROR_CORRECT_R_2){
+		// Else if we're too close on the right side or too far on the left side
+		else if(irCvtR >= ERROR_CORRECT_R_1 || irCvtL <= PULL_CORRECT_L_1){
+			if(irCvtR >= ERROR_CORRECT_R_2 || irCvtL <= PULL_CORRECT_L_2){
 				autocorrect(right, CLICKS_FOR_AC_2, backward);
 			}
 			autocorrect(right, CLICKS_FOR_AC_1, forward);
@@ -230,7 +246,7 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char ho
   	}//else
   
   	PORTB=BREAK;
-  	msDelay(200);
+  	msDelay(50);
   
   	PORTB=GO_STRAIGHT;
 }//autocorrect
