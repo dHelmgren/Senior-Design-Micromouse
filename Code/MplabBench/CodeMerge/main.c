@@ -5,6 +5,25 @@
 
 /****** MACROS ******/
 
+//#define FIBROTAUR 1
+#ifdef FIBROTAUR
+#define DIFF 100
+#define GO_RIGHT 			0b11101010
+#define GO_LEFT 			0b11110101
+#define BREAK_R_WHEEL		0b11111011
+#define BREAK_L_WHEEL 		0b11111101
+#define BACKWARD_R_WHEEL	0b11111110
+#define BACKWARD_L_WHEEL	0b11110111
+#else
+#define DIFF 0
+#define GO_LEFT 			0b11101010
+#define GO_RIGHT 			0b11110101
+#define BREAK_L_WHEEL		0b11111011
+#define BREAK_R_WHEEL 		0b11111101
+#define BACKWARD_L_WHEEL	0b11111110
+#define BACKWARD_R_WHEEL	0b11110111
+#endif
+
 #define true    	1 
 #define false   	0 
 #define left		1
@@ -17,16 +36,11 @@
 #define STRAIGHT_IR_SELECT 	0b00000001
 #define LEFT_IR_SELECT 		0b00000101
 #define RIGHT_IR_SELECT 	0b00001001
-#define CLICKS_FOR_NINETY 	0xB0
-#define GO_LEFT 			0b11101010
-#define GO_RIGHT 			0b11110101
+#define CLICKS_FOR_NINETY 	0x9C
+
 #define GO_STRAIGHT 		0b11111001
 #define GO_BACKWARD 		0b11110110
-#define BREAK_R_WHEEL 		0b11111101
-#define BREAK_L_WHEEL		0b11111011
 #define BREAK 				0b11111111
-#define BACKWARD_L_WHEEL	0b11111110
-#define BACKWARD_R_WHEEL	0b11110111
 
 #define DELAY 			1000
 #define CLICKS_PER_CM 	55  // Was messing up in hex
@@ -43,31 +57,36 @@
 // Poll 3: Move mouse forward 4 cm
 #define LEAVE_UNIT 4
 
-#define CONTINUE_TO_CENTER 14
+#define CONTINUE_TO_CENTER 14-1
 
 // Stop the mouse because it is about to run into the wall, since the
 // IR sensor readouts are too high and close to the 3 cm max readout
 #define STOP 900
 
 // Constants to trigger push autocorrect
-#define LR_DIFF				100
-#define ERROR_CORRECT_L_1	580
+#define LR_DIFF				150
+#define ERROR_CORRECT_L_1	780-DIFF
 #define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
-#define ERROR_CORRECT_L_2	750
+#define ERROR_CORRECT_L_2	780-DIFF
 #define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
-#define ERROR_CORRECT_CAP_L	340
+#define ERROR_CORRECT_CAP_L	340-DIFF
 #define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
 #define RIGHT_BUFFER		30
 
 // Constants to trigger pull autocorrect
-#define PULL_CORRECT_L_1	580-100
-#define PULL_CORRECT_R_1	450-100
-#define PULL_CORRECT_L_2	440-100
-#define PULL_CORRECT_R_2	380-100
+#define PULL_CORRECT_L_1	480
+#define PULL_CORRECT_R_1	(PULL_CORRECT_L_1 - LR_DIFF)//450-100
+#define PULL_CORRECT_L_2	480
+#define PULL_CORRECT_R_2	(PULL_CORRECT_L_2 - LR_DIFF)//380-100
 
 // Constants to define how much to autocorrect
 #define CLICKS_FOR_AC_1		0x20
 #define CLICKS_FOR_AC_2		0x18
+
+// Number of times we have iterated through the while loop without
+// autocorrecting or making a tuple; therefore, we may be stuck!
+#define STUCK 10000
+#define STUCK_POLL 200
 
 /****** FUNCTION DEFINITIONS ******/
 
@@ -76,6 +95,8 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char ho
 void blinkTest(void);
 void driveTest(void);
 void goForward(int distance); // Step 2 of 4 step polling process
+void ifAutocorrect(void);
+void ifSuicide(void);
 void initial(void);
 void init4StepPoll(unsigned char isDeadEnd);
 unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
@@ -116,6 +137,8 @@ int irCvtRP4 = 0;
 int noWallL = -1;
 int noWallR = -1;
 
+unsigned int stuck = 0;
+
 /****** CODE ******/
 
 #pragma code 
@@ -137,18 +160,11 @@ void main(void)
 	
 	/**** BEGIN! ****/
 msDelay(10000);
-//PORTB=BREAK;
-//while(true){
-//Delay10TCYx(1);
-//		irCvtL = adConvert(LEFT_IR_SELECT);
-//Delay10TCYx(1);
-//		irCvtR = adConvert(RIGHT_IR_SELECT);
-//}
 
 	PORTB=GO_STRAIGHT;
 
 	while(true) {
-
+stuck++;
 Delay10TCYx(1);
 		irCvtL = adConvert(LEFT_IR_SELECT);
 Delay10TCYx(1);
@@ -168,35 +184,28 @@ Delay10TCYx(1);
 				PORTB=GO_STRAIGHT;
 				leftWall = false;
 				init4StepPoll(!IS_DEAD_END);
+				stuck=0;
 			}
 			else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= 250){
 				PORTB=BREAK;
 				blinkTest();
 				PORTB=GO_STRAIGHT;
 				rightWall = false;
-				init4StepPoll(!IS_DEAD_END);		
+				init4StepPoll(!IS_DEAD_END);
+				stuck=0;		
 			}
-			else if(irCvtS >= (int)STOP){
+			else if(irCvtS >= STOP){
 				PORTB=BREAK;
 				straightWall = true;
 				init4StepPoll(IS_DEAD_END);
+				stuck=0;
 			}
 
-		// Determine if autocorrect is needed
-		// If we're too close on the left side or too far on the right side
-		if(irCvtL >= ERROR_CORRECT_L_1 || irCvtR <= PULL_CORRECT_R_1){
-			if(irCvtL >= ERROR_CORRECT_L_2 || irCvtR <= PULL_CORRECT_R_2){
-				autocorrect(left, CLICKS_FOR_AC_2, backward);
-			}
-			autocorrect(left, CLICKS_FOR_AC_1, forward);
-		}
-		// Else if we're too close on the right side or too far on the left side
-		else if(irCvtR >= ERROR_CORRECT_R_1 || irCvtL <= PULL_CORRECT_L_1){
-			if(irCvtR >= ERROR_CORRECT_R_2 || irCvtL <= PULL_CORRECT_L_2){
-				autocorrect(right, CLICKS_FOR_AC_2, backward);
-			}
-			autocorrect(right, CLICKS_FOR_AC_1, forward);
-		}
+		// Determine if we are in a suicide run (aka running directly into
+		// a wall)
+		//ifSuicide();
+		// Determine if we need to autocorrect, and if we do, then do so.
+		ifAutocorrect();
 
 		irCvtLP4 = irCvtLP3;
 		irCvtRP4 = irCvtRP3;
@@ -211,13 +220,62 @@ Delay10TCYx(1);
 
 }//main
 
+void ifSuicide(void){
+	// Determine which sensor is causing the suicide run, if we are in
+	// a suicide situation at all
+	if(irCvtS >= STOP+50 || stuck > STUCK){
+		PORTB=GO_BACKWARD;
+		//reset the timers
+		TMR0L = 0;
+		TMR0H = 0;
+		while(TMR0L < STUCK_POLL){
+			Nop();
+		}
+		PORTB=BREAK;
+		// TODO: We will later pass in a distance traveled of zero so that
+		// the agent can modify the last NavNode created and modify the
+		// agent's choice.
+		irCvtS = adConvert(STRAIGHT_IR_SELECT);
+		if(irCvtS >= 600){
+			turn(makeDecision(false, true, false));
+		}
+		stuck=0;
+	}
+	else if(irCvtL >= STOP+50){
+
+	}
+	else if(irCvtR >= STOP+50){
+
+	}
+	PORTB=GO_STRAIGHT;
+}
+
+void ifAutocorrect(void){
+	// Determine if autocorrect is needed
+	// If we're too close on the left side or too far on the right side
+	if(irCvtL >= ERROR_CORRECT_L_1/* || (irCvtR <= PULL_CORRECT_R_1 && irCvtR >= NO_WALL_RIGHT)*/){
+		if(irCvtL >= ERROR_CORRECT_L_2/* || (irCvtR <= PULL_CORRECT_R_2 && irCvtR >= NO_WALL_RIGHT)*/){
+			autocorrect(left, CLICKS_FOR_AC_2, backward);
+		}
+		autocorrect(left, CLICKS_FOR_AC_1, forward);
+	}
+	// Else if we're too close on the right side or too far on the left side
+	else if(irCvtR >= ERROR_CORRECT_R_1/* || (irCvtL <= PULL_CORRECT_L_1 && irCvtL >= NO_WALL_LEFT)*/){
+		if(irCvtR >= ERROR_CORRECT_R_2/* || (irCvtL <= PULL_CORRECT_L_2 && irCvtL >= NO_WALL_LEFT)*/){
+			autocorrect(right, CLICKS_FOR_AC_2, backward);
+		}
+		autocorrect(right, CLICKS_FOR_AC_1, forward);
+	}
+}
+
 void autocorrect(unsigned char direction, unsigned char clicks, unsigned char howAutocorrect){
+	PORTB=BREAK;
+	stuck=0;
 	TMR0L = 0;
   	TMR1L = 0;
   	TMR0H = 0;
   	TMR1H = 0;
-  	//countA = 0;
-  	//countB = 0;
+	PORTB=GO_STRAIGHT;
   
   	if(direction == left){ // We need to turn a little right
   
@@ -289,6 +347,8 @@ PORTB=GO_STRAIGHT;
 	// Step 3
 	decision = makeDecision(leftWall, straightWall, rightWall);
 	turn(decision);
+	// Determine if the possibly erroneous turn caused us to be directly
+	// in front of a wall
 
 	// Reset all variables used in the main loop to prepare for the
 	// next tuple or autocorrect
@@ -320,7 +380,7 @@ PORTB=BREAK;
 	// and turns 180 degrees around). Even LEAVE_UNIT-1 sometimes isn't enough
 	// for mouse to leave tupled unit, so it sees the current tupled unit again,
 	// but thinks it's the next tuple. Need to brainstorm ideas.
-	goForward(LEAVE_UNIT);
+	goForward(LEAVE_UNIT-1);
 
 	//msDelay(5000);
 
@@ -332,15 +392,40 @@ unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, u
 	if(!straightWall){
 		return straight;
 	}
-	else if(!rightWall){
-		return right;
-	}
 	else if(!leftWall){
 		return left;
+	}
+	else if(!rightWall){
+		return right;
 	}
 	else{
 		return turnAround;
 	}
+
+//TODO: Fix this.
+	/*unsigned char choice = irCvtL + irCvtR;
+PORTB=BREAK;
+	choice = choice << 4;
+	choice = choice >> 6;
+
+	if(choice == straight || choice == 3){
+		if(!straightWall)
+			return straight;
+		else if(choice == straight)
+			choice++;
+		else
+			choice--;
+	}
+	if(choice == right){
+		if(!rightWall)
+			return right;	
+	}
+	if(!leftWall){
+		return left;
+	}
+	else{
+		return turnAround;
+	}*/
 }
 
 void driveTest(void)
@@ -422,9 +507,14 @@ void goForward(int distance)
 		}//if
 		if(TMR0L >= CLICKS_PER_CM){
 			cmTraveled++;
-			TMR0L = 0;
+			TMR0L = TMR0L - CLICKS_PER_CM;
 			if(cmTraveled == distance){
 				prevIrCvtS = adConvert(STRAIGHT_IR_SELECT);
+			}
+			if(distance != CONTINUE_TO_CENTER){
+				//ifSuicide();
+				// Determine if autocorrect is necessary
+				//ifAutocorrect();
 			}
 		}
 	}//while
@@ -432,13 +522,16 @@ void goForward(int distance)
 	// We are continually moving closer to a wall, and haven't gotten too
   	// close yet. Therefore, keep going (using wall ahead as a marker) until
   	// we are in center of tupled unit.
+PORTB=BREAK;
+	Delay10KTCYx(1);
   	irCvtS = adConvert(STRAIGHT_IR_SELECT);
-  	//PORTB=BREAK;
-  	if(irCvtS >= 250 && irCvtS - prevIrCvtS > 0){
+  	if(irCvtS >= 350){// && irCvtS - prevIrCvtS > 0){
+		msDelay(5000);
   		PORTB=BREAK;
   		straightWall = true;
   		PORTB=GO_STRAIGHT;
   		while(irCvtS < STOP){
+			Delay10TCYx(1);
   			irCvtS = adConvert(STRAIGHT_IR_SELECT);
   		}
   	}//if
@@ -568,7 +661,6 @@ void initial(void)
 	TMR0H = 0;
 	TMR1L = 0;
 	TMR1H = 0;
-	
 }
 
 void blinkTest(void)
