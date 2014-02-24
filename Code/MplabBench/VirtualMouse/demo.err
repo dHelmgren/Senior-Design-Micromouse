@@ -1,0 +1,3 @@
+Error[1027] C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\VirtualMouse\demo.c 1 : unable to locate 'stdio.h'
+Error[1027] C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\VirtualMouse\demo.c 2 : unable to locate 'stdlib.h'
+Error[1027] C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\VirtualMouse\demo.c 3 : unable to locate 'string.h'
