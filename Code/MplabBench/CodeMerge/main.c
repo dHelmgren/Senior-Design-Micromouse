@@ -36,7 +36,8 @@
 #define STRAIGHT_IR_SELECT 	0b00000001
 #define LEFT_IR_SELECT 		0b00000101
 #define RIGHT_IR_SELECT 	0b00001001
-#define CLICKS_FOR_NINETY 	0x9C
+#define CLICKS_FOR_NINETY 	0xA0
+#define CLICKS_FOR_180		0xB0
 
 #define GO_STRAIGHT 		0b11111001
 #define GO_BACKWARD 		0b11110110
@@ -52,12 +53,17 @@
 // TODO: We may need to adjust this value lower, depending on testing
 #define NO_WALL_STRAIGHT 350
 #define NO_WALL_LEFT 250
+#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 250)
 #define NO_WALL_RIGHT 175
+#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 200)
 
 // Poll 3: Move mouse forward 4 cm
 #define LEAVE_UNIT 4
 
-#define CONTINUE_TO_CENTER 14-1
+#define CONTINUE_TO_CENTER 14
+
+// Number of clicks to back up when we have crashed
+#define CRASH_BACK_UP	330
 
 // Stop the mouse because it is about to run into the wall, since the
 // IR sensor readouts are too high and close to the 3 cm max readout
@@ -81,19 +87,19 @@
 
 // Constants to define how much to autocorrect
 #define CLICKS_FOR_AC_1		0x20
-#define CLICKS_FOR_AC_2		0x18
+#define CLICKS_FOR_AC_2		0x20//was 18
 
 // Number of times we have iterated through the while loop without
 // autocorrecting or making a tuple; therefore, we may be stuck!
-#define STUCK 10000
-#define STUCK_POLL 200
+//#define STUCK 10000
+//#define STUCK_POLL 200
 
 /****** FUNCTION DEFINITIONS ******/
 
 unsigned int adConvert(unsigned char channel);
 void autocorrect(unsigned char direction, unsigned char clicks, unsigned char howAutocorrect);
 void blinkTest(void);
-void driveTest(void);
+void clearTimers(void);
 void goForward(int distance); // Step 2 of 4 step polling process
 void ifAutocorrect(void);
 void ifSuicide(void);
@@ -137,7 +143,23 @@ int irCvtRP4 = 0;
 int noWallL = -1;
 int noWallR = -1;
 
-unsigned int stuck = 0;
+/* Timer values which indicate how far mouse has traveled since
+   last tuple */
+unsigned int traveled0 = 0;
+unsigned int traveled1 = 0;
+
+/* Timer values which indicate how long the mouse has been stuck in
+   the for loop (and is therefore probably stuck in front a wall) */
+unsigned char stuck0L = 0;
+unsigned char stuck0H = 0;
+unsigned char stuck1L = 0;
+unsigned char stuck1H = 0;
+
+/* AI agent delete-me-later variable which keeps track of where the
+   mouse is (hardcoded) in the maze and makes turn decisions based
+   on that */
+unsigned char hardcodedAgent = 0;
+
 
 /****** CODE ******/
 
@@ -146,64 +168,78 @@ unsigned int stuck = 0;
 void main(void)
 {
 	// Initialization of constants
-	unsigned char countA = 0;
-	unsigned char countB = 0;
-	unsigned char straightIR;
-	unsigned char tempF;
-	unsigned char tempL;
-	unsigned char tempR;
-	unsigned char leftIR;
-	unsigned char rightIR;
+	unsigned char straightIR = 0;
+	unsigned char tempF = 0;
+	unsigned char tempL = 0;
+	unsigned char tempR = 0;
+	unsigned char leftIR = 0;
+	unsigned char rightIR = 0;
+	unsigned char oldIrCvtL = 0;
+	unsigned char oldIrCvtR = 0;
+	unsigned char oldIrCvtS = 0;
 
 	Nop();
 	initial();
-	
+
 	/**** BEGIN! ****/
-msDelay(10000);
+	msDelay(10000);
 
 	PORTB=GO_STRAIGHT;
 
 	while(true) {
-stuck++;
-Delay10TCYx(1);
+		stuck0H = TMR0H;
+		stuck1H = TMR1H;
+		stuck0L = TMR0L;
+		stuck1L = TMR1L;
+		if(stuck1H >= 20 || stuck0H >= 20){
+			PORTB=BREAK;
+			msDelay(5000);
+			ifSuicide();
+			// TODO: Reset stuck and subtract the amount that we were stuck from traveled.
+		}
+//msDelay(10000);
+
+		Delay10TCYx(1);
 		irCvtL = adConvert(LEFT_IR_SELECT);
-Delay10TCYx(1);
+		Delay10TCYx(1);
 		irCvtR = adConvert(RIGHT_IR_SELECT);
-Delay10TCYx(1);
+		Delay10TCYx(1);
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
+Nop();
+
+//PORTB=BREAK;
+//PORTB=GO_STRAIGHT;
 
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
 		if(irCvtLP4 !=0 && irCvtRP4 !=0) {
 			noWallL = NO_WALL_LEFT;
 			noWallR = NO_WALL_RIGHT;
-		}
 			if(irCvtL <= noWallL||irCvtLP4-irCvtL >= 250){
 				PORTB=BREAK;
 				blinkTest();
 				PORTB=GO_STRAIGHT;
 				leftWall = false;
 				init4StepPoll(!IS_DEAD_END);
-				stuck=0;
 			}
 			else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= 250){
 				PORTB=BREAK;
 				blinkTest();
 				PORTB=GO_STRAIGHT;
 				rightWall = false;
-				init4StepPoll(!IS_DEAD_END);
-				stuck=0;		
+				init4StepPoll(!IS_DEAD_END);		
 			}
 			else if(irCvtS >= STOP){
 				PORTB=BREAK;
 				straightWall = true;
 				init4StepPoll(IS_DEAD_END);
-				stuck=0;
 			}
+		}//if
 
 		// Determine if we are in a suicide run (aka running directly into
 		// a wall)
 		//ifSuicide();
+
 		// Determine if we need to autocorrect, and if we do, then do so.
 		ifAutocorrect();
 
@@ -217,37 +253,46 @@ Delay10TCYx(1);
 		irCvtRP1 = irCvtR;
 
 	}//while(true)
-
 }//main
 
 void ifSuicide(void){
+	int tempInt = 0;
+	int traveledInt0 = 0;	
+	int traveledInt1 = 0;
+
+	// Add the distance Microtaur has traveled thus far to the total 
+	// traveled since the last tuple was made
+	traveled0 += TMR0L;
+	tempInt = (int)TMR0H;
+	traveled0 += (tempInt << 8);
+	tempInt = 0;
+	traveled1 += TMR1L;
+	tempInt = (int)TMR1H;
+	traveled1 += (tempInt << 8);
+
 	// Determine which sensor is causing the suicide run, if we are in
 	// a suicide situation at all
-	if(irCvtS >= STOP+50 || stuck > STUCK){
-		PORTB=GO_BACKWARD;
-		//reset the timers
-		TMR0L = 0;
-		TMR0H = 0;
-		while(TMR0L < STUCK_POLL){
-			Nop();
-		}
-		PORTB=BREAK;
-		// TODO: We will later pass in a distance traveled of zero so that
-		// the agent can modify the last NavNode created and modify the
-		// agent's choice.
-		irCvtS = adConvert(STRAIGHT_IR_SELECT);
-		if(irCvtS >= 600){
-			turn(makeDecision(false, true, false));
-		}
-		stuck=0;
-	}
-	else if(irCvtL >= STOP+50){
+	clearTimers();
+	PORTB=GO_BACKWARD;
+	while(traveledInt0 <= CRASH_BACK_UP || traveledInt1 <= CRASH_BACK_UP){
+		traveledInt0 = 0;
+		traveledInt1 = 0;
+		tempInt = 0;
 
-	}
-	else if(irCvtR >= STOP+50){
+		traveledInt0 += (int)TMR0L;
+		tempInt = (int)TMR0H;
+		traveledInt0 += (tempInt << 8);
+		tempInt = 0;
 
+		traveledInt1 += (int)TMR1L;
+		tempInt = (int)TMR1H;
+		traveledInt1 += (tempInt << 8);
 	}
-	PORTB=GO_STRAIGHT;
+
+	PORTB=BREAK;
+	clearTimers();
+
+	// if(nothing has changed && (irCvtR == r || "" == l || "" == s))
 }
 
 void ifAutocorrect(void){
@@ -255,26 +300,41 @@ void ifAutocorrect(void){
 	// If we're too close on the left side or too far on the right side
 	if(irCvtL >= ERROR_CORRECT_L_1/* || (irCvtR <= PULL_CORRECT_R_1 && irCvtR >= NO_WALL_RIGHT)*/){
 		if(irCvtL >= ERROR_CORRECT_L_2/* || (irCvtR <= PULL_CORRECT_R_2 && irCvtR >= NO_WALL_RIGHT)*/){
-			autocorrect(left, CLICKS_FOR_AC_2, backward);
+			autocorrect(left, CLICKS_FOR_AC_2, forward);
+			//goForward(2);
+			//autocorrect(right, CLICKS_FOR_AC_2>>1, forward);
 		}
-		autocorrect(left, CLICKS_FOR_AC_1, forward);
+		else{
+			autocorrect(left, CLICKS_FOR_AC_1, forward);
+		}
 	}
 	// Else if we're too close on the right side or too far on the left side
 	else if(irCvtR >= ERROR_CORRECT_R_1/* || (irCvtL <= PULL_CORRECT_L_1 && irCvtL >= NO_WALL_LEFT)*/){
 		if(irCvtR >= ERROR_CORRECT_R_2/* || (irCvtL <= PULL_CORRECT_L_2 && irCvtL >= NO_WALL_LEFT)*/){
-			autocorrect(right, CLICKS_FOR_AC_2, backward);
+			autocorrect(right, CLICKS_FOR_AC_2, forward);
+			//goForward(2);
+			//autocorrect(left, CLICKS_FOR_AC_2>>1, forward);
 		}
-		autocorrect(right, CLICKS_FOR_AC_1, forward);
+		else{
+			autocorrect(right, CLICKS_FOR_AC_1, forward);
+		}
 	}
 }
 
 void autocorrect(unsigned char direction, unsigned char clicks, unsigned char howAutocorrect){
 	PORTB=BREAK;
-	stuck=0;
-	TMR0L = 0;
-  	TMR1L = 0;
-  	TMR0H = 0;
-  	TMR1H = 0;
+
+	// Add the distance Microtaur has traveled thus far to the total 
+	// traveled since the last tuple was made
+	traveled0 += TMR0L;
+	traveled0 += (int)(TMR0H << 8);
+	traveled1 += TMR1L;
+	traveled1 += (int)(TMR1H << 8);
+
+	// Reset the timers to count exactly how far Microtaur has traveled
+	// in this method because these variables are "local"
+	clearTimers();
+
 	PORTB=GO_STRAIGHT;
   
   	if(direction == left){ // We need to turn a little right
@@ -303,6 +363,10 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char ho
   		while(TMR0L < clicks && TMR1L < clicks) {}
   	}//else
   
+	// Reset the timers so that we don't add in extra clicks that were
+	// used for autocorrect and not the actual traversal
+	clearTimers();
+
   	PORTB=BREAK;
   	msDelay(50);
   
@@ -311,7 +375,6 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char ho
 
 void init4StepPoll(unsigned char isDeadEnd){
 	// local variables
-	//int irCvtS = 0;
 	char decision;
 	unsigned char i = 0;
 
@@ -322,11 +385,9 @@ void init4StepPoll(unsigned char isDeadEnd){
 
 PORTB=BREAK;
 		msDelay(5000);
-PORTB=BREAK;
 		for(i=0;i<5;++i) {
 			Delay10TCYx(10);
 			irCvtS = adConvert(STRAIGHT_IR_SELECT);
-			irCvtS = irCvtS + 1;
 		}
 		if(irCvtS <= (int)NO_WALL_STRAIGHT){
 			straightWall = false;
@@ -363,83 +424,180 @@ PORTB=GO_STRAIGHT;
 	noWallL = -1;
 	noWallR = -1;
 
+	// Reset wall data
 	leftWall = true;
 	rightWall = true;
 	straightWall = false;
 
-	TMR0L = 0;
-	TMR1L = 0;
+	// Reset crash and burn, and click counting for the AI
+	clearTimers();
+	stuck0H = TMR0H;
+	stuck1H = TMR1H;
+	stuck0L = TMR0L;
+	stuck1L = TMR1L;
+	traveled0 = 0;
+	traveled1 = 0;
 
 PORTB=BREAK;
 	msDelay(5000);
 
 	// Step 4: Continue a little past current unit
-	// TODO: Perhaps looking for another way to leave the tupled unit, since
-	// this sometimes take the robot too far and therefore it can't recognize
-	// the next tuple (at worst case, the robot just thinks it is in a dead end
-	// and turns 180 degrees around). Even LEAVE_UNIT-1 sometimes isn't enough
-	// for mouse to leave tupled unit, so it sees the current tupled unit again,
-	// but thinks it's the next tuple. Need to brainstorm ideas.
-	goForward(LEAVE_UNIT-1);
-
-	//msDelay(5000);
+	goForward(LEAVE_UNIT);
 
 	// Start polling process again
 	PORTB=GO_STRAIGHT;
 }
 
 unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
-	if(!straightWall){
+	if(hardcodedAgent == 0 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 1 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 2 && !straightWall){
+		hardcodedAgent++;
 		return straight;
 	}
-	else if(!leftWall){
+	else if(hardcodedAgent == 3 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 4 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 5 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 6 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 7 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 8 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 9 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 10 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 11 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 12 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 13 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 14 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 15 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 16 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 17 && !straightWall){
+		hardcodedAgent++;
+		return straight;
+	}
+	else if(hardcodedAgent == 18 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 19 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 20 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 21 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 22 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 23 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 24 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 25 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 26 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 27 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 28 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 29 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 30 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 31 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 32 && !straightWall){
+		hardcodedAgent++;
+		return straight;
+	}
+	else if(hardcodedAgent == 33 && !rightWall){
+		return right;
+	}
+
+	// Previous version of the hardcoded ai
+	if(!leftWall){
 		return left;
 	}
 	else if(!rightWall){
 		return right;
 	}
+	else if(!straightWall){
+		return straight;
+	} 
 	else{
 		return turnAround;
 	}
-
-//TODO: Fix this.
-	/*unsigned char choice = irCvtL + irCvtR;
-PORTB=BREAK;
-	choice = choice << 4;
-	choice = choice >> 6;
-
-	if(choice == straight || choice == 3){
-		if(!straightWall)
-			return straight;
-		else if(choice == straight)
-			choice++;
-		else
-			choice--;
-	}
-	if(choice == right){
-		if(!rightWall)
-			return right;	
-	}
-	if(!leftWall){
-		return left;
-	}
-	else{
-		return turnAround;
-	}*/
-}
-
-void driveTest(void)
-{	
-	PORTB = GO_STRAIGHT; //Drive forward!
-	msDelay(DELAY);
-	msDelay(DELAY);
-	msDelay(DELAY);
-	turn(left);
-	msDelay(DELAY);
-	PORTB = GO_STRAIGHT; //Drive forward!
-	msDelay(DELAY);
-	PORTB = BREAK; //break
-	msDelay(DELAY);
 }
 
 unsigned int adConvert(unsigned char channel)
@@ -454,7 +612,7 @@ unsigned int adConvert(unsigned char channel)
 	//instead waiting 10ms 
 			//Note: this timing can be played with to get a
 			//more accurate reading
-	Delay10TCYx(10);
+	Delay10TCYx(0.5);
 	//turn go on!
 	ADCON0 = (ADCON0 | 0x02); //or-ed with 2
 	//wait for the done bit to be cleared
@@ -467,35 +625,51 @@ unsigned int adConvert(unsigned char channel)
 	irValue = ReadADC();
 	//close the converter module
 	CloseADC();
+
 	return irValue;
 }
 
 void goForward(int distance)
 {
-	int prevIrCvtS = 0;
-	TMR0L = 0;
-	TMR0H = 0;
-	TMR1L = 0;
-	TMR1H = 0;
+	unsigned int highestIrCvtS = 0;
+	unsigned int tempIrCvtS = 0;
+
+	// Add the distance Microtaur has traveled thus far to the total 
+	// traveled since the last tuple was made
+	traveled0 += TMR0L;
+	traveled0 += (int)(TMR0H << 8);
+	traveled1 += TMR1L;
+	traveled1 += (int)(TMR1H << 8);
+
+	// Reset the timers to count exactly how far Microtaur has traveled
+	// in this method because these variables are "local"
+	clearTimers();
+
+
 	PORTB=GO_STRAIGHT; //Drive forward
 	cmTraveled = 0;
 	while(cmTraveled < distance)
 	{
 		irCvtL = adConvert(LEFT_IR_SELECT);
 		irCvtR = adConvert(RIGHT_IR_SELECT);
+		// Continue to gather information about our tuple, specifically if
+		// there is a wall to the left or the right
 		if(cmTraveled <= 6){
-			if(irCvtL <= NO_WALL_LEFT && irCvtLP4 - irCvtL >= 250){
+			if(irCvtL <= NO_WALL_LEFT_IN_TUPLE/* && irCvtLP4 - irCvtL >= 250*/ && leftWall){
 				PORTB=BREAK;
 				blinkTest();
 				PORTB=GO_STRAIGHT;
 				leftWall = false;
 			}
-			else if(irCvtR <= NO_WALL_RIGHT && irCvtRP4 - irCvtR >= 250){
+			else if(irCvtR <= NO_WALL_RIGHT_IN_TUPLE/* && irCvtRP4 - irCvtR >= 250*/ && rightWall){
 				PORTB=BREAK;
 				blinkTest();
 				PORTB=GO_STRAIGHT;
 				rightWall = false;
 			}
+
+			// Continue to update previous sensor readings, like in the 
+			// main method
 			irCvtLP4 = irCvtLP3;
 			irCvtRP4 = irCvtRP3;
 			irCvtLP3 = irCvtLP2;
@@ -508,52 +682,79 @@ void goForward(int distance)
 		if(TMR0L >= CLICKS_PER_CM){
 			cmTraveled++;
 			TMR0L = TMR0L - CLICKS_PER_CM;
-			if(cmTraveled == distance){
-				prevIrCvtS = adConvert(STRAIGHT_IR_SELECT);
+			tempIrCvtS = 0;
+			Delay10TCYx(1);
+			tempIrCvtS = adConvert(STRAIGHT_IR_SELECT);
+			if(tempIrCvtS >= highestIrCvtS){
+				if(tempIrCvtS >= STOP){
+PORTB=BREAK;
+					// Prevents Microtaur from crashing into a wall when the
+					// constant CONTINUE_TO_CENTER may be too high
+					break;
+				}
+				else if(highestIrCvtS < 1024){
+					// We are getting a faulty reading from the adConvert method
+					// so work around it by not letting the mouse get to the other
+					// side of the voltage curve
+					highestIrCvtS = 0;
+					highestIrCvtS = tempIrCvtS;
+//PORTB=BREAK;
+//PORTB=GO_STRAIGHT;
+//msDelay(100);
+				}
+
+				//if(highestIrCvtS >= 1024){
+				//	PORTB=BREAK;
+				//	while(true){
+				//		Nop();
+				//	}
+				//}
 			}
+Nop();
 			if(distance != CONTINUE_TO_CENTER){
 				//ifSuicide();
 				// Determine if autocorrect is necessary
 				//ifAutocorrect();
 			}
-		}
+		}//if
 	}//while
 
 	// We are continually moving closer to a wall, and haven't gotten too
   	// close yet. Therefore, keep going (using wall ahead as a marker) until
   	// we are in center of tupled unit.
-PORTB=BREAK;
-	Delay10KTCYx(1);
-  	irCvtS = adConvert(STRAIGHT_IR_SELECT);
-  	if(irCvtS >= 350){// && irCvtS - prevIrCvtS > 0){
-		msDelay(5000);
-  		PORTB=BREAK;
-  		straightWall = true;
-  		PORTB=GO_STRAIGHT;
-  		while(irCvtS < STOP){
-			Delay10TCYx(1);
-  			irCvtS = adConvert(STRAIGHT_IR_SELECT);
-  		}
-  	}//if
-
-	PORTB=BREAK; //stop the right wheel
-	Nop();
-	//msDelay(10);
-	TMR0L = 0;
-	TMR0H = 0;
+	PORTB=BREAK;
+	if(distance == CONTINUE_TO_CENTER){
+		Delay10KTCYx(1);
+	  	tempIrCvtS = adConvert(STRAIGHT_IR_SELECT);
+	  	if(highestIrCvtS >= 450){// && irCvtS - prevIrCvtS > 0){
+blinkTest();
+			msDelay(5000);
+	  		straightWall = true;
+	  		PORTB=GO_STRAIGHT;
+	  		while(highestIrCvtS < STOP+50){
+				// TODO: Add stuck code!!!
+				Delay10TCYx(1);
+				tempIrCvtS = adConvert(STRAIGHT_IR_SELECT);
+				//if(tempIrCvtS < highestIrCvtS){
+				//	break;
+				//}
+	  			highestIrCvtS = tempIrCvtS;
+	  		}
+			PORTB=BREAK;
+			blinkTest();
+	  	}//if
+	}//if
 }
 
 void turn(unsigned char direction)
 {
 	// local variables
+	unsigned char turnClicks = CLICKS_FOR_NINETY;
 	unsigned char numTurns = 1;
 	unsigned char i = 0;
 	int countA = 0;
 	int countB = 0;
-    TMR0L = 0;
-	TMR1L = 0;
-	TMR0H = 0;
-	TMR1H = 0;
+    clearTimers();
 
 	if(direction == left){
 		PORTB=GO_LEFT;
@@ -563,15 +764,11 @@ void turn(unsigned char direction)
 	}
 	else if(direction == turnAround){
 		numTurns = 2;
+		turnClicks = CLICKS_FOR_180;
 		PORTB=GO_RIGHT;
 	}
-	else if(direction == straight){
+	else{ //(direction == straight){
 		PORTB=GO_STRAIGHT;
-		return;
-	}
-	else{ // This case should never be reached
-		PORTB=BREAK;
-		while(1){blinkTest();}
 		return;
 	}
 
@@ -579,21 +776,18 @@ void turn(unsigned char direction)
 
 		Delay10TCYx(2000); //10ms delay
 
-		while(countA < CLICKS_FOR_NINETY && countB < CLICKS_FOR_NINETY) {
+		while(countA < turnClicks && countB < turnClicks) {
 			// check again and repeat.
 			countA = TMR0L;
 			countB = TMR1L;
 		}
 		countA = 0;
 		countB = 0;
-    	TMR0L = 0;
-		TMR1L = 0;
-		TMR0H = 0;
-		TMR1H = 0;
+    	clearTimers();
 
 		Delay10TCYx(2000); //10ms delay
 
-		while(countA < CLICKS_FOR_NINETY && countB < CLICKS_FOR_NINETY) {
+		while(countA < turnClicks && countB < turnClicks) {
 			// check again and repeat.
 			countA = TMR0L;
 			countB = TMR1L;
@@ -601,10 +795,7 @@ void turn(unsigned char direction)
 
 		countA = 0;
 		countB = 0;
-    	TMR0L = 0;
-		TMR1L = 0;
-		TMR0H = 0;
-		TMR1H = 0;
+    	clearTimers();
 	}
 
 	PORTB=BREAK; //break
@@ -657,26 +848,32 @@ void initial(void)
 	PORTA = 0;
 	PORTB = 0;
 	PORTC = 0;
-	TMR0L = 0;
+	clearTimers();
+}
+
+void clearTimers(void){
+	// High must be written to first and low must be read first 
+	// due to buffer updates in the background. Else, code won't work. 
 	TMR0H = 0;
-	TMR1L = 0;
 	TMR1H = 0;
+	TMR0L = 0;
+	TMR1L = 0;
 }
 
 void blinkTest(void)
 {
-		//Blink LEDs on
-		PORTA = 0b000000;
-		msDelay(500);
-		//Blink LEDs off
-		PORTA = 0b101000;
-		msDelay(500);
-		//Blink LEDs on
-		PORTA = 0b000000;
-		msDelay(500);
-		//Blink LEDs off
-		PORTA = 0b101000;
-		msDelay(500);
+	//Blink LEDs on
+	PORTA = 0b000000;
+	msDelay(500);
+	//Blink LEDs off
+	PORTA = 0b101000;
+	msDelay(500);
+	//Blink LEDs on
+	PORTA = 0b000000;
+	msDelay(500);
+	//Blink LEDs off
+	PORTA = 0b101000;
+	msDelay(500);
 }
 
 void msDelay(unsigned int itime)
