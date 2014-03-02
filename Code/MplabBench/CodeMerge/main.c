@@ -36,7 +36,7 @@
 #define STRAIGHT_IR_SELECT 	0b00000001
 #define LEFT_IR_SELECT 		0b00000101
 #define RIGHT_IR_SELECT 	0b00001001
-#define CLICKS_FOR_NINETY 	0xA0
+#define CLICKS_FOR_NINETY 	0xA2
 #define CLICKS_FOR_180		0xB0
 
 #define GO_STRAIGHT 		0b11111001
@@ -45,6 +45,7 @@
 
 #define DELAY 			1000
 #define CLICKS_PER_CM 	55  // Was messing up in hex
+#define CLICKS_PER_HALF_CM 27
 #define ONE_UNIT_CM 	18
 #define STRAIGHT_IR_STOP 128
 #define IS_DEAD_END 	1
@@ -60,8 +61,8 @@
 // Poll 3: Move mouse forward 4 cm
 #define LEAVE_UNIT 4
 
-#define CONTINUE_TO_CENTER_R_FIRST 16  // Unsure about this value....................
-#define CONTINUE_TO_CENTER_L_FIRST 12
+#define CONTINUE_TO_CENTER_R_FIRST 18  // Unsure about this value....................
+#define CONTINUE_TO_CENTER_L_FIRST 13
 
 // Number of clicks to back up when we have crashed
 #define CRASH_BACK_UP	330
@@ -163,7 +164,7 @@ unsigned char waitToAutocorrect = false;
 /* AI agent delete-me-later variable which keeps track of where the
    mouse is (hardcoded) in the maze and makes turn decisions based
    on that */
-unsigned char hardcodedAgent = 3;
+unsigned char hardcodedAgent = 0;
 
 
 /****** CODE ******/
@@ -371,7 +372,9 @@ Nop();
   		}
   		
 		// Wait until the optical encoders reach at least "clicks"
-  		while(TMR0L < clicks && TMR0H < 255 || TMR1L < clicks && TMR1H < 255) {}
+  		while(TMR0L < clicks && TMR0H < 255 && TMR1L < clicks && TMR1H < 255) {
+			Nop();
+		}
   	}//if
   
   	else{ // direction == right; we need to turn left
@@ -384,7 +387,9 @@ Nop();
   		}
   
 		// Wait until the optical encoders reach at least "clicks"
-  		while(TMR0L < clicks && TMR0H < 255 || TMR1L < clicks && TMR1H < 255) {}
+  		while(TMR0L < clicks && TMR0H < 255 && TMR1L < clicks && TMR1H < 255) {
+			Nop();
+		}
   	}//else
   
 	// Reset the timers so that we don't add in extra clicks that were
@@ -406,10 +411,10 @@ void init4StepPoll(unsigned char isDeadEnd){
 
 		// Step 2
 		if(firstNoWall == left){
-			goForward(CONTINUE_TO_CENTER_L_FIRST);
+			goForward(CONTINUE_TO_CENTER_L_FIRST*2);
 		}
 		else{
-			goForward(CONTINUE_TO_CENTER_R_FIRST);
+			goForward(CONTINUE_TO_CENTER_R_FIRST*2);
 		}
 
 PORTB=BREAK;
@@ -471,7 +476,7 @@ PORTB=BREAK;
 	msDelay(5000);
 
 	// Step 4: Continue a little past current unit
-	goForward(LEAVE_UNIT-1);
+	goForward((LEAVE_UNIT-1)*2+1);
 
 	// Do not autocorrect immediately after going forward some time. Wait
 	// until confirmation that the next unit is not a tuple
@@ -560,29 +565,29 @@ unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, u
 		hardcodedAgent++;
 		return left;
 	}
-	else if(hardcodedAgent == 19 && !rightWall){
+	else if(hardcodedAgent == 19 && !straightWall){
+		hardcodedAgent++;
+		return straight;
+	}
+	else if(hardcodedAgent == 20 && !rightWall){
 		hardcodedAgent++;
 		return right;
 	}
-	else if(hardcodedAgent == 20 && !leftWall){
+	else if(hardcodedAgent == 21 && !leftWall){
 		hardcodedAgent++;
 		return left;
-	}
-	else if(hardcodedAgent == 21 && !rightWall){
-		hardcodedAgent++;
-		return right;
 	}
 	else if(hardcodedAgent == 22 && !rightWall){
 		hardcodedAgent++;
 		return right;
 	}
-	else if(hardcodedAgent == 23 && !rightWall){
+	else if(hardcodedAgent == 23 && !straightWall){
 		hardcodedAgent++;
-		return right;
+		return straight;
 	}
-	else if(hardcodedAgent == 24 && !leftWall){
+	else if(hardcodedAgent == 24 && !straightWall){
 		hardcodedAgent++;
-		return left;
+		return straight;
 	}
 	else if(hardcodedAgent == 25 && !rightWall){
 		hardcodedAgent++;
@@ -596,9 +601,9 @@ unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, u
 		hardcodedAgent++;
 		return left;
 	}
-	else if(hardcodedAgent == 28 && !leftWall){
+	else if(hardcodedAgent == 28 && !rightWall){
 		hardcodedAgent++;
-		return left;
+		return right;
 	}
 	else if(hardcodedAgent == 29 && !rightWall){
 		hardcodedAgent++;
@@ -612,11 +617,23 @@ unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, u
 		hardcodedAgent++;
 		return left;
 	}
-	else if(hardcodedAgent == 32 && !straightWall){
+	else if(hardcodedAgent == 32 && !rightWall){
+		hardcodedAgent++;
+		return right;
+	}
+	else if(hardcodedAgent == 33 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 34 && !leftWall){
+		hardcodedAgent++;
+		return left;
+	}
+	else if(hardcodedAgent == 35 && !straightWall){
 		hardcodedAgent++;
 		return straight;
 	}
-	else if(hardcodedAgent == 33 && !rightWall){
+	else if(hardcodedAgent == 36 && !rightWall){
 		return right;
 	}
 
@@ -716,7 +733,7 @@ PORTB=GO_STRAIGHT;
 			irCvtRP1 = irCvtR;
 		}//if
 
-		else if(cmTraveled > 5 && cmTraveled <=7 && (distance == CONTINUE_TO_CENTER_R_FIRST || distance == CONTINUE_TO_CENTER_L_FIRST)){
+		else if(cmTraveled > 5 && cmTraveled <=7 && (distance == CONTINUE_TO_CENTER_R_FIRST*2 || distance == CONTINUE_TO_CENTER_L_FIRST*2)){
 			if((irCvtL <= (NO_WALL_LEFT_IN_TUPLE+50) || irCvtLP4 - irCvtL >= 250) && leftWall==true){
 				PORTB=BREAK;
 				blinkTest();
@@ -743,15 +760,16 @@ PORTB=GO_STRAIGHT;
 		}//if
 
 
-		if(TMR0L >= CLICKS_PER_CM){
+		if(TMR0L >= CLICKS_PER_HALF_CM){
 			cmTraveled++;
-			TMR0L = TMR0L - CLICKS_PER_CM;
+			TMR0L = TMR0L - CLICKS_PER_HALF_CM;
 			tempIrCvtS = 0;
 			Delay10TCYx(1);
 			tempIrCvtS = adConvert(STRAIGHT_IR_SELECT);
 			if(tempIrCvtS >= highestIrCvtS){
 				if(tempIrCvtS >= STOP){
 PORTB=BREAK;
+					highestIrCvtS = tempIrCvtS;
 					// Prevents Microtaur from crashing into a wall when the
 					// constant CONTINUE_TO_CENTER may be too high
 					break;
@@ -760,19 +778,12 @@ PORTB=BREAK;
 					// We are getting a faulty reading from the adConvert method
 					// so work around it by not letting the mouse get to the other
 					// side of the voltage curve
-					highestIrCvtS = 0;
 					highestIrCvtS = tempIrCvtS;
 				}
 			}//if
-Nop();
-			if(distance != CONTINUE_TO_CENTER_L_FIRST && distance != CONTINUE_TO_CENTER_R_FIRST){
-				//ifSuicide();
-				// Determine if autocorrect is necessary
-				//ifAutocorrect();
-			}
 		}//if
 	}//while
-/*
+
 	// We are continually moving closer to a wall, and haven't gotten too
   	// close yet. Therefore, keep going (using wall ahead as a marker) until
   	// we are in center of tupled unit.
@@ -805,7 +816,7 @@ Nop();
 			
 		}
 	}//if
-*/
+
 PORTB=BREAK;
 }
 
