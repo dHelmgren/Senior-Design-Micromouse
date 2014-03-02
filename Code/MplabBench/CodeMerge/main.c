@@ -53,21 +53,22 @@
 // TODO: We may need to adjust this value lower, depending on testing
 #define NO_WALL_STRAIGHT 350
 #define NO_WALL_LEFT 250
-#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 250)
-#define NO_WALL_RIGHT 175
-#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 200)
+#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 150)
+#define NO_WALL_RIGHT 215
+#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 150)
 
 // Poll 3: Move mouse forward 4 cm
 #define LEAVE_UNIT 4
 
-#define CONTINUE_TO_CENTER 14
+#define CONTINUE_TO_CENTER_R_FIRST 16  // Unsure about this value....................
+#define CONTINUE_TO_CENTER_L_FIRST 12
 
 // Number of clicks to back up when we have crashed
 #define CRASH_BACK_UP	330
 
 // Stop the mouse because it is about to run into the wall, since the
 // IR sensor readouts are too high and close to the 3 cm max readout
-#define STOP 900
+#define STOP 940
 
 // Constants to trigger push autocorrect
 #define LR_DIFF				150
@@ -89,10 +90,6 @@
 #define CLICKS_FOR_AC_1		0x20
 #define CLICKS_FOR_AC_2		0x20//was 18
 
-// Number of times we have iterated through the while loop without
-// autocorrecting or making a tuple; therefore, we may be stuck!
-//#define STUCK 10000
-//#define STUCK_POLL 200
 
 /****** FUNCTION DEFINITIONS ******/
 
@@ -128,6 +125,9 @@ unsigned char straightWall = true;
 /* Can make tuple. This boolean is false if a tuiple is not allowed to be made at this time. */
 unsigned char canCallTuple = true;
 
+/* Which absence of a wall caused a tuple to be recognized first? */
+unsigned char firstNoWall = -1;
+
 int irCvtL = 0;
 int irCvtR = 0;
 int irCvtS = 0;
@@ -155,10 +155,15 @@ unsigned char stuck0H = 0;
 unsigned char stuck1L = 0;
 unsigned char stuck1H = 0;
 
+/* Since we have run into trouble when the mouse has tried to autocorrect
+   immediately after a tuple, wait just a few moments to make sure there isn't
+   another tuple ahead of us */
+unsigned char waitToAutocorrect = false;
+
 /* AI agent delete-me-later variable which keeps track of where the
    mouse is (hardcoded) in the maze and makes turn decisions based
    on that */
-unsigned char hardcodedAgent = 0;
+unsigned char hardcodedAgent = 3;
 
 
 /****** CODE ******/
@@ -187,39 +192,51 @@ void main(void)
 	PORTB=GO_STRAIGHT;
 
 	while(true) {
-		stuck0H = TMR0H;
-		stuck1H = TMR1H;
+
+	PORTB = GO_STRAIGHT;
+
 		stuck0L = TMR0L;
 		stuck1L = TMR1L;
+		stuck0H = TMR0H;
+		stuck1H = TMR1H;
+		if(stuck1H >= 2 || stuck0H >= 2){
+			waitToAutocorrect = false;
+		}
 		if(stuck1H >= 20 || stuck0H >= 20){
 			PORTB=BREAK;
 			msDelay(5000);
 			ifSuicide();
 			// TODO: Reset stuck and subtract the amount that we were stuck from traveled.
 		}
-//msDelay(10000);
 
+PORTB=BREAK;
 		Delay10TCYx(1);
 		irCvtL = adConvert(LEFT_IR_SELECT);
+PORTB=GO_STRAIGHT;
 		Delay10TCYx(1);
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 		Delay10TCYx(1);
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
-Nop();
 
-//PORTB=BREAK;
-//PORTB=GO_STRAIGHT;
+		PORTB = BREAK;
 
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
 		if(irCvtLP4 !=0 && irCvtRP4 !=0) {
 			noWallL = NO_WALL_LEFT;
 			noWallR = NO_WALL_RIGHT;
+		} // This if statement should end here because it gives the mouse
+		// permission to make a tuple immediately, which is extremely necessary
+		// where in situations where there is a tuple after a tuple
 			if(irCvtL <= noWallL||irCvtLP4-irCvtL >= 250){
 				PORTB=BREAK;
 				blinkTest();
 				PORTB=GO_STRAIGHT;
 				leftWall = false;
+				// Set this value so that we can how far to continue to center,
+				// since the ir sensors are placed at different angles, the right
+				// sensor will always recognize a tuple first
+				firstNoWall = left;
 				init4StepPoll(!IS_DEAD_END);
 			}
 			else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= 250){
@@ -227,21 +244,28 @@ Nop();
 				blinkTest();
 				PORTB=GO_STRAIGHT;
 				rightWall = false;
+				firstNoWall = right;
 				init4StepPoll(!IS_DEAD_END);		
 			}
 			else if(irCvtS >= STOP){
 				PORTB=BREAK;
+				msDelay(5000);
 				straightWall = true;
 				init4StepPoll(IS_DEAD_END);
 			}
-		}//if
+		//}//if
 
 		// Determine if we are in a suicide run (aka running directly into
 		// a wall)
 		//ifSuicide();
 
 		// Determine if we need to autocorrect, and if we do, then do so.
-		ifAutocorrect();
+		// Do not autocorrect if we haven't traveled far enough away from the
+		// current tuple, because statistically, immediate post-turn autocorrect
+		// has put the mouse at an incorrect angle (turns are very accurate)
+		//if(waitToAutocorrect == false){
+			ifAutocorrect();
+		//}
 
 		irCvtLP4 = irCvtLP3;
 		irCvtRP4 = irCvtRP3;
@@ -334,7 +358,7 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char ho
 	// Reset the timers to count exactly how far Microtaur has traveled
 	// in this method because these variables are "local"
 	clearTimers();
-
+Nop();
 	PORTB=GO_STRAIGHT;
   
   	if(direction == left){ // We need to turn a little right
@@ -347,7 +371,7 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char ho
   		}
   		
 		// Wait until the optical encoders reach at least "clicks"
-  		while(TMR0L < clicks && TMR1L < clicks) {}
+  		while(TMR0L < clicks && TMR0H < 255 || TMR1L < clicks && TMR1H < 255) {}
   	}//if
   
   	else{ // direction == right; we need to turn left
@@ -360,7 +384,7 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char ho
   		}
   
 		// Wait until the optical encoders reach at least "clicks"
-  		while(TMR0L < clicks && TMR1L < clicks) {}
+  		while(TMR0L < clicks && TMR0H < 255 || TMR1L < clicks && TMR1H < 255) {}
   	}//else
   
 	// Reset the timers so that we don't add in extra clicks that were
@@ -381,7 +405,12 @@ void init4StepPoll(unsigned char isDeadEnd){
 	if(!isDeadEnd){
 
 		// Step 2
-		goForward(CONTINUE_TO_CENTER);
+		if(firstNoWall == left){
+			goForward(CONTINUE_TO_CENTER_L_FIRST);
+		}
+		else{
+			goForward(CONTINUE_TO_CENTER_R_FIRST);
+		}
 
 PORTB=BREAK;
 		msDelay(5000);
@@ -442,7 +471,13 @@ PORTB=BREAK;
 	msDelay(5000);
 
 	// Step 4: Continue a little past current unit
-	goForward(LEAVE_UNIT);
+	goForward(LEAVE_UNIT-1);
+
+	// Do not autocorrect immediately after going forward some time. Wait
+	// until confirmation that the next unit is not a tuple
+	//waitToAutocorrect = true;
+PORTB=BREAK;
+msDelay(10000);
 
 	// Start polling process again
 	PORTB=GO_STRAIGHT;
@@ -629,8 +664,7 @@ unsigned int adConvert(unsigned char channel)
 	return irValue;
 }
 
-void goForward(int distance)
-{
+void goForward(int distance){
 	unsigned int highestIrCvtS = 0;
 	unsigned int tempIrCvtS = 0;
 
@@ -650,18 +684,20 @@ void goForward(int distance)
 	cmTraveled = 0;
 	while(cmTraveled < distance)
 	{
+PORTB=BREAK;
 		irCvtL = adConvert(LEFT_IR_SELECT);
+PORTB=GO_STRAIGHT;
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 		// Continue to gather information about our tuple, specifically if
 		// there is a wall to the left or the right
-		if(cmTraveled <= 6){
-			if(irCvtL <= NO_WALL_LEFT_IN_TUPLE/* && irCvtLP4 - irCvtL >= 250*/ && leftWall){
+		if(cmTraveled <= 5 && (distance == CONTINUE_TO_CENTER_R_FIRST || distance == CONTINUE_TO_CENTER_L_FIRST)){
+			if((irCvtL <= NO_WALL_LEFT_IN_TUPLE || irCvtLP4 - irCvtL >= 250) && leftWall==true){
 				PORTB=BREAK;
 				blinkTest();
 				PORTB=GO_STRAIGHT;
 				leftWall = false;
 			}
-			else if(irCvtR <= NO_WALL_RIGHT_IN_TUPLE/* && irCvtRP4 - irCvtR >= 250*/ && rightWall){
+			else if((irCvtR <= NO_WALL_RIGHT_IN_TUPLE || irCvtRP4 - irCvtR >= 250) && rightWall==true){
 				PORTB=BREAK;
 				blinkTest();
 				PORTB=GO_STRAIGHT;
@@ -679,6 +715,34 @@ void goForward(int distance)
 			irCvtLP1 = irCvtL;
 			irCvtRP1 = irCvtR;
 		}//if
+
+		else if(cmTraveled > 5 && cmTraveled <=7 && (distance == CONTINUE_TO_CENTER_R_FIRST || distance == CONTINUE_TO_CENTER_L_FIRST)){
+			if((irCvtL <= (NO_WALL_LEFT_IN_TUPLE+50) || irCvtLP4 - irCvtL >= 250) && leftWall==true){
+				PORTB=BREAK;
+				blinkTest();
+				PORTB=GO_STRAIGHT;
+				leftWall = false;
+			}
+			else if((irCvtR <= (NO_WALL_RIGHT_IN_TUPLE+50) || irCvtRP4 - irCvtR >= 250) && rightWall==true){
+				PORTB=BREAK;
+				blinkTest();
+				PORTB=GO_STRAIGHT;
+				rightWall = false;
+			}
+
+			// Continue to update previous sensor readings, like in the 
+			// main method
+			irCvtLP4 = irCvtLP3;
+			irCvtRP4 = irCvtRP3;
+			irCvtLP3 = irCvtLP2;
+			irCvtRP3 = irCvtRP2;
+			irCvtLP2 = irCvtLP1;
+			irCvtRP2 = irCvtRP1;
+			irCvtLP1 = irCvtL;
+			irCvtRP1 = irCvtR;
+		}//if
+
+
 		if(TMR0L >= CLICKS_PER_CM){
 			cmTraveled++;
 			TMR0L = TMR0L - CLICKS_PER_CM;
@@ -692,46 +756,38 @@ PORTB=BREAK;
 					// constant CONTINUE_TO_CENTER may be too high
 					break;
 				}
-				else if(highestIrCvtS < 1024){
+				else if(tempIrCvtS < 1024){
 					// We are getting a faulty reading from the adConvert method
 					// so work around it by not letting the mouse get to the other
 					// side of the voltage curve
 					highestIrCvtS = 0;
 					highestIrCvtS = tempIrCvtS;
-//PORTB=BREAK;
-//PORTB=GO_STRAIGHT;
-//msDelay(100);
 				}
-
-				//if(highestIrCvtS >= 1024){
-				//	PORTB=BREAK;
-				//	while(true){
-				//		Nop();
-				//	}
-				//}
-			}
+			}//if
 Nop();
-			if(distance != CONTINUE_TO_CENTER){
+			if(distance != CONTINUE_TO_CENTER_L_FIRST && distance != CONTINUE_TO_CENTER_R_FIRST){
 				//ifSuicide();
 				// Determine if autocorrect is necessary
 				//ifAutocorrect();
 			}
 		}//if
 	}//while
-
+/*
 	// We are continually moving closer to a wall, and haven't gotten too
   	// close yet. Therefore, keep going (using wall ahead as a marker) until
   	// we are in center of tupled unit.
 	PORTB=BREAK;
-	if(distance == CONTINUE_TO_CENTER){
-		Delay10KTCYx(1);
+	if(distance == CONTINUE_TO_CENTER_L_FIRST || distance == CONTINUE_TO_CENTER_R_FIRST){
+		Delay10TCYx(1);
 	  	tempIrCvtS = adConvert(STRAIGHT_IR_SELECT);
-	  	if(highestIrCvtS >= 450){// && irCvtS - prevIrCvtS > 0){
-blinkTest();
-			msDelay(5000);
+	  	if(highestIrCvtS >= 550 && highestIrCvtS < STOP){// && irCvtS - prevIrCvtS > 0){
+			// Our stopping point is a wall ahead of us in this same tuple, so
+			// track to that wall
+//			blinkTest();
+			//msDelay(5000);
 	  		straightWall = true;
 	  		PORTB=GO_STRAIGHT;
-	  		while(highestIrCvtS < STOP+50){
+	  		while(highestIrCvtS < STOP){
 				// TODO: Add stuck code!!!
 				Delay10TCYx(1);
 				tempIrCvtS = adConvert(STRAIGHT_IR_SELECT);
@@ -741,9 +797,16 @@ blinkTest();
 	  			highestIrCvtS = tempIrCvtS;
 	  		}
 			PORTB=BREAK;
-			blinkTest();
+//			blinkTest();
 	  	}//if
+		else{
+			// Wall is at least one tuple away, so our tracking point is now
+			// the presence of an wall or wall stub on one of the 
+			
+		}
 	}//if
+*/
+PORTB=BREAK;
 }
 
 void turn(unsigned char direction)
@@ -855,8 +918,8 @@ void clearTimers(void){
 	// High must be written to first and low must be read first 
 	// due to buffer updates in the background. Else, code won't work. 
 	TMR0H = 0;
-	TMR1H = 0;
 	TMR0L = 0;
+	TMR1H = 0;
 	TMR1L = 0;
 }
 
