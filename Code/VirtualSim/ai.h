@@ -1,11 +1,7 @@
 /*
- * Devin, please implement this AI code as if you were programming on the PIC.
- * This means, please use structs and C syntax, as opposed to C++ syntax (even
- * though the environment is coded in C++). We would like this code to be 
- * portable onto the robot when it comes time to load this code onto the PIC.
- * This virtual environment is just a way for us to "simulate the hardware." At
- * this point, this code simulates all the data processing that Devon and I are
- * doing for you, but it will get more complex in the future.
+ *AI.h
+ *
+ * A pretty neat-o file where Devin plays with confusing things
  */
 #define AI_WEST 0
 #define AI_NORTH 1
@@ -37,19 +33,18 @@ private:
 	// To keep track of what way is "forward" for the mouse
 	int compass;
 	int dummyVar;
-	NavNode mazeArray[16][16];
+	NavNode* mazeArray[16][16];
 	int memIndex;
+	bool sawDeadEndLastTime;
 
 public:
 
 	NavNode root;
-	NavNode currentNode;
+	NavNode* currentNode;
+	NavNode* prevNode;
 	NavNode emptyNodes[100];
-	// Default constructor; currently only initializes compass
+	// Default constructor initializes all of the above variables. See ai.cpp for more info
 	AI();
-	// Devin, please implement this "make decision" code for your AI. We are
-	// handing you 5 parameters to work with: distance traveled since last tuple
-	// and whether there are walls left, straight, right, and back.
 	// TRUE = YES WALL
 	// FALSE = NO WALL
 	// Return: AI_LEFT, AI_STRAIGHT, AI_RIGHT, or AI_BACK
@@ -57,5 +52,5 @@ public:
 	int makeDecision(int deltaDist, bool left, bool straight, bool right, bool back);
 	int rateNode(int x, int y);
 	NavNode* buildNode(int turnDir, int currX, int currY);
-	
+	int modFour(int val);
 };

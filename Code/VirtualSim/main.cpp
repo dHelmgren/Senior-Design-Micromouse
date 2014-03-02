@@ -123,7 +123,7 @@ void drawScene() {
 				}
 				else if(decision == AI_BACK){
 					mouseRobot.back();
-					mouseRobot.updateIsGoingForward(false);
+					mouseRobot.updateIsGoingForward(true);
 				}
 			}//if mouse is in a grid with a tuple
 		}//if
