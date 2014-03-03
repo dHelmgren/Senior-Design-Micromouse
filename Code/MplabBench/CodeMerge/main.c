@@ -88,6 +88,22 @@
 #define STUCK 10000
 #define STUCK_POLL 200
 
+// Constants for AI Program
+#define AI_WEST 0
+#define AI_NORTH 1
+#define AI_EAST 2
+#define AI_SOUTH 3
+
+#define AI_LEFT 0
+#define AI_STRAIGHT 1
+#define AI_RIGHT 2
+#define AI_BACK 3
+
+#define NODE_STRAIGHT 0
+#define NODE_RIGHT 1
+#define NODE_BACK 2
+#define NODE_LEFT 3
+
 /****** FUNCTION DEFINITIONS ******/
 
 unsigned int adConvert(unsigned char channel);
@@ -103,6 +119,26 @@ unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, u
 void msDelay(unsigned int time);
 void stopTest(void);
 void turn(unsigned char direction); // Step 3
+
+//AI Defs
+int rateNode(int x, int y);
+NavNode* buildNode(int turnDir, int currX, int currY);
+int modFour(int val);
+
+/****** STRUCT ******/
+
+//NavNode Struct
+
+typedef struct NavNode
+{
+	int rating;
+	int xOffset;
+	int yOffset;
+	NavNode *west;
+	NavNode *north;
+	NavNode *east;
+	NavNode *south;
+}NavNode;
 
 /****** GLOBAL VARIABLES ******/
 
@@ -138,6 +174,27 @@ int noWallL = -1;
 int noWallR = -1;
 
 unsigned int stuck = 0;
+
+//AI variables
+
+int compass = AI_NORTH;
+
+//Temporary stopgap to access the memory array
+int memIndex = 0;
+
+bool sawDeadEndLastTime = false;
+
+NavNode* mazeArray[16][16];
+NavNode root = {14, -8,-8, 0, 0, 0, 0};
+NavNode* currentNode = &root;
+NavNode* prevNode = &root;
+NavNode emptyNodes[100] = null;//TODO: Is this legal?? 
+NavNode blank = {0,0,0,0,0,0,0};
+	for(i = 0; i < 100; i++)
+	{
+		emptyNodes[i] = blank;
+	}
+mazeArray[0][0] = &root;
 
 /****** CODE ******/
 
@@ -386,46 +443,6 @@ PORTB=BREAK;
 
 	// Start polling process again
 	PORTB=GO_STRAIGHT;
-}
-
-unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
-	if(!straightWall){
-		return straight;
-	}
-	else if(!leftWall){
-		return left;
-	}
-	else if(!rightWall){
-		return right;
-	}
-	else{
-		return turnAround;
-	}
-
-//TODO: Fix this.
-	/*unsigned char choice = irCvtL + irCvtR;
-PORTB=BREAK;
-	choice = choice << 4;
-	choice = choice >> 6;
-
-	if(choice == straight || choice == 3){
-		if(!straightWall)
-			return straight;
-		else if(choice == straight)
-			choice++;
-		else
-			choice--;
-	}
-	if(choice == right){
-		if(!rightWall)
-			return right;	
-	}
-	if(!leftWall){
-		return left;
-	}
-	else{
-		return turnAround;
-	}*/
 }
 
 void driveTest(void)
@@ -690,4 +707,297 @@ void msDelay(unsigned int itime)
 			Nop();
 		}
 	}
+}
+
+unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
+	//node Rating variables
+	int leftRating = 99;
+	int rightRating = 99;
+	int forwardRating = 99;
+	
+	//location variables
+	int currX = 0;
+	int currY = 0;
+	int nodePos = 0;
+	int backPos = (compass + NODE_BACK) %4;
+	int choice = 0;
+	
+	int currX = (int) (*currentNode).xOffset;
+		int currY = (int) (*currentNode).yOffset;
+	
+	
+
+		//travel adjustment for initial state
+		if(currX != -8 && currY != -8)
+		{
+			deltaDist--;
+		}
+	
+		//determine the proper deltaDistance so that we can get an accurate location in the maze
+		if(compass == AI_NORTH)
+		{
+			//deals with crossing the origin, as each square is measured by the outermost corner
+			if((*currentNode).yOffset < 0 && deltaDist > -(*currentNode).yOffset)
+			{
+				//if we cross the origin, we modify the distance to skip zero
+				deltaDist++;
+			}
+			currY += deltaDist;
+		}
+		else if(compass == AI_SOUTH)
+		{
+			if((*currentNode).yOffset > 0 && deltaDist > (*currentNode).yOffset)
+			{
+				deltaDist++;
+			}
+			currY -= deltaDist;
+		}
+		else if(compass == AI_EAST)
+		{
+			if((*currentNode).xOffset < 0 && deltaDist > -(*currentNode).xOffset)
+			{
+				deltaDist++;
+			}
+			currX += deltaDist;
+		}
+		else if(compass == AI_WEST)
+		{
+			if((*currentNode).xOffset > 0 && deltaDist > (*currentNode).xOffset)
+			{
+				deltaDist++;
+			}
+			currX -= deltaDist;
+		}
+
+		//Fix the node's position to match its real world location and store it in the maze array.
+		currentNode -> xOffset = currX;
+		currentNode -> yOffset = currY;
+
+		//Make adjustments to the index based on location
+		//Add 8 so that the position can be indexed into the double array
+		if(currX > 0 && currY > 0){
+			//currX -1 currY -1
+			mazeArray[indX+7][indY+7] = currentNode;
+		}
+		else if (currX > 0)
+		{
+			//currX -1
+			mazeArray[currX+7][currY+8] = currentNode;
+		}
+		else if (currY > 0)
+		{
+			//currY -1
+			mazeArray[currX+8][currY+7] = currentNode;
+		}
+		else{
+			//No adjustments
+			mazeArray[indX+8][indY+8] = currentNode;
+		}
+	
+		if (!left){
+			int nodePos = (compass + NODE_LEFT)%4;
+			if (nodePos == AI_WEST){
+				(*currentNode).west = buildNode(AI_WEST, currX, currY);
+				leftRating = currentNode->west->rating;
+			}
+			else if (nodePos == AI_NORTH){
+				(*currentNode).north = buildNode(AI_NORTH, currX, currY);
+				leftRating = currentNode->north->rating;
+			}
+			else if (nodePos == AI_SOUTH){
+				(*currentNode).south = buildNode(AI_SOUTH, currX, currY);
+				leftRating = currentNode->south->rating;
+			}
+			else if (nodePos == AI_EAST){
+				currentNode->east = buildNode(AI_EAST, currX, currY);
+				leftRating = currentNode->east->rating;
+			}
+		}
+		if (!straight){
+			int nodePos = (compass + NODE_STRAIGHT)%4;
+			if (nodePos == AI_WEST){
+				currentNode->west = buildNode(AI_WEST, currX, currY);
+				forwardRating = currentNode->west->rating;
+			}
+			else if (nodePos == AI_NORTH){
+				currentNode->north = buildNode(AI_NORTH, currX, currY);
+				forwardRating = currentNode->north->rating;
+			}
+			else if (nodePos == AI_SOUTH){
+				currentNode->south = buildNode(AI_SOUTH, currX, currY);
+				forwardRating = currentNode->south->rating;
+			}
+			else if (nodePos == AI_EAST){
+				currentNode->east = buildNode(AI_EAST, currX, currY);
+				forwardRating = currentNode->east->rating;
+			}
+		}
+		if (!right){
+			int nodePos = (compass + NODE_RIGHT)%4;
+			if (nodePos == AI_WEST){
+				currentNode->west = buildNode(AI_WEST, currX, currY);
+				rightRating = currentNode->west->rating;
+			}
+			else if (nodePos == AI_NORTH){
+				currentNode->north = buildNode(AI_NORTH, currX, currY);
+				rightRating = currentNode->north->rating;
+			}
+			else if (nodePos == AI_SOUTH){
+				currentNode->south = buildNode(AI_SOUTH, currX, currY);
+				rightRating = currentNode->south->rating;
+			}
+			else if (nodePos == AI_EAST){
+				currentNode->east = buildNode(AI_EAST, currX, currY);
+				rightRating = currentNode->east->rating;
+			}
+		}
+
+		int backPos = (compass + NODE_BACK) %4;
+
+		if (backPos == AI_WEST){
+			currentNode->west = prevNode;
+		}
+		else if (backPos == AI_NORTH){
+			currentNode->north = prevNode;
+		}
+		else if (backPos == AI_SOUTH){
+			currentNode->south = prevNode;
+		}
+		else if (backPos == AI_EAST){
+			currentNode->east = prevNode;			
+		}
+
+	if(forwardRating == 99 && leftRating == 99 && rightRating == 99)
+	{
+		currentNode->rating = 99;
+		//sawDeadEndLastTime = true;
+		choice = NODE_BACK;
+	}
+	else if((leftRating < rightRating) && (leftRating < forwardRating))
+	{
+		choice = NODE_LEFT;
+	}
+	else if((rightRating < leftRating) && (rightRating < forwardRating))
+	{
+		choice = NODE_RIGHT;
+	}
+	else if((forwardRating < leftRating) && (forwardRating < rightRating))
+	{
+		choice = NODE_STRAIGHT;
+	}
+	else if((forwardRating == rightRating) || (forwardRating == leftRating))
+	{
+		choice = NODE_STRAIGHT;
+	}
+	else
+	{
+		choice = NODE_RIGHT;
+	}
+
+	
+	if((compass + choice)%4 == AI_WEST)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).west;
+		compass = AI_WEST;
+	}
+	else if((compass + choice)%4 == AI_NORTH)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).north;
+		compass = AI_NORTH;
+	}
+	else if((compass + choice)%4 == AI_EAST)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).east;
+		compass = AI_EAST;
+	}
+	else if((compass + choice)%4 == AI_SOUTH)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).south;// dont do if backtracking
+		compass = AI_SOUTH;
+	}
+
+	return (choice +1)%4;
+
+
+}
+
+int rateNode(int x, int y){
+	//Make sure we are using positive values
+	if (x<0){
+		x=x*-1;
+	}
+	if (y<0){
+		y=y*-1;
+	}
+
+	return x + y -1;
+}
+
+buildNode(int turnDir, int currX, int currY)
+{
+	int newX = currX;
+	int newY = currY;
+	NavNode newNode = blank;
+	NavNode* index = &emptyNodes[memIndex];
+
+	if(turnDir == AI_WEST)
+		{
+			newX--;
+			if(newX == 0)
+			{
+				newX = -1;
+			}
+		}
+	else if(turnDir == AI_NORTH)
+		{
+			newY++;
+			if(newY == 0)
+			{
+				newY = 1;
+			}
+		}
+	else if(turnDir == AI_EAST)
+		{
+			newX++;
+			if(newX == 0)
+			{
+				newX = 1;
+			}
+		}
+	else if(turnDir == AI_SOUTH)
+		{
+			newY--;
+			if(newY == 0)
+			{
+				newY = -1;
+			}
+		}
+
+	newNode = {rateNode(newX, newY), newX, newY, 0, 0, 0, 0};
+	
+	if(turnDir == AI_WEST)
+		{
+			newNode.east = currentNode;
+		}
+	else if(turnDir == AI_NORTH)
+		{
+			newNode.south = currentNode;
+		}
+	else if(turnDir == AI_EAST)
+		{
+			newNode.west = currentNode;
+		}
+	else if(turnDir == AI_SOUTH)
+		{
+			newNode.north = currentNode;
+		}
+
+	emptyNodes[memIndex] = newNode;
+	index = &emptyNodes[memIndex];
+	memIndex++;
+	return index;
 }
