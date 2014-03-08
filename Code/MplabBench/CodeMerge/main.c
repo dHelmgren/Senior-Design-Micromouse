@@ -2,6 +2,7 @@
 #include <timers.h>
 #include <delays.h>
 #include <adc.h>
+#include <math.h>
 
 /****** MACROS ******/
 
@@ -216,14 +217,14 @@ int memIndex = 0;
 
 unsigned char sawDeadEndLastTime = false;
 
-NavNode root = {14, -8,-8, 0, 0, 0, 0}; 
-NavNode blank = {0,0,0,0,0,0,0};
-NavNode* currentNode;
-NavNode* prevNode;
-NavNode* mazeArray[16][16];
-NavNode emptyNodes[100];
+struct NavNode root = {14, -8,-8, 0, 0, 0, 0}; 
+struct NavNode blank = {0,0,0,0,0,0,0};
+struct NavNode* currentNode;
+struct NavNode* prevNode;
 unsigned int i = 0;
 unsigned int j = 0;
+struct NavNode* rom mazeArray[16][16];
+struct NavNode rom emptyNodes[100];
 
 /****** CODE ******/
 
@@ -648,13 +649,13 @@ void turn(unsigned char direction)
 	int countB = 0;
     clearTimers();
 
-	if(direction == left){
+	if(direction == NODE_LEFT){
 		PORTB=GO_LEFT;
 	}
-	else if(direction == right){
+	else if(direction == NODE_RIGHT){
 		PORTB=GO_RIGHT;
 	}
-	else if(direction == turnAround){
+	else if(direction == NODE_BACK){
 		numTurns = 2;
 		turnClicks = CLICKS_FOR_180;
 		PORTB=GO_RIGHT;
@@ -891,7 +892,7 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 			mazeArray[currX+8][currY+8] = currentNode;
 		}
 	
-		if (!left){
+		if (!leftWall){
 			int nodePos = (compass + NODE_LEFT)%4;
 			if (nodePos == AI_WEST){
 				(*currentNode).west = buildNode(AI_WEST, currX, currY);
@@ -910,7 +911,7 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 				leftRating = currentNode->east->rating;
 			}
 		}
-		if (!straight){
+		if (!straightWall){
 			int nodePos = (compass + NODE_STRAIGHT)%4;
 			if (nodePos == AI_WEST){
 				currentNode->west = buildNode(AI_WEST, currX, currY);
@@ -929,7 +930,7 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 				forwardRating = currentNode->east->rating;
 			}
 		}
-		if (!right){
+		if (!rightWall){
 			int nodePos = (compass + NODE_RIGHT)%4;
 			if (nodePos == AI_WEST){
 				currentNode->west = buildNode(AI_WEST, currX, currY);
@@ -1018,7 +1019,6 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 	}
 
 	return (choice +1)%4;
-
 
 }
 
