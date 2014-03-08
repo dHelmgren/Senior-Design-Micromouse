@@ -43,7 +43,6 @@
 #define GO_BACKWARD 		0b11110110
 #define BREAK 				0b11111111
 
-#define DELAY 			1000
 #define CLICKS_PER_CM 	55  // Was messing up in hex
 #define CLICKS_PER_HALF_CM 27
 #define ONE_UNIT_CM 	18
@@ -72,7 +71,7 @@
 #define STOP 940
 
 // Constants to trigger push autocorrect
-#define LR_DIFF				150
+#define LR_DIFF				130 // Changed from 150
 #define ERROR_CORRECT_L_1	780-DIFF
 #define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
 #define ERROR_CORRECT_L_2	780-DIFF
@@ -90,6 +89,9 @@
 // Constants to define how much to autocorrect
 #define CLICKS_FOR_AC_1		0x20
 #define CLICKS_FOR_AC_2		0x20//was 18
+
+// How long to wait in between states of the code
+#define DELAY 800
 
 
 // Constants for AI Program
@@ -129,6 +131,7 @@ typedef struct NavNode{
 unsigned int adConvert(unsigned char channel);
 void autocorrect(unsigned char direction, unsigned char clicks, unsigned char howAutocorrect);
 void blinkTest(void);
+unsigned char calcUnitsTraveled(void);
 void clearTimers(void);
 void goForward(int distance); // Step 2 of 4 step polling process
 void ifAutocorrect(void);
@@ -137,6 +140,7 @@ void initial(void);
 void init4StepPoll(unsigned char isDeadEnd);
 unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
 void msDelay(unsigned int time);
+void readTimersToTraveled(void);
 void stopTest(void);
 void turn(unsigned char direction); // Step 3
 
@@ -203,7 +207,6 @@ unsigned char waitToAutocorrect = false;
    on that */
 unsigned char hardcodedAgent = 0;
 
-
 //AI variables
 
 int compass = AI_NORTH;
@@ -251,30 +254,12 @@ void main(void)
 	/**** BEGIN! ****/
 	msDelay(10000);
 
-	PORTB=GO_STRAIGHT;
-
 	while(true) {
 
-	PORTB = GO_STRAIGHT;
+		PORTB = GO_STRAIGHT;
 
-		stuck0L = TMR0L;
-		stuck1L = TMR1L;
-		stuck0H = TMR0H;
-		stuck1H = TMR1H;
-		if(stuck1H >= 2 || stuck0H >= 2){
-			waitToAutocorrect = false;
-		}
-		if(stuck1H >= 20 || stuck0H >= 20){
-			PORTB=BREAK;
-			msDelay(5000);
-			ifSuicide();
-			// TODO: Reset stuck and subtract the amount that we were stuck from traveled.
-		}
-
-PORTB=BREAK;
 		Delay10TCYx(1);
 		irCvtL = adConvert(LEFT_IR_SELECT);
-PORTB=GO_STRAIGHT;
 		Delay10TCYx(1);
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 		Delay10TCYx(1);
@@ -290,44 +275,40 @@ PORTB=GO_STRAIGHT;
 		} // This if statement should end here because it gives the mouse
 		// permission to make a tuple immediately, which is extremely necessary
 		// where in situations where there is a tuple after a tuple
-			if(irCvtL <= noWallL||irCvtLP4-irCvtL >= 250){
-				PORTB=BREAK;
-				blinkTest();
-				PORTB=GO_STRAIGHT;
-				leftWall = false;
-				// Set this value so that we can how far to continue to center,
-				// since the ir sensors are placed at different angles, the right
-				// sensor will always recognize a tuple first
-				firstNoWall = left;
-				init4StepPoll(!IS_DEAD_END);
-			}
-			else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= 250){
-				PORTB=BREAK;
-				blinkTest();
-				PORTB=GO_STRAIGHT;
-				rightWall = false;
-				firstNoWall = right;
-				init4StepPoll(!IS_DEAD_END);		
-			}
-			else if(irCvtS >= STOP){
-				PORTB=BREAK;
-				msDelay(5000);
-				straightWall = true;
-				init4StepPoll(IS_DEAD_END);
-			}
-		//}//if
 
-		// Determine if we are in a suicide run (aka running directly into
-		// a wall)
-		//ifSuicide();
+		if(irCvtL <= noWallL||irCvtLP4-irCvtL >= 250){
+			PORTB=BREAK;
+			msDelay(DELAY);
+			//blinkTest();
+			PORTB=GO_STRAIGHT;
+			leftWall = false;
+			// Set this value so that we can how far to continue to center,
+			// since the ir sensors are placed at different angles, the right
+			// sensor will always recognize a tuple first
+			firstNoWall = left;
+			init4StepPoll(!IS_DEAD_END);
+		}
+		else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= 250){
+			PORTB=BREAK;
+			msDelay(DELAY);
+			//blinkTest();
+			PORTB=GO_STRAIGHT;
+			rightWall = false;
+			firstNoWall = right;
+			init4StepPoll(!IS_DEAD_END);		
+		}
+		else if(irCvtS >= STOP){
+			PORTB=BREAK;
+			msDelay(DELAY);
+			straightWall = true;
+			init4StepPoll(IS_DEAD_END);
+		}
 
 		// Determine if we need to autocorrect, and if we do, then do so.
 		// Do not autocorrect if we haven't traveled far enough away from the
 		// current tuple, because statistically, immediate post-turn autocorrect
 		// has put the mouse at an incorrect angle (turns are very accurate)
-		//if(waitToAutocorrect == false){
-			ifAutocorrect();
-		//}
+		ifAutocorrect();
 
 		irCvtLP4 = irCvtLP3;
 		irCvtRP4 = irCvtRP3;
@@ -339,47 +320,8 @@ PORTB=GO_STRAIGHT;
 		irCvtRP1 = irCvtR;
 
 	}//while(true)
+
 }//main
-
-void ifSuicide(void){
-	int tempInt = 0;
-	int traveledInt0 = 0;	
-	int traveledInt1 = 0;
-
-	// Add the distance Microtaur has traveled thus far to the total 
-	// traveled since the last tuple was made
-	traveled0 += TMR0L;
-	tempInt = (int)TMR0H;
-	traveled0 += (tempInt << 8);
-	tempInt = 0;
-	traveled1 += TMR1L;
-	tempInt = (int)TMR1H;
-	traveled1 += (tempInt << 8);
-
-	// Determine which sensor is causing the suicide run, if we are in
-	// a suicide situation at all
-	clearTimers();
-	PORTB=GO_BACKWARD;
-	while(traveledInt0 <= CRASH_BACK_UP || traveledInt1 <= CRASH_BACK_UP){
-		traveledInt0 = 0;
-		traveledInt1 = 0;
-		tempInt = 0;
-
-		traveledInt0 += (int)TMR0L;
-		tempInt = (int)TMR0H;
-		traveledInt0 += (tempInt << 8);
-		tempInt = 0;
-
-		traveledInt1 += (int)TMR1L;
-		tempInt = (int)TMR1H;
-		traveledInt1 += (tempInt << 8);
-	}
-
-	PORTB=BREAK;
-	clearTimers();
-
-	// if(nothing has changed && (irCvtR == r || "" == l || "" == s))
-}
 
 void ifAutocorrect(void){
 	// Determine if autocorrect is needed
@@ -387,8 +329,6 @@ void ifAutocorrect(void){
 	if(irCvtL >= ERROR_CORRECT_L_1/* || (irCvtR <= PULL_CORRECT_R_1 && irCvtR >= NO_WALL_RIGHT)*/){
 		if(irCvtL >= ERROR_CORRECT_L_2/* || (irCvtR <= PULL_CORRECT_R_2 && irCvtR >= NO_WALL_RIGHT)*/){
 			autocorrect(left, CLICKS_FOR_AC_2, forward);
-			//goForward(2);
-			//autocorrect(right, CLICKS_FOR_AC_2>>1, forward);
 		}
 		else{
 			autocorrect(left, CLICKS_FOR_AC_1, forward);
@@ -398,8 +338,6 @@ void ifAutocorrect(void){
 	else if(irCvtR >= ERROR_CORRECT_R_1/* || (irCvtL <= PULL_CORRECT_L_1 && irCvtL >= NO_WALL_LEFT)*/){
 		if(irCvtR >= ERROR_CORRECT_R_2/* || (irCvtL <= PULL_CORRECT_L_2 && irCvtL >= NO_WALL_LEFT)*/){
 			autocorrect(right, CLICKS_FOR_AC_2, forward);
-			//goForward(2);
-			//autocorrect(left, CLICKS_FOR_AC_2>>1, forward);
 		}
 		else{
 			autocorrect(right, CLICKS_FOR_AC_1, forward);
@@ -412,15 +350,12 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char ho
 
 	// Add the distance Microtaur has traveled thus far to the total 
 	// traveled since the last tuple was made
-	traveled0 += TMR0L;
-	traveled0 += (int)(TMR0H << 8);
-	traveled1 += TMR1L;
-	traveled1 += (int)(TMR1H << 8);
+	readTimersToTraveled();
 
 	// Reset the timers to count exactly how far Microtaur has traveled
 	// in this method because these variables are "local"
 	clearTimers();
-Nop();
+
 	PORTB=GO_STRAIGHT;
   
   	if(direction == left){ // We need to turn a little right
@@ -453,12 +388,9 @@ Nop();
 		}
   	}//else
   
-	// Reset the timers so that we don't add in extra clicks that were
-	// used for autocorrect and not the actual traversal
-	clearTimers();
-
-  	PORTB=BREAK;
-  	msDelay(50);
+	// Do not reset timers here because we want timers to continue to count
+	// even during autocorrect (else we will lose data because we are still
+	// moving forward
   
   	PORTB=GO_STRAIGHT;
 }//autocorrect
@@ -478,8 +410,7 @@ void init4StepPoll(unsigned char isDeadEnd){
 			goForward(CONTINUE_TO_CENTER_R_FIRST*2);
 		}
 
-PORTB=BREAK;
-		msDelay(5000);
+		msDelay(DELAY);
 		for(i=0;i<5;++i) {
 			Delay10TCYx(10);
 			irCvtS = adConvert(STRAIGHT_IR_SELECT);
@@ -491,7 +422,8 @@ PORTB=BREAK;
 			straightWall = true;
 		}
 	}
-PORTB=GO_STRAIGHT;
+
+PORTB=BREAK;
 	// This if statement is just to be safe; it can be removed once
 	// this information is verified
 	if(isDeadEnd){
@@ -501,7 +433,12 @@ PORTB=GO_STRAIGHT;
 	}
 
 	// Step 3
-	decision = makeDecision(leftWall, straightWall, rightWall);
+	// Add the distance Microtaur has traveled thus far to the total 
+	// traveled since the last tuple was made; AI will need this info
+	// Add the distance Microtaur has traveled thus far to the total 
+	// traveled since the last tuple was made
+	readTimersToTraveled();
+	decision = makeDecision(calcUnitsTraveled(), leftWall, straightWall, rightWall);
 	turn(decision);
 	// Determine if the possibly erroneous turn caused us to be directly
 	// in front of a wall
@@ -526,24 +463,17 @@ PORTB=GO_STRAIGHT;
 
 	// Reset crash and burn, and click counting for the AI
 	clearTimers();
-	stuck0H = TMR0H;
-	stuck1H = TMR1H;
-	stuck0L = TMR0L;
-	stuck1L = TMR1L;
 	traveled0 = 0;
 	traveled1 = 0;
 
-PORTB=BREAK;
-	msDelay(5000);
+	PORTB=BREAK;
+	msDelay(DELAY);
 
 	// Step 4: Continue a little past current unit
 	goForward((LEAVE_UNIT-1)*2+1);
 
-	// Do not autocorrect immediately after going forward some time. Wait
-	// until confirmation that the next unit is not a tuple
-	//waitToAutocorrect = true;
-PORTB=BREAK;
-msDelay(10000);
+	PORTB=BREAK;
+	msDelay(DELAY);
 
 	// Start polling process again
 	PORTB=GO_STRAIGHT;
@@ -584,15 +514,11 @@ void goForward(int distance){
 
 	// Add the distance Microtaur has traveled thus far to the total 
 	// traveled since the last tuple was made
-	traveled0 += TMR0L;
-	traveled0 += (int)(TMR0H << 8);
-	traveled1 += TMR1L;
-	traveled1 += (int)(TMR1H << 8);
+	readTimersToTraveled();
 
 	// Reset the timers to count exactly how far Microtaur has traveled
 	// in this method because these variables are "local"
 	clearTimers();
-
 
 	PORTB=GO_STRAIGHT; //Drive forward
 	cmTraveled = 0;
@@ -607,13 +533,15 @@ PORTB=GO_STRAIGHT;
 		if(cmTraveled <= 5 && (distance == CONTINUE_TO_CENTER_R_FIRST || distance == CONTINUE_TO_CENTER_L_FIRST)){
 			if((irCvtL <= NO_WALL_LEFT_IN_TUPLE || irCvtLP4 - irCvtL >= 250) && leftWall==true){
 				PORTB=BREAK;
-				blinkTest();
+				msDelay(DELAY);
+				//blinkTest();
 				PORTB=GO_STRAIGHT;
 				leftWall = false;
 			}
 			else if((irCvtR <= NO_WALL_RIGHT_IN_TUPLE || irCvtRP4 - irCvtR >= 250) && rightWall==true){
 				PORTB=BREAK;
-				blinkTest();
+				msDelay(DELAY);
+				//blinkTest();
 				PORTB=GO_STRAIGHT;
 				rightWall = false;
 			}
@@ -633,13 +561,15 @@ PORTB=GO_STRAIGHT;
 		else if(cmTraveled > 5 && cmTraveled <=7 && (distance == CONTINUE_TO_CENTER_R_FIRST*2 || distance == CONTINUE_TO_CENTER_L_FIRST*2)){
 			if((irCvtL <= (NO_WALL_LEFT_IN_TUPLE+50) || irCvtLP4 - irCvtL >= 250) && leftWall==true){
 				PORTB=BREAK;
-				blinkTest();
+				msDelay(DELAY);
+				//blinkTest();
 				PORTB=GO_STRAIGHT;
 				leftWall = false;
 			}
 			else if((irCvtR <= (NO_WALL_RIGHT_IN_TUPLE+50) || irCvtRP4 - irCvtR >= 250) && rightWall==true){
 				PORTB=BREAK;
-				blinkTest();
+				msDelay(DELAY);
+				//blinkTest();
 				PORTB=GO_STRAIGHT;
 				rightWall = false;
 			}
@@ -691,30 +621,18 @@ PORTB=BREAK;
 	  	if(highestIrCvtS >= 550 && highestIrCvtS < STOP){// && irCvtS - prevIrCvtS > 0){
 			// Our stopping point is a wall ahead of us in this same tuple, so
 			// track to that wall
-//			blinkTest();
-			//msDelay(5000);
 	  		straightWall = true;
 	  		PORTB=GO_STRAIGHT;
 	  		while(highestIrCvtS < STOP){
-				// TODO: Add stuck code!!!
 				Delay10TCYx(1);
 				tempIrCvtS = adConvert(STRAIGHT_IR_SELECT);
-				//if(tempIrCvtS < highestIrCvtS){
-				//	break;
-				//}
 	  			highestIrCvtS = tempIrCvtS;
 	  		}
 			PORTB=BREAK;
-//			blinkTest();
 	  	}//if
-		else{
-			// Wall is at least one tuple away, so our tracking point is now
-			// the presence of an wall or wall stub on one of the 
-			
-		}
 	}//if
 
-PORTB=BREAK;
+	PORTB=BREAK;
 }
 
 void turn(unsigned char direction)
@@ -825,10 +743,35 @@ void initial(void)
 void clearTimers(void){
 	// High must be written to first and low must be read first 
 	// due to buffer updates in the background. Else, code won't work. 
-	TMR0H = 0;
+	TMR0H = 0; //Right wheel
 	TMR0L = 0;
-	TMR1H = 0;
+	TMR1H = 0; //Left wheel
 	TMR1L = 0;
+}
+
+void readTimersToTraveled(void){
+	int tempInt = 0;
+	Delay100TCYx(1);
+	// Add the distance Microtaur has traveled thus far to the total 
+	// traveled since the last tuple was made
+	traveled0 += TMR0L;
+	tempInt = (int)TMR0H;
+	traveled0 += (tempInt << 8);
+	tempInt = 0;
+	traveled1 += TMR1L;
+	tempInt = (int)TMR1H;
+	traveled1 += (tempInt << 8);
+}
+
+unsigned char calcUnitsTraveled(void){
+	unsigned char unitsTraveled = 0;
+	while(traveled1 >= 990){
+		unitsTraveled++;
+		traveled1 = traveled1 - 990;
+	}
+	if(unitsTraveled >= 445)
+		unitsTraveled++;
+	return unitsTraveled;
 }
 
 void blinkTest(void)
