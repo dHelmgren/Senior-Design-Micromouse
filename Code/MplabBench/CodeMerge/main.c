@@ -121,11 +121,12 @@ typedef struct NavNode{
 	char rating;
 	char xOffset;
 	char yOffset;
-	struct NavNode* west;
-	struct NavNode* north;
-	struct NavNode* east;
-	struct NavNode* south;
+	struct NavNode * west;
+	struct NavNode * north;
+	struct NavNode * east;
+	struct NavNode * south;
 }NavNode;
+
 
 /****** FUNCTION DEFINITIONS ******/
 
@@ -215,19 +216,28 @@ int compass = AI_NORTH;
 //Temporary stopgap to access the memory array
 int memIndex = 0;
 
-unsigned char sawDeadEndLastTime = false;
 
-struct NavNode root = {14, -8,-8, 0, 0, 0, 0}; 
-struct NavNode blank = {0,0,0,0,0,0,0};
-struct NavNode* currentNode;
-struct NavNode* prevNode;
+unsigned char sawDeadEndLastTime = false;
+NavNode root = {14, -8,-8, 0, 0, 0, 0}; 
+NavNode blank = {0,0,0,0,0,0,0};
+NavNode* currentNode;
+NavNode* prevNode;
 unsigned int i = 0;
 unsigned int j = 0;
-struct NavNode* rom mazeArray[16][16];
-struct NavNode rom emptyNodes[100];
+
+//#pragma idata mazeArray
+#pragma udata BIGDATA1
+NavNode * ram mazeArray[16][16];
+#pragma udata
+//#pragma idata emptyNodes
+#pragma udata BIGDATA2
+NavNode ram emptyNodes[93];
+#pragma udata
+
+unsigned char ram tempHere = 0;
+
 
 /****** CODE ******/
-
 #pragma code 
 
 void main(void)
@@ -242,6 +252,8 @@ void main(void)
 	unsigned char oldIrCvtL = 0;
 	unsigned char oldIrCvtR = 0;
 	unsigned char oldIrCvtS = 0;
+
+
 	currentNode = &root;
 	prevNode = &root;
 	for(i = 0; i < 100; i++){emptyNodes[i] = blank;}
