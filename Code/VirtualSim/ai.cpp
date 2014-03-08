@@ -37,6 +37,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	int leftRating = 99;
 	int rightRating = 99;
 	int forwardRating = 99;
+	int backPos = (compass + NODE_BACK) %4;
 
 	if(!sawDeadEndLastTime){
 		int currX = (int) currentNode->xOffset;
@@ -86,11 +87,6 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 			currX -= deltaDist;
 		}
 
-		//Fix the node's position to match its real world location and store it in the maze array.
-		currentNode -> xOffset = currX;
-		currentNode -> yOffset = currY;
-		printf("X: %d Y: %d ", currX, currY);
-
 		//Make adjustments to the index based on location (CAN BE DONE WITHOUT INDX AND INDY as in Main.c on microtaur code)
 		int indX = currX;
 		int indY = currY;
@@ -103,8 +99,42 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 			indY--;
 		}
 
+		indY += 8;
+		indX += 8;
+
+		if(mazeArray[indX][indY] != NULL){
+			NavNode* tempNode = currentNode;
+			currentNode = mazeArray[indX][indY];
+
+
+			if(compass == AI_WEST){
+				mazeArray[indX][indY]->east = prevNode;
+				prevNode->west = mazeArray[indX][indY];
+			}
+			else if(compass == AI_EAST){
+				mazeArray[indX][indY]->west = prevNode;
+				prevNode->east = mazeArray[indX][indY];
+			}
+			else if(compass == AI_NORTH){
+				mazeArray[indX][indY]->south = prevNode;
+				prevNode->north = mazeArray[indX][indY];
+			}
+			else if(compass == AI_SOUTH){
+				mazeArray[indX][indY]->north = prevNode;
+				prevNode->south = mazeArray[indX][indY];
+			}
+
+
+
+		}
+
+		//Fix the node's position to match its real world location and store it in the maze array.
+		currentNode -> xOffset = currX;
+		currentNode -> yOffset = currY;
+		printf("X: %d Y: %d ", currX, currY);
+
 		//Add 8 so that the position can be indexed into the double array
-		mazeArray[indX+8][indY+8] = currentNode;
+		mazeArray[indX][indY] = currentNode;
 	
 
 		//The next chuck of code is somewhat convoluted, but also repetitive, here's the rundown:
@@ -182,8 +212,6 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 				rightRating = currentNode->east->rating;
 			}
 		}
-
-		int backPos = (compass + NODE_BACK) %4;
 
 		if (backPos == AI_WEST)
 		{
