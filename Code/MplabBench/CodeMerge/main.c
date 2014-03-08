@@ -71,10 +71,10 @@
 #define STOP 940
 
 // Constants to trigger push autocorrect
-#define LR_DIFF				130 // Changed from 150
-#define ERROR_CORRECT_L_1	780-DIFF
+#define LR_DIFF				160 // Changed from 150
+#define ERROR_CORRECT_L_1	810-DIFF
 #define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
-#define ERROR_CORRECT_L_2	780-DIFF
+#define ERROR_CORRECT_L_2	810-DIFF
 #define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
 #define ERROR_CORRECT_CAP_L	340-DIFF
 #define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
@@ -91,7 +91,7 @@
 #define CLICKS_FOR_AC_2		0x20//was 18
 
 // How long to wait in between states of the code
-#define DELAY 800
+#define DELAY 5000
 
 
 /****** FUNCTION DEFINITIONS ******/
@@ -631,6 +631,9 @@ PORTB=BREAK;
 		irCvtL = adConvert(LEFT_IR_SELECT);
 PORTB=GO_STRAIGHT;
 		irCvtR = adConvert(RIGHT_IR_SELECT);
+
+//ifAutocorrect();
+
 		// Continue to gather information about our tuple, specifically if
 		// there is a wall to the left or the right
 		if(cmTraveled <= 5 && (distance == CONTINUE_TO_CENTER_R_FIRST || distance == CONTINUE_TO_CENTER_L_FIRST)){
