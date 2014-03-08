@@ -2,6 +2,7 @@
 #include <timers.h>
 #include <delays.h>
 #include <adc.h>
+#include <math.h>
 
 /****** MACROS ******/
 
@@ -71,10 +72,10 @@
 #define STOP 940
 
 // Constants to trigger push autocorrect
-#define LR_DIFF				130 // Changed from 150
-#define ERROR_CORRECT_L_1	780-DIFF
+#define LR_DIFF				160 // Changed from 150
+#define ERROR_CORRECT_L_1	810-DIFF
 #define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
-#define ERROR_CORRECT_L_2	780-DIFF
+#define ERROR_CORRECT_L_2	810-DIFF
 #define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
 #define ERROR_CORRECT_CAP_L	340-DIFF
 #define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
@@ -91,7 +92,7 @@
 #define CLICKS_FOR_AC_2		0x20//was 18
 
 // How long to wait in between states of the code
-#define DELAY 800
+#define DELAY 5000
 
 
 // Constants for AI Program
@@ -216,14 +217,14 @@ int memIndex = 0;
 
 unsigned char sawDeadEndLastTime = false;
 
-NavNode root = {14, -8,-8, 0, 0, 0, 0}; 
-NavNode blank = {0,0,0,0,0,0,0};
-NavNode* currentNode;
-NavNode* prevNode;
-NavNode* mazeArray[16][16];
-NavNode emptyNodes[100];
+struct NavNode root = {14, -8,-8, 0, 0, 0, 0}; 
+struct NavNode blank = {0,0,0,0,0,0,0};
+struct NavNode* currentNode;
+struct NavNode* prevNode;
 unsigned int i = 0;
 unsigned int j = 0;
+struct NavNode* rom mazeArray[16][16];
+struct NavNode rom emptyNodes[100];
 
 /****** CODE ******/
 
@@ -528,6 +529,9 @@ PORTB=BREAK;
 		irCvtL = adConvert(LEFT_IR_SELECT);
 PORTB=GO_STRAIGHT;
 		irCvtR = adConvert(RIGHT_IR_SELECT);
+
+//ifAutocorrect();
+
 		// Continue to gather information about our tuple, specifically if
 		// there is a wall to the left or the right
 		if(cmTraveled <= 5 && (distance == CONTINUE_TO_CENTER_R_FIRST || distance == CONTINUE_TO_CENTER_L_FIRST)){
@@ -645,13 +649,13 @@ void turn(unsigned char direction)
 	int countB = 0;
     clearTimers();
 
-	if(direction == left){
+	if(direction == NODE_LEFT){
 		PORTB=GO_LEFT;
 	}
-	else if(direction == right){
+	else if(direction == NODE_RIGHT){
 		PORTB=GO_RIGHT;
 	}
-	else if(direction == turnAround){
+	else if(direction == NODE_BACK){
 		numTurns = 2;
 		turnClicks = CLICKS_FOR_180;
 		PORTB=GO_RIGHT;
@@ -888,7 +892,7 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 			mazeArray[currX+8][currY+8] = currentNode;
 		}
 	
-		if (!left){
+		if (!leftWall){
 			int nodePos = (compass + NODE_LEFT)%4;
 			if (nodePos == AI_WEST){
 				(*currentNode).west = buildNode(AI_WEST, currX, currY);
@@ -907,7 +911,7 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 				leftRating = currentNode->east->rating;
 			}
 		}
-		if (!straight){
+		if (!straightWall){
 			int nodePos = (compass + NODE_STRAIGHT)%4;
 			if (nodePos == AI_WEST){
 				currentNode->west = buildNode(AI_WEST, currX, currY);
@@ -926,7 +930,7 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 				forwardRating = currentNode->east->rating;
 			}
 		}
-		if (!right){
+		if (!rightWall){
 			int nodePos = (compass + NODE_RIGHT)%4;
 			if (nodePos == AI_WEST){
 				currentNode->west = buildNode(AI_WEST, currX, currY);
@@ -1015,7 +1019,6 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 	}
 
 	return (choice +1)%4;
-
 
 }
 

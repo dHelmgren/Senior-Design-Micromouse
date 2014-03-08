@@ -1,2 +1,2 @@
-Error[1203] C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\MplabBench\CodeMerge\main.c 301 : too few arguments in function call
-Error[1203] C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\MplabBench\CodeMerge\main.c 409 : too few arguments in function call
+Warning[2066] C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\MplabBench\CodeMerge\main.c 1042 : type qualifier mismatch in assignment
+Warning[2066] C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\MplabBench\CodeMerge\main.c 1099 : type qualifier mismatch in assignment
