@@ -94,6 +94,38 @@
 #define DELAY 5000
 
 
+// Constants for AI Program
+#define AI_WEST 0
+#define AI_NORTH 1
+#define AI_EAST 2
+#define AI_SOUTH 3
+
+#define AI_LEFT 0
+#define AI_STRAIGHT 1
+#define AI_RIGHT 2
+#define AI_BACK 3
+
+#define NODE_STRAIGHT 0
+#define NODE_RIGHT 1
+#define NODE_BACK 2
+#define NODE_LEFT 3
+
+#define NULL 0
+
+/****** STRUCT ******/
+
+//NavNode Struct
+
+typedef struct NavNode{
+	char rating;
+	char xOffset;
+	char yOffset;
+	struct NavNode* west;
+	struct NavNode* north;
+	struct NavNode* east;
+	struct NavNode* south;
+}NavNode;
+
 /****** FUNCTION DEFINITIONS ******/
 
 unsigned int adConvert(unsigned char channel);
@@ -106,11 +138,16 @@ void ifAutocorrect(void);
 void ifSuicide(void);
 void initial(void);
 void init4StepPoll(unsigned char isDeadEnd);
-unsigned char makeDecision(unsigned char unitsTraveled, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
+unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
 void msDelay(unsigned int time);
 void readTimersToTraveled(void);
 void stopTest(void);
 void turn(unsigned char direction); // Step 3
+
+//AI Defs
+int rateNode(int x, int y);
+struct NavNode* buildNode(int turnDir, int currX, int currY);
+int modFour(int val);
 
 /****** GLOBAL VARIABLES ******/
 
@@ -170,6 +207,24 @@ unsigned char waitToAutocorrect = false;
    on that */
 unsigned char hardcodedAgent = 0;
 
+//AI variables
+
+int compass = AI_NORTH;
+
+//Temporary stopgap to access the memory array
+int memIndex = 0;
+
+unsigned char sawDeadEndLastTime = false;
+
+NavNode root = {14, -8,-8, 0, 0, 0, 0}; 
+NavNode blank = {0,0,0,0,0,0,0};
+NavNode* currentNode;
+NavNode* prevNode;
+NavNode* mazeArray[16][16];
+NavNode emptyNodes[100];
+unsigned int i = 0;
+unsigned int j = 0;
+
 /****** CODE ******/
 
 #pragma code 
@@ -186,6 +241,12 @@ void main(void)
 	unsigned char oldIrCvtL = 0;
 	unsigned char oldIrCvtR = 0;
 	unsigned char oldIrCvtS = 0;
+	currentNode = &root;
+	prevNode = &root;
+	for(i = 0; i < 100; i++){emptyNodes[i] = blank;}
+	for(i = 0; i < 16; i++){for(j=0; j < 16; j++){mazeArray[i][j] = NULL;}}
+	mazeArray[0][0] = &root;
+
 
 	Nop();
 	initial();
@@ -416,170 +477,6 @@ PORTB=BREAK;
 
 	// Start polling process again
 	PORTB=GO_STRAIGHT;
-}
-
-unsigned char makeDecision(unsigned char unitsTraveled, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
-	if(hardcodedAgent == 0 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 1 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 2 && !straightWall){
-		hardcodedAgent++;
-		return straight;
-	}
-	else if(hardcodedAgent == 3 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 4 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 5 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 6 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 7 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 8 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 9 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 10 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 11 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 12 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 13 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 14 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 15 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 16 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 17 && !straightWall){
-		hardcodedAgent++;
-		return straight;
-	}
-	else if(hardcodedAgent == 18 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 19 && !straightWall){
-		hardcodedAgent++;
-		return straight;
-	}
-	else if(hardcodedAgent == 20 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 21 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 22 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 23 && !straightWall){
-		hardcodedAgent++;
-		return straight;
-	}
-	else if(hardcodedAgent == 24 && !straightWall){
-		hardcodedAgent++;
-		return straight;
-	}
-	else if(hardcodedAgent == 25 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 26 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 27 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 28 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 29 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 30 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 31 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 32 && !rightWall){
-		hardcodedAgent++;
-		return right;
-	}
-	else if(hardcodedAgent == 33 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 34 && !leftWall){
-		hardcodedAgent++;
-		return left;
-	}
-	else if(hardcodedAgent == 35 && !straightWall){
-		hardcodedAgent++;
-		return straight;
-	}
-	else if(hardcodedAgent == 36 && !rightWall){
-		return right;
-	}
-
-	// Previous version of the hardcoded ai
-	if(!leftWall){
-		return left;
-	}
-	else if(!rightWall){
-		return right;
-	}
-	else if(!straightWall){
-		return straight;
-	} 
-	else{
-		return turnAround;
-	}
 }
 
 unsigned int adConvert(unsigned char channel)
@@ -907,4 +804,299 @@ void msDelay(unsigned int itime)
 			Nop();
 		}
 	}
+}
+
+unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
+	//node Rating variables
+	int leftRating = 99;
+	int rightRating = 99;
+	int forwardRating = 99;
+	
+	//location variables
+	int currX = 0;
+	int currY = 0;
+	int nodePos = 0;
+	int backPos = (compass + NODE_BACK) %4;
+	int choice = 0;
+	
+	currX = (int) (*currentNode).xOffset;
+	currY = (int) (*currentNode).yOffset;
+	
+	
+
+		//travel adjustment for initial state
+		if(currX != -8 && currY != -8)
+		{
+			deltaDist--;
+		}
+	
+		//determine the proper deltaDistance so that we can get an accurate location in the maze
+		if(compass == AI_NORTH)
+		{
+			//deals with crossing the origin, as each square is measured by the outermost corner
+			if((*currentNode).yOffset < 0 && deltaDist > -(*currentNode).yOffset)
+			{
+				//if we cross the origin, we modify the distance to skip zero
+				deltaDist++;
+			}
+			currY += deltaDist;
+		}
+		else if(compass == AI_SOUTH)
+		{
+			if((*currentNode).yOffset > 0 && deltaDist > (*currentNode).yOffset)
+			{
+				deltaDist++;
+			}
+			currY -= deltaDist;
+		}
+		else if(compass == AI_EAST)
+		{
+			if((*currentNode).xOffset < 0 && deltaDist > -(*currentNode).xOffset)
+			{
+				deltaDist++;
+			}
+			currX += deltaDist;
+		}
+		else if(compass == AI_WEST)
+		{
+			if((*currentNode).xOffset > 0 && deltaDist > (*currentNode).xOffset)
+			{
+				deltaDist++;
+			}
+			currX -= deltaDist;
+		}
+
+		//Fix the node's position to match its real world location and store it in the maze array.
+		currentNode -> xOffset = currX;
+		currentNode -> yOffset = currY;
+
+		//Make adjustments to the index based on location
+		//Add 8 so that the position can be indexed into the double array
+		if(currX > 0 && currY > 0){
+			//currX -1 currY -1
+			mazeArray[currX+7][currY+7] = currentNode;
+		}
+		else if (currX > 0)
+		{
+			//currX -1
+			mazeArray[currX+7][currY+8] = currentNode;
+		}
+		else if (currY > 0)
+		{
+			//currY -1
+			mazeArray[currX+8][currY+7] = currentNode;
+		}
+		else{
+			//No adjustments
+			mazeArray[currX+8][currY+8] = currentNode;
+		}
+	
+		if (!left){
+			int nodePos = (compass + NODE_LEFT)%4;
+			if (nodePos == AI_WEST){
+				(*currentNode).west = buildNode(AI_WEST, currX, currY);
+				leftRating = currentNode->west->rating;
+			}
+			else if (nodePos == AI_NORTH){
+				(*currentNode).north = buildNode(AI_NORTH, currX, currY);
+				leftRating = currentNode->north->rating;
+			}
+			else if (nodePos == AI_SOUTH){
+				(*currentNode).south = buildNode(AI_SOUTH, currX, currY);
+				leftRating = currentNode->south->rating;
+			}
+			else if (nodePos == AI_EAST){
+				currentNode->east = buildNode(AI_EAST, currX, currY);
+				leftRating = currentNode->east->rating;
+			}
+		}
+		if (!straight){
+			int nodePos = (compass + NODE_STRAIGHT)%4;
+			if (nodePos == AI_WEST){
+				currentNode->west = buildNode(AI_WEST, currX, currY);
+				forwardRating = currentNode->west->rating;
+			}
+			else if (nodePos == AI_NORTH){
+				currentNode->north = buildNode(AI_NORTH, currX, currY);
+				forwardRating = currentNode->north->rating;
+			}
+			else if (nodePos == AI_SOUTH){
+				currentNode->south = buildNode(AI_SOUTH, currX, currY);
+				forwardRating = currentNode->south->rating;
+			}
+			else if (nodePos == AI_EAST){
+				currentNode->east = buildNode(AI_EAST, currX, currY);
+				forwardRating = currentNode->east->rating;
+			}
+		}
+		if (!right){
+			int nodePos = (compass + NODE_RIGHT)%4;
+			if (nodePos == AI_WEST){
+				currentNode->west = buildNode(AI_WEST, currX, currY);
+				rightRating = currentNode->west->rating;
+			}
+			else if (nodePos == AI_NORTH){
+				currentNode->north = buildNode(AI_NORTH, currX, currY);
+				rightRating = currentNode->north->rating;
+			}
+			else if (nodePos == AI_SOUTH){
+				currentNode->south = buildNode(AI_SOUTH, currX, currY);
+				rightRating = currentNode->south->rating;
+			}
+			else if (nodePos == AI_EAST){
+				currentNode->east = buildNode(AI_EAST, currX, currY);
+				rightRating = currentNode->east->rating;
+			}
+		}
+
+		//originally was here		int backPos = (compass + NODE_BACK) %4;
+
+		if (backPos == AI_WEST){
+			currentNode->west = prevNode;
+		}
+		else if (backPos == AI_NORTH){
+			currentNode->north = prevNode;
+		}
+		else if (backPos == AI_SOUTH){
+			currentNode->south = prevNode;
+		}
+		else if (backPos == AI_EAST){
+			currentNode->east = prevNode;			
+		}
+
+	if(forwardRating == 99 && leftRating == 99 && rightRating == 99)
+	{
+		currentNode->rating = 99;
+		//sawDeadEndLastTime = true;
+		choice = NODE_BACK;
+	}
+	else if((leftRating < rightRating) && (leftRating < forwardRating))
+	{
+		choice = NODE_LEFT;
+	}
+	else if((rightRating < leftRating) && (rightRating < forwardRating))
+	{
+		choice = NODE_RIGHT;
+	}
+	else if((forwardRating < leftRating) && (forwardRating < rightRating))
+	{
+		choice = NODE_STRAIGHT;
+	}
+	else if((forwardRating == rightRating) || (forwardRating == leftRating))
+	{
+		choice = NODE_STRAIGHT;
+	}
+	else
+	{
+		choice = NODE_RIGHT;
+	}
+
+	
+	if((compass + choice)%4 == AI_WEST)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).west;
+		compass = AI_WEST;
+	}
+	else if((compass + choice)%4 == AI_NORTH)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).north;
+		compass = AI_NORTH;
+	}
+	else if((compass + choice)%4 == AI_EAST)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).east;
+		compass = AI_EAST;
+	}
+	else if((compass + choice)%4 == AI_SOUTH)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).south;// dont do if backtracking
+		compass = AI_SOUTH;
+	}
+
+	return (choice +1)%4;
+
+
+}
+
+int rateNode(int x, int y){
+	//Make sure we are using positive values
+	if (x<0){
+		x=x*-1;
+	}
+	if (y<0){
+		y=y*-1;
+	}
+
+	return x + y -1;
+}
+
+NavNode* buildNode(int turnDir, int currX, int currY)
+{
+	int newX = currX;
+	int newY = currY;
+	NavNode newNode = blank;
+	NavNode* index = &emptyNodes[memIndex];
+
+	if(turnDir == AI_WEST)
+		{
+			newX--;
+			if(newX == 0)
+			{
+				newX = -1;
+			}
+		}
+	else if(turnDir == AI_NORTH)
+		{
+			newY++;
+			if(newY == 0)
+			{
+				newY = 1;
+			}
+		}
+	else if(turnDir == AI_EAST)
+		{
+			newX++;
+			if(newX == 0)
+			{
+				newX = 1;
+			}
+		}
+	else if(turnDir == AI_SOUTH)
+		{
+			newY--;
+			if(newY == 0)
+			{
+				newY = -1;
+			}
+		}
+
+	newNode.rating = rateNode(newX, newY);
+	newNode.xOffset = newX; 
+	newNode.yOffset = newY;
+	
+	if(turnDir == AI_WEST)
+		{
+			newNode.east = currentNode;
+		}
+	else if(turnDir == AI_NORTH)
+		{
+			newNode.south = currentNode;
+		}
+	else if(turnDir == AI_EAST)
+		{
+			newNode.west = currentNode;
+		}
+	else if(turnDir == AI_SOUTH)
+		{
+			newNode.north = currentNode;
+		}
+
+	emptyNodes[memIndex] = newNode;
+	index = &emptyNodes[memIndex];
+	memIndex++;
+	return index;
 }
