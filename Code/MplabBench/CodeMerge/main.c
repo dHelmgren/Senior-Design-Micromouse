@@ -104,6 +104,22 @@
 #define NODE_BACK 2
 #define NODE_LEFT 3
 
+#define NULL 0
+
+/****** STRUCT ******/
+
+//NavNode Struct
+
+typedef struct NavNode{
+	char rating;
+	char xOffset;
+	char yOffset;
+	struct NavNode* west;
+	struct NavNode* north;
+	struct NavNode* east;
+	struct NavNode* south;
+}NavNode;
+
 /****** FUNCTION DEFINITIONS ******/
 
 unsigned int adConvert(unsigned char channel);
@@ -115,30 +131,15 @@ void ifAutocorrect(void);
 void ifSuicide(void);
 void initial(void);
 void init4StepPoll(unsigned char isDeadEnd);
-unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
+unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
 void msDelay(unsigned int time);
 void stopTest(void);
 void turn(unsigned char direction); // Step 3
 
 //AI Defs
 int rateNode(int x, int y);
-NavNode* buildNode(int turnDir, int currX, int currY);
+struct NavNode* buildNode(int turnDir, int currX, int currY);
 int modFour(int val);
-
-/****** STRUCT ******/
-
-//NavNode Struct
-
-typedef struct NavNode
-{
-	int rating;
-	int xOffset;
-	int yOffset;
-	NavNode *west;
-	NavNode *north;
-	NavNode *east;
-	NavNode *south;
-}NavNode;
 
 /****** GLOBAL VARIABLES ******/
 
@@ -182,19 +183,16 @@ int compass = AI_NORTH;
 //Temporary stopgap to access the memory array
 int memIndex = 0;
 
-bool sawDeadEndLastTime = false;
+unsigned char sawDeadEndLastTime = false;
 
-NavNode* mazeArray[16][16];
-NavNode root = {14, -8,-8, 0, 0, 0, 0};
-NavNode* currentNode = &root;
-NavNode* prevNode = &root;
-NavNode emptyNodes[100] = null;//TODO: Is this legal?? 
+NavNode root = {14, -8,-8, 0, 0, 0, 0}; 
 NavNode blank = {0,0,0,0,0,0,0};
-	for(i = 0; i < 100; i++)
-	{
-		emptyNodes[i] = blank;
-	}
-mazeArray[0][0] = &root;
+NavNode* currentNode;
+NavNode* prevNode;
+NavNode* mazeArray[16][16];
+NavNode emptyNodes[100];
+unsigned int i = 0;
+unsigned int j = 0;
 
 /****** CODE ******/
 
@@ -211,6 +209,12 @@ void main(void)
 	unsigned char tempR;
 	unsigned char leftIR;
 	unsigned char rightIR;
+	currentNode = &root;
+	prevNode = &root;
+	for(i = 0; i < 100; i++){emptyNodes[i] = blank;}
+	for(i = 0; i < 16; i++){for(j=0; j < 16; j++){mazeArray[i][j] = NULL;}}
+	mazeArray[0][0] = &root;
+	
 
 	Nop();
 	initial();
@@ -709,7 +713,7 @@ void msDelay(unsigned int itime)
 	}
 }
 
-unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
+unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
 	//node Rating variables
 	int leftRating = 99;
 	int rightRating = 99;
@@ -722,8 +726,8 @@ unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, u
 	int backPos = (compass + NODE_BACK) %4;
 	int choice = 0;
 	
-	int currX = (int) (*currentNode).xOffset;
-		int currY = (int) (*currentNode).yOffset;
+	currX = (int) (*currentNode).xOffset;
+	currY = (int) (*currentNode).yOffset;
 	
 	
 
@@ -777,7 +781,7 @@ unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, u
 		//Add 8 so that the position can be indexed into the double array
 		if(currX > 0 && currY > 0){
 			//currX -1 currY -1
-			mazeArray[indX+7][indY+7] = currentNode;
+			mazeArray[currX+7][currY+7] = currentNode;
 		}
 		else if (currX > 0)
 		{
@@ -791,7 +795,7 @@ unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, u
 		}
 		else{
 			//No adjustments
-			mazeArray[indX+8][indY+8] = currentNode;
+			mazeArray[currX+8][currY+8] = currentNode;
 		}
 	
 		if (!left){
@@ -852,7 +856,7 @@ unsigned char makeDecision(unsigned char leftWall, unsigned char straightWall, u
 			}
 		}
 
-		int backPos = (compass + NODE_BACK) %4;
+		//originally was here		int backPos = (compass + NODE_BACK) %4;
 
 		if (backPos == AI_WEST){
 			currentNode->west = prevNode;
@@ -937,7 +941,7 @@ int rateNode(int x, int y){
 	return x + y -1;
 }
 
-buildNode(int turnDir, int currX, int currY)
+NavNode* buildNode(int turnDir, int currX, int currY)
 {
 	int newX = currX;
 	int newY = currY;
@@ -977,7 +981,9 @@ buildNode(int turnDir, int currX, int currY)
 			}
 		}
 
-	newNode = {rateNode(newX, newY), newX, newY, 0, 0, 0, 0};
+	newNode.rating = rateNode(newX, newY);
+	newNode.xOffset = newX; 
+	newNode.yOffset = newY;
 	
 	if(turnDir == AI_WEST)
 		{
