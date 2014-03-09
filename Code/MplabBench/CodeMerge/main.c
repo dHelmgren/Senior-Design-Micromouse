@@ -34,6 +34,7 @@
 #define backward	0
 #define forward		1
 
+
 #define STRAIGHT_IR_SELECT 	0b00000001
 #define LEFT_IR_SELECT 		0b00000101
 #define RIGHT_IR_SELECT 	0b00001001
@@ -112,6 +113,7 @@
 #define NODE_LEFT 3
 
 #define NULL 0
+#define BLANK {0,0,0,0,0,0,0}
 
 /****** STRUCT ******/
 
@@ -234,7 +236,7 @@ NavNode * ram mazeArray[16][16];
 NavNode ram emptyNodes[93];
 #pragma udata
 
-unsigned char ram tempHere = 0;
+
 
 
 /****** CODE ******/
@@ -252,12 +254,11 @@ void main(void)
 	unsigned char oldIrCvtL = 0;
 	unsigned char oldIrCvtR = 0;
 	unsigned char oldIrCvtS = 0;
-
+	for(i = 0; i < 93; i++){emptyNodes[i] = blank;}
+	for(i = 0; i < 16; i++){for(j=0; j < 16; j++){mazeArray[i][j] = NULL;}}
 
 	currentNode = &root;
 	prevNode = &root;
-	for(i = 0; i < 100; i++){emptyNodes[i] = blank;}
-	for(i = 0; i < 16; i++){for(j=0; j < 16; j++){mazeArray[i][j] = NULL;}}
 	mazeArray[0][0] = &root;
 
 

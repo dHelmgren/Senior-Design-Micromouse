@@ -1,5 +1,5 @@
 MPLINK 4.48, Linker
-Linker Map File - Created Sat Mar 08 14:00:09 2014
+Linker Map File - Created Sun Mar 09 14:17:39 2014
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
@@ -21,21 +21,21 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
        .romdata_adcread.o    romdata   0x002116    program   0x000000
          .romdata_c018i.o    romdata   0x002116    program   0x000000
       .romdata_fxd1616u.o    romdata   0x002116    program   0x000000
-          .idata_main.o_i    romdata   0x002116    program   0x00004a
+          .idata_main.o_i    romdata   0x002116    program   0x000049
       .romdata_adcclose.o    romdata   0x002116    program   0x000000
           .romdata_main.o    romdata   0x002116    program   0x000000
-      .idata_fxd1616u.o_i    romdata   0x002160    program   0x000000
+      .idata_fxd1616u.o_i    romdata   0x00215f    program   0x000000
+       .idata_adcread.o_i    romdata   0x00215f    program   0x000000
+        .idata___init.o_i    romdata   0x00215f    program   0x000000
+      .idata_adcclose.o_i    romdata   0x00215f    program   0x000000
+         .idata_c018i.o_i    romdata   0x00215f    program   0x000000
             .code_c018i.o       code   0x002160    program   0x000000
-       .idata_adcread.o_i    romdata   0x002160    program   0x000000
-        .idata___init.o_i    romdata   0x002160    program   0x000000
-      .idata_adcclose.o_i    romdata   0x002160    program   0x000000
-         .idata_c018i.o_i    romdata   0x002160    program   0x000000
                 MATH_DATA      udata   0x000000       data   0x000014
                  .tmpdata      udata   0x000014       data   0x000008
                 DELAYDAT1      udata   0x00001c       data   0x000001
-            .idata_main.o      idata   0x000060       data   0x00004a
-           .udata_c018i.o      udata   0x0000aa       data   0x00000a
-            .udata_main.o      udata   0x0000b4       data   0x000004
+            .idata_main.o      idata   0x000060       data   0x000049
+           .udata_c018i.o      udata   0x0000a9       data   0x00000a
+            .udata_main.o      udata   0x0000b3       data   0x000004
                  BIGDATA2      udata   0x000300       data   0x0003ff
         .udata_adcclose.o      udata   0x0006ff       data   0x000000
         .idata_adcclose.o      idata   0x0006ff       data   0x000000
@@ -65,8 +65,8 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                               Program Memory Usage 
                                Start         End      
                            ---------   ---------      
-                            0x000000    0x00215f      
-            8544 out of 131074 program addresses used, program memory utilization is 6%
+                            0x000000    0x00215e      
+            8543 out of 131074 program addresses used, program memory utilization is 6%
 
 
 
@@ -102,15 +102,15 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
          ___else_lbl00031   0x0003c2    program     static                          
          ___else_lbl00038   0x000414    program     static                          
          ___else_lbl00045   0x000408    program     static                          
-          ___for_lbl00001   0x0000b8    program     static                          
-          ___for_lbl00002   0x0000c2    program     static                          
-          ___for_lbl00003   0x00005c    program     static                          
-          ___for_lbl00004   0x00012e    program     static                          
-          ___for_lbl00005   0x000138    program     static                          
-          ___for_lbl00006   0x000124    program     static                          
-          ___for_lbl00007   0x00012e    program     static                          
-          ___for_lbl00008   0x0000da    program     static                          
-          ___for_lbl00009   0x0000c8    program     static                          
+          ___for_lbl00001   0x0000a4    program     static                          
+          ___for_lbl00002   0x0000ae    program     static                          
+          ___for_lbl00003   0x000048    program     static                          
+          ___for_lbl00004   0x00011a    program     static                          
+          ___for_lbl00005   0x000124    program     static                          
+          ___for_lbl00006   0x000110    program     static                          
+          ___for_lbl00007   0x00011a    program     static                          
+          ___for_lbl00008   0x0000c6    program     static                          
+          ___for_lbl00009   0x0000b4    program     static                          
           ___for_lbl00120   0x000ce0    program     static                          
           ___for_lbl00121   0x000cea    program     static                          
           ___for_lbl00122   0x000cda    program     static                          
@@ -644,10 +644,10 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
              canCallTuple   0x000064       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                cmTraveled   0x000060       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                   compass   0x00008a       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                curr_byte   0x0000ad       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-               curr_entry   0x0000af       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-              currentNode   0x0000b4       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 data_ptr   0x0000b1       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+                curr_byte   0x0000ac       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+               curr_entry   0x0000ae       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+              currentNode   0x0000b3       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 data_ptr   0x0000b0       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                emptyNodes   0x000300       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
               firstNoWall   0x000065       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
            hardcodedAgent   0x000089       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
@@ -669,8 +669,8 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                  memIndex   0x00008c       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                   noWallL   0x00007c       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                   noWallR   0x00007e       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 prevNode   0x0000b6       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                     prom   0x0000aa       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+                 prevNode   0x0000b5       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     prom   0x0000a9       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                 rightWall   0x000062       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                      root   0x00008f       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
        sawDeadEndLastTime   0x00008e       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
@@ -679,7 +679,6 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                   stuck0L   0x000084       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                   stuck1H   0x000087       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                   stuck1L   0x000086       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 tempHere   0x0000a9       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                 traveled0   0x000080       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                 traveled1   0x000082       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
         waitToAutocorrect   0x000088       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
@@ -692,15 +691,15 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                    _entry   0x000000    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
        ___return_lbl00000   0x000004    program     static                          
                      main   0x000014    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-          ___for_lbl00003   0x00005c    program     static                          
-          ___for_lbl00001   0x0000b8    program     static                          
-          ___for_lbl00002   0x0000c2    program     static                          
-          ___for_lbl00009   0x0000c8    program     static                          
-          ___for_lbl00008   0x0000da    program     static                          
-          ___for_lbl00006   0x000124    program     static                          
-          ___for_lbl00007   0x00012e    program     static                          
-          ___for_lbl00004   0x00012e    program     static                          
-          ___for_lbl00005   0x000138    program     static                          
+          ___for_lbl00003   0x000048    program     static                          
+          ___for_lbl00001   0x0000a4    program     static                          
+          ___for_lbl00002   0x0000ae    program     static                          
+          ___for_lbl00009   0x0000b4    program     static                          
+          ___for_lbl00008   0x0000c6    program     static                          
+          ___for_lbl00006   0x000110    program     static                          
+          ___for_lbl00007   0x00011a    program     static                          
+          ___for_lbl00004   0x00011a    program     static                          
+          ___for_lbl00005   0x000124    program     static                          
         ___while_lbl00010   0x000158    program     static                          
                __tmplbl_1   0x0001b4    program     static                          
                __tmplbl_0   0x0001bc    program     static                          
@@ -808,14 +807,14 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                      SIGN   0x000000       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\cmath18.asm
                 __FPFLAGS   0x000001       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\cmath18.asm
             __FPFLAGSbits   0x000001       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\cmath18.asm
-                  __REMB3   0x000002       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
                  __AARGB7   0x000002       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
-                  __REMB2   0x000003       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
+                  __REMB3   0x000002       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
                  __AARGB6   0x000003       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
-                  __REMB1   0x000004       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
+                  __REMB2   0x000003       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
                  __AARGB5   0x000004       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
-                  __REMB0   0x000005       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
+                  __REMB1   0x000004       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
                  __AARGB4   0x000005       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
+                  __REMB0   0x000005       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
                  __AARGB3   0x000006       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
                  __AARGB2   0x000007       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
                  __AARGB1   0x000008       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\aarg.asm
@@ -829,10 +828,10 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                  __TEMPB3   0x000010       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
                  __TEMPB2   0x000011       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
                  __TEMPB1   0x000012       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
-                 __TEMPB0   0x000013       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
                    __TEMP   0x000013       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
-                  __tmp_0   0x000014       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
+                 __TEMPB0   0x000013       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
                   __tmp_0   0x000014       data     static C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  __tmp_0   0x000014       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
             DelayCounter1   0x00001c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\delayd1.asm
                cmTraveled   0x000060       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                  leftWall   0x000061       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
@@ -868,33 +867,32 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                     blank   0x00009a       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                         i   0x0000a5       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                         j   0x0000a7       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 tempHere   0x0000a9       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                     prom   0x0000aa       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-                curr_byte   0x0000ad       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-               curr_entry   0x0000af       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-                 data_ptr   0x0000b1       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-              currentNode   0x0000b4       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 prevNode   0x0000b6       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     prom   0x0000a9       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+                curr_byte   0x0000ac       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+               curr_entry   0x0000ae       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+                 data_ptr   0x0000b0       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+              currentNode   0x0000b3       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 prevNode   0x0000b5       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                emptyNodes   0x000300       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                 mazeArray   0x000700       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                   ADCTRIG   0x000eb8       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               ADCTRIGbits   0x000eb8       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   PMDIS0   0x000eb9       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                       PD0   0x000eb9       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   PD0bits   0x000eb9       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                PMDIS0bits   0x000eb9       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   PMDIS0   0x000eb9       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                       PD1   0x000eba       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                  PD1bits   0x000eba       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    PMDIS1   0x000eba       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                PMDIS1bits   0x000eba       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                      PD2   0x000ebb       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                  PD2bits   0x000ebb       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                  PD1bits   0x000eba       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                PMDIS2bits   0x000ebb       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    PMDIS2   0x000ebb       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                      PD2   0x000ebb       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                  PD2bits   0x000ebb       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                       PD3   0x000ebc       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   PD3bits   0x000ebc       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-               PMDIS3bits   0x000ebc       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    PMDIS3   0x000ebc       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+               PMDIS3bits   0x000ebc       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    PPSCON   0x000ebf       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                PPSCONbits   0x000ebf       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     RPOR0   0x000ec0       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
@@ -942,12 +940,12 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
               CCP9CONbits   0x000f03       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR9L   0x000f04       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR9H   0x000f05       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-              CCP8CONbits   0x000f06       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   CCP8CON   0x000f06       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+              CCP8CONbits   0x000f06       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR8L   0x000f07       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR8H   0x000f08       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-              CCP7CONbits   0x000f09       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   CCP7CON   0x000f09       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+              CCP7CONbits   0x000f09       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR7L   0x000f0a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR7H   0x000f0b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               CCP6CONbits   0x000f0c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
@@ -958,20 +956,20 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                   CCP5CON   0x000f0f       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR5L   0x000f10       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR5H   0x000f11       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-              CCP4CONbits   0x000f12       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   CCP4CON   0x000f12       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+              CCP4CONbits   0x000f12       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR4L   0x000f13       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR4H   0x000f14       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               CCP3CONbits   0x000f15       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   CCP3CON   0x000f15       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR3L   0x000f16       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR3H   0x000f17       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                 ECCP3DEL   0x000f18       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
              ECCP3DELbits   0x000f18       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                 ECCP3DEL   0x000f18       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   ECCP3AS   0x000f19       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               ECCP3ASbits   0x000f19       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-             PSTR3CONbits   0x000f1a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  PSTR3CON   0x000f1a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+             PSTR3CONbits   0x000f1a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     T8CON   0x000f1b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                 T8CONbits   0x000f1b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                       PR8   0x000f1c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
@@ -986,12 +984,12 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                 T5CONbits   0x000f22       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     TMR5L   0x000f23       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     TMR5H   0x000f24       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-               CM3CONbits   0x000f25       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CM3CON   0x000f25       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+               CM3CONbits   0x000f25       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   RTCVALL   0x000f3a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   RTCVALH   0x000f3b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-              PADCFG1bits   0x000f3c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   PADCFG1   0x000f3c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+              PADCFG1bits   0x000f3c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               REFOCONbits   0x000f3d       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   REFOCON   0x000f3d       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    RTCCAL   0x000f3e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
@@ -1006,10 +1004,10 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                ODCON1bits   0x000f42       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  ALRMVALL   0x000f44       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  ALRMVALH   0x000f45       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-              ALRMRPTbits   0x000f46       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   ALRMRPT   0x000f46       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-              ALRMCFGbits   0x000f47       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+              ALRMRPTbits   0x000f46       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   ALRMCFG   0x000f47       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+              ALRMCFGbits   0x000f47       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                ANCON0bits   0x000f48       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    ANCON0   0x000f48       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                ANCON1bits   0x000f49       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
@@ -1018,42 +1016,42 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                   DSWAKEL   0x000f4a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               DSWAKEHbits   0x000f4b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   DSWAKEH   0x000f4b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-               DSCONLbits   0x000f4c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    DSCONL   0x000f4c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+               DSCONLbits   0x000f4c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    DSCONH   0x000f4d       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                DSCONHbits   0x000f4d       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    DSGPR0   0x000f4e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    DSGPR1   0x000f4f       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
              CCPTMRS2bits   0x000f50       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  CCPTMRS2   0x000f50       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-             CCPTMRS1bits   0x000f51       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  CCPTMRS1   0x000f51       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-             CCPTMRS0bits   0x000f52       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+             CCPTMRS1bits   0x000f51       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  CCPTMRS0   0x000f52       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   CVRCON   0x000f53       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+             CCPTMRS0bits   0x000f52       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                CVRCONbits   0x000f53       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   DMABCH   0x000f66       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   CVRCON   0x000f53       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                DMABCHbits   0x000f66       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   DMABCH   0x000f66       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    DMABCL   0x000f67       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-              RXADDRHbits   0x000f68       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   RXADDRH   0x000f68       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+              RXADDRHbits   0x000f68       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   RXADDRL   0x000f69       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               TXADDRHbits   0x000f6a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   TXADDRH   0x000f6a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   TXADDRL   0x000f6b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CMSTAT   0x000f70       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  CMSTATUS   0x000f70       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-             CMSTATUSbits   0x000f70       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                CMSTATbits   0x000f70       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-             SSP2CON2bits   0x000f71       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+             CMSTATUSbits   0x000f70       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  SSP2CON2   0x000f71       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+             SSP2CON2bits   0x000f71       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
              SSP2CON1bits   0x000f72       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  SSP2CON1   0x000f72       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
              SSP2STATbits   0x000f73       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  SSP2STAT   0x000f73       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                  SSP2ADD   0x000f74       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               SSP2MSKbits   0x000f74       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   SSP2MSK   0x000f74       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                  SSP2ADD   0x000f74       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   SSP2BUF   0x000f75       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                 T4CONbits   0x000f76       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     T4CON   0x000f76       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
@@ -1069,31 +1067,31 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                   BAUDCON   0x000f7e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  BAUDCON1   0x000f7e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
              BAUDCON1bits   0x000f7e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+              BAUDCONbits   0x000f7e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               BAUDCTLbits   0x000f7e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   BAUDCTL   0x000f7e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-              BAUDCONbits   0x000f7e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   SPBRGH   0x000f7f       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   SPBRGH1   0x000f7f       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                PORTAbits   0x000f80       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   SPBRGH   0x000f7f       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     PORTA   0x000f80       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                PORTBbits   0x000f81       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                PORTAbits   0x000f80       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     PORTB   0x000f81       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                PORTBbits   0x000f81       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                 PORTCbits   0x000f82       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     PORTC   0x000f82       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               HLVDCONbits   0x000f85       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   HLVDCON   0x000f85       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-              DMACON2bits   0x000f86       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   DMACON2   0x000f86       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+              DMACON2bits   0x000f86       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               OSCCON2bits   0x000f87       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   OSCCON2   0x000f87       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                  DMACON1   0x000f88       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               DMACON1bits   0x000f88       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                  DMACON1   0x000f88       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  LATAbits   0x000f89       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      LATA   0x000f89       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  LATBbits   0x000f8a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      LATB   0x000f8a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                 LATCbits   0x000f8b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      LATC   0x000f8b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                 LATCbits   0x000f8b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  PIE4bits   0x000f8e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      PIE4   0x000f8e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      PIR4   0x000f8f       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
@@ -1104,51 +1102,51 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                      PIE5   0x000f91       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                 TRISAbits   0x000f92       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     TRISA   0x000f92       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                TRISBbits   0x000f93       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     TRISB   0x000f93       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                TRISBbits   0x000f93       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                 TRISCbits   0x000f94       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     TRISC   0x000f94       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   T3GCON   0x000f97       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                T3GCONbits   0x000f97       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                     PIR5   0x000f98       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   T3GCON   0x000f97       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  PIR5bits   0x000f98       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                     PIR5   0x000f98       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  IPR5bits   0x000f99       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      IPR5   0x000f99       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                T1GCONbits   0x000f9a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    T1GCON   0x000f9a       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                  OSCTUNE   0x000f9b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               OSCTUNEbits   0x000f9b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-               RCSTA2bits   0x000f9c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                  OSCTUNE   0x000f9b       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    RCSTA2   0x000f9c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                     PIE1   0x000f9d       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+               RCSTA2bits   0x000f9c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  PIE1bits   0x000f9d       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                     PIE1   0x000f9d       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      PIR1   0x000f9e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  PIR1bits   0x000f9e       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  IPR1bits   0x000f9f       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      IPR1   0x000f9f       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                     PIE2   0x000fa0       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  PIE2bits   0x000fa0       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                     PIR2   0x000fa1       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                     PIE2   0x000fa0       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  PIR2bits   0x000fa1       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                     PIR2   0x000fa1       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      IPR2   0x000fa2       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  IPR2bits   0x000fa2       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  PIE3bits   0x000fa3       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      PIE3   0x000fa3       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  PIR3bits   0x000fa4       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      PIR3   0x000fa4       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                 IPR3bits   0x000fa5       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                      IPR3   0x000fa5       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                 IPR3bits   0x000fa5       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    EECON1   0x000fa6       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                EECON1bits   0x000fa6       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    EECON2   0x000fa7       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   TXSTA2   0x000fa8       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                TXSTA2bits   0x000fa8       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   TXSTA2   0x000fa8       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    TXREG2   0x000fa9       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    RCREG2   0x000faa       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    SPBRG2   0x000fab       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-               RCSTA1bits   0x000fac       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   RCSTA1   0x000fac       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     RCSTA   0x000fac       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   RCSTA1   0x000fac       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+               RCSTA1bits   0x000fac       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                 RCSTAbits   0x000fac       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    TXSTA1   0x000fad       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                TXSTA1bits   0x000fad       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
@@ -1156,34 +1154,34 @@ Linker Map File - Created Sat Mar 08 14:00:09 2014
                     TXSTA   0x000fad       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    TXREG1   0x000fae       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     TXREG   0x000fae       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                    RCREG   0x000faf       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    RCREG1   0x000faf       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                    RCREG   0x000faf       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     SPBRG   0x000fb0       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    SPBRG1   0x000fb0       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  CTMUICON   0x000fb1       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
              CTMUICONbits   0x000fb1       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  CTMUCONL   0x000fb2       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
              CTMUCONLbits   0x000fb2       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                 CTMUCONH   0x000fb3       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
              CTMUCONHbits   0x000fb3       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                 ECCP2CON   0x000fb4       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-             ECCP2CONbits   0x000fb4       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                 CTMUCONH   0x000fb3       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   CCP2CON   0x000fb4       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               CCP2CONbits   0x000fb4       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                 ECCP2CON   0x000fb4       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+             ECCP2CONbits   0x000fb4       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR2L   0x000fb5       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     CCPR2   0x000fb5       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR2H   0x000fb6       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  ECCP2DEL   0x000fb7       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-             ECCP2DELbits   0x000fb7       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               PWM2CONbits   0x000fb7       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   PWM2CON   0x000fb7       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+             ECCP2DELbits   0x000fb7       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   ECCP2AS   0x000fb8       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               ECCP2ASbits   0x000fb8       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                 PSTR2CON   0x000fb9       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
              PSTR2CONbits   0x000fb9       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                 PSTR2CON   0x000fb9       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+             ECCP1CONbits   0x000fba       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               CCP1CONbits   0x000fba       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   CCP1CON   0x000fba       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-             ECCP1CONbits   0x000fba       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                  ECCP1CON   0x000fba       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    CCPR1L   0x000fbb       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                     CCPR1   0x000fbb       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
