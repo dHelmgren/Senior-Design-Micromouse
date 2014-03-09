@@ -144,13 +144,14 @@ void initial(void);
 void init4StepPoll(unsigned char isDeadEnd);
 unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall);
 void msDelay(unsigned int time);
+unsigned char mod4(unsigned char value);
 void readTimersToTraveled(void);
 void stopTest(void);
 void turn(unsigned char direction); // Step 3
 
 //AI Defs
-int rateNode(int x, int y);
-struct NavNode* buildNode(int turnDir, int currX, int currY);
+unsigned char rateNode(char x, char y);
+NavNode* buildNode(unsigned char turnDir, char currX, char currY);
 int modFour(int val);
 
 /****** GLOBAL VARIABLES ******/
@@ -822,19 +823,19 @@ void msDelay(unsigned int itime)
 
 unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
 	//node Rating variables
-	int leftRating = 99;
-	int rightRating = 99;
-	int forwardRating = 99;
+	unsigned char leftRating = 99;
+	unsigned char rightRating = 99;
+	unsigned char forwardRating = 99;
 	
 	//location variables
-	int currX = 0;
-	int currY = 0;
-	int nodePos = 0;
-	int backPos = (compass + NODE_BACK) %4;
-	int choice = 0;
+	char currX = 0;
+	char currY = 0;
+	char nodePos = 0;
+	char backPos = mod4(compass + NODE_BACK);
+	unsigned char choice = 0;
 	
-	currX = (int) (*currentNode).xOffset;
-	currY = (int) (*currentNode).yOffset;
+	currX = (char) (*currentNode).xOffset;
+	currY = (char) (*currentNode).yOffset;
 	
 	
 
@@ -905,8 +906,8 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 			mazeArray[currX+8][currY+8] = currentNode;
 		}
 	
-		if (!leftWall){
-			int nodePos = (compass + NODE_LEFT)%4;
+		if (leftWall == false){
+			int nodePos = mod4(compass + NODE_LEFT);
 			if (nodePos == AI_WEST){
 				(*currentNode).west = buildNode(AI_WEST, currX, currY);
 				leftRating = currentNode->west->rating;
@@ -924,8 +925,8 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 				leftRating = currentNode->east->rating;
 			}
 		}
-		if (!straightWall){
-			int nodePos = (compass + NODE_STRAIGHT)%4;
+		if (straightWall == false){
+			int nodePos = mod4(compass + NODE_STRAIGHT);
 			if (nodePos == AI_WEST){
 				currentNode->west = buildNode(AI_WEST, currX, currY);
 				forwardRating = currentNode->west->rating;
@@ -943,8 +944,8 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 				forwardRating = currentNode->east->rating;
 			}
 		}
-		if (!rightWall){
-			int nodePos = (compass + NODE_RIGHT)%4;
+		if (rightWall == false){
+			int nodePos = mod4(compass + NODE_RIGHT);
 			if (nodePos == AI_WEST){
 				currentNode->west = buildNode(AI_WEST, currX, currY);
 				rightRating = currentNode->west->rating;
@@ -1006,36 +1007,36 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 	}
 
 	
-	if((compass + choice)%4 == AI_WEST)
+	if(mod4(compass + choice) == AI_WEST)
 	{
 		prevNode = currentNode;
 		currentNode = (*currentNode).west;
 		compass = AI_WEST;
 	}
-	else if((compass + choice)%4 == AI_NORTH)
+	else if(mod4(compass + choice) == AI_NORTH)
 	{
 		prevNode = currentNode;
 		currentNode = (*currentNode).north;
 		compass = AI_NORTH;
 	}
-	else if((compass + choice)%4 == AI_EAST)
+	else if(mod4(compass + choice) == AI_EAST)
 	{
 		prevNode = currentNode;
 		currentNode = (*currentNode).east;
 		compass = AI_EAST;
 	}
-	else if((compass + choice)%4 == AI_SOUTH)
+	else if(mod4(compass + choice) == AI_SOUTH)
 	{
 		prevNode = currentNode;
 		currentNode = (*currentNode).south;// dont do if backtracking
 		compass = AI_SOUTH;
 	}
 
-	return (choice +1)%4;
+	return mod4(choice +1);
 
 }
 
-int rateNode(int x, int y){
+unsigned char rateNode(char x, char y){
 	//Make sure we are using positive values
 	if (x<0){
 		x=x*-1;
@@ -1044,13 +1045,19 @@ int rateNode(int x, int y){
 		y=y*-1;
 	}
 
-	return x + y -1;
+	return (unsigned char) x + y -1;
 }
 
-NavNode* buildNode(int turnDir, int currX, int currY)
+unsigned char mod4(unsigned char value){
+	while(value > 4)
+		value -= 4;
+	return value;
+}
+
+NavNode* buildNode(unsigned char turnDir, char currX, char currY)
 {
-	int newX = currX;
-	int newY = currY;
+	char newX = currX;
+	char newY = currY;
 	NavNode newNode = blank;
 	NavNode* index = &emptyNodes[memIndex];
 
