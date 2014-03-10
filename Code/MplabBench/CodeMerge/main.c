@@ -1,3 +1,4 @@
+/****** INCLUDES ******/
 #include <p18f27j13.h>
 #include <timers.h>
 #include <delays.h>
@@ -6,24 +7,116 @@
 
 /****** MACROS ******/
 
+// Commenting in and commenting out the below #define will determine
+// if we are programming on Fibrotaur right now or on Microtaur
 //#define FIBROTAUR 1
 #ifdef FIBROTAUR
-#define DIFF 100
+
+/****** FIBROTAUR ********/
+// Navigation constants for Fibrotaur
+
+/*
 #define GO_RIGHT 			0b11101010
 #define GO_LEFT 			0b11110101
 #define BREAK_R_WHEEL		0b11111011
 #define BREAK_L_WHEEL 		0b11111101
 #define BACKWARD_R_WHEEL	0b11111110
 #define BACKWARD_L_WHEEL	0b11110111
-#else
-#define DIFF 0
+*/
+
+/*TESTING*/
 #define GO_LEFT 			0b11101010
 #define GO_RIGHT 			0b11110101
 #define BREAK_L_WHEEL		0b11111011
 #define BREAK_R_WHEEL 		0b11111101
 #define BACKWARD_L_WHEEL	0b11111110
 #define BACKWARD_R_WHEEL	0b11110111
-#endif
+/*END TESTING*/
+
+
+#define CLICKS_FOR_180		0xA8
+#define CLICKS_FOR_NINETY 	0x9B
+
+// Poll 1
+#define CONTINUE_TO_CENTER_R_FIRST 16
+#define CONTINUE_TO_CENTER_L_FIRST 14
+
+// Poll 2 constants for Fibrotaur
+#define NO_WALL_LEFT 100
+#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 100)
+#define NO_WALL_RIGHT 180
+#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 100)
+#define TUPLE_CHANGE 1024
+
+// Poll 3: Move mouse forward
+#define LEAVE_UNIT 4
+
+// Constants to trigger push autocorrect
+#define LR_DIFF				250
+#define ERROR_CORRECT_L_1	780
+#define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
+#define ERROR_CORRECT_L_2	780
+#define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
+#define ERROR_CORRECT_CAP_L	340
+#define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
+#define RIGHT_BUFFER		30
+
+// Constants for reading from the ADC
+#define STRAIGHT_IR_SELECT 	0b00000001
+#define RIGHT_IR_SELECT 		0b00000101
+#define LEFT_IR_SELECT 	0b00001001
+
+// Stop the mouse because it is about to run into the wall, since the
+// IR sensor readouts are too high and close to the 3 cm max readout
+#define STOP 940
+
+/****** MICROTAUR ********/
+#else // We are programming on Microtaur, not Fibrotaur
+// Navigation constants for Microtaur
+#define GO_LEFT 			0b11101010
+#define GO_RIGHT 			0b11110101
+#define BREAK_L_WHEEL		0b11111011
+#define BREAK_R_WHEEL 		0b11111101
+#define BACKWARD_L_WHEEL	0b11111110
+#define BACKWARD_R_WHEEL	0b11110111
+
+#define CLICKS_FOR_180		0xB0
+#define CLICKS_FOR_NINETY 	0xA2
+
+// Poll 1
+#define CONTINUE_TO_CENTER_R_FIRST 17
+#define CONTINUE_TO_CENTER_L_FIRST 14
+
+// Poll 2 constants for Microtaur
+#define NO_WALL_LEFT 250
+#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 100)
+#define NO_WALL_RIGHT 200
+#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 30)
+#define TUPLE_CHANGE 250
+
+// Poll 3: Move mouse forward 4 cm
+#define LEAVE_UNIT 4
+
+// Constants to trigger push autocorrect
+#define LR_DIFF				160 // Changed from 150
+#define ERROR_CORRECT_L_1	760
+#define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
+#define ERROR_CORRECT_L_2	760
+#define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
+#define ERROR_CORRECT_CAP_L	340
+#define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
+#define RIGHT_BUFFER		30
+
+// Constants for reading from the ADC
+#define STRAIGHT_IR_SELECT 	0b00000001
+#define LEFT_IR_SELECT 		0b00000101
+#define RIGHT_IR_SELECT 	0b00001001
+
+// Stop the mouse because it is about to run into the wall, since the
+// IR sensor readouts are too high and close to the 3 cm max readout
+#define STOP 940
+
+#endif//////////////////END MICROTAUR//////////////////
 
 #define true    	1 
 #define false   	0 
@@ -33,13 +126,6 @@
 #define turnAround 	3
 #define backward	0
 #define forward		1
-
-
-#define STRAIGHT_IR_SELECT 	0b00000001
-#define LEFT_IR_SELECT 		0b00000101
-#define RIGHT_IR_SELECT 	0b00001001
-#define CLICKS_FOR_NINETY 	0xA2
-#define CLICKS_FOR_180		0xB0
 
 #define GO_STRAIGHT 		0b11111001
 #define GO_BACKWARD 		0b11110110
@@ -52,35 +138,10 @@
 #define IS_DEAD_END 	1
 
 // Poll 2: No wall means wall is farther than digital value 250
-// TODO: We may need to adjust this value lower, depending on testing
 #define NO_WALL_STRAIGHT 350
-#define NO_WALL_LEFT 250
-#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 150)
-#define NO_WALL_RIGHT 215
-#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 150)
-
-// Poll 3: Move mouse forward 4 cm
-#define LEAVE_UNIT 4
-
-#define CONTINUE_TO_CENTER_R_FIRST 18  // Unsure about this value....................
-#define CONTINUE_TO_CENTER_L_FIRST 13
 
 // Number of clicks to back up when we have crashed
 #define CRASH_BACK_UP	330
-
-// Stop the mouse because it is about to run into the wall, since the
-// IR sensor readouts are too high and close to the 3 cm max readout
-#define STOP 940
-
-// Constants to trigger push autocorrect
-#define LR_DIFF				160 // Changed from 150
-#define ERROR_CORRECT_L_1	810-DIFF
-#define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
-#define ERROR_CORRECT_L_2	810-DIFF
-#define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
-#define ERROR_CORRECT_CAP_L	340-DIFF
-#define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
-#define RIGHT_BUFFER		30
 
 // Constants to trigger pull autocorrect
 #define PULL_CORRECT_L_1	480
@@ -93,7 +154,7 @@
 #define CLICKS_FOR_AC_2		0x20//was 18
 
 // How long to wait in between states of the code
-#define DELAY 5000
+#define DELAY 2000
 
 
 // Constants for AI Program
@@ -116,8 +177,6 @@
 #define BLANK {0,0,0,0,0,0,0}
 
 /****** STRUCT ******/
-
-//NavNode Struct
 
 typedef struct NavNode{
 	char rating;
@@ -195,13 +254,6 @@ int noWallR = -1;
 unsigned int traveled0 = 0;
 unsigned int traveled1 = 0;
 
-/* Timer values which indicate how long the mouse has been stuck in
-   the for loop (and is therefore probably stuck in front a wall) */
-unsigned char stuck0L = 0;
-unsigned char stuck0H = 0;
-unsigned char stuck1L = 0;
-unsigned char stuck1H = 0;
-
 /* Since we have run into trouble when the mouse has tried to autocorrect
    immediately after a tuple, wait just a few moments to make sure there isn't
    another tuple ahead of us */
@@ -234,7 +286,7 @@ NavNode * ram mazeArray[16][16];
 #pragma udata
 //#pragma idata emptyNodes
 #pragma udata BIGDATA2
-NavNode ram emptyNodes[93];
+NavNode ram emptyNodes[116];
 #pragma udata
 
 
@@ -255,7 +307,7 @@ void main(void)
 	unsigned char oldIrCvtL = 0;
 	unsigned char oldIrCvtR = 0;
 	unsigned char oldIrCvtS = 0;
-	for(i = 0; i < 93; i++){emptyNodes[i] = blank;}
+	for(i = 0; i < 116; i++){emptyNodes[i] = blank;}
 	for(i = 0; i < 16; i++){for(j=0; j < 16; j++){mazeArray[i][j] = NULL;}}
 
 	currentNode = &root;
@@ -268,7 +320,7 @@ void main(void)
 
 	/**** BEGIN! ****/
 	msDelay(10000);
-
+//PORTB=BREAK;
 	while(true) {
 
 		PORTB = GO_STRAIGHT;
@@ -281,7 +333,7 @@ void main(void)
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
 
 		PORTB = BREAK;
-
+		Nop();
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
 		if(irCvtLP4 !=0 && irCvtRP4 !=0) {
@@ -291,7 +343,7 @@ void main(void)
 		// permission to make a tuple immediately, which is extremely necessary
 		// where in situations where there is a tuple after a tuple
 
-		if(irCvtL <= noWallL||irCvtLP4-irCvtL >= 250){
+		if(irCvtL <= noWallL||irCvtLP4-irCvtL >= TUPLE_CHANGE){
 			PORTB=BREAK;
 			msDelay(DELAY);
 			//blinkTest();
@@ -303,7 +355,7 @@ void main(void)
 			firstNoWall = left;
 			init4StepPoll(!IS_DEAD_END);
 		}
-		else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= 250){
+		else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= TUPLE_CHANGE){
 			PORTB=BREAK;
 			msDelay(DELAY);
 			//blinkTest();
@@ -539,9 +591,9 @@ void goForward(int distance){
 	cmTraveled = 0;
 	while(cmTraveled < distance)
 	{
-PORTB=BREAK;
+//PORTB=BREAK;
 		irCvtL = adConvert(LEFT_IR_SELECT);
-PORTB=GO_STRAIGHT;
+//PORTB=GO_STRAIGHT;
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 
 //ifAutocorrect();
@@ -783,11 +835,13 @@ void readTimersToTraveled(void){
 
 unsigned char calcUnitsTraveled(void){
 	unsigned char unitsTraveled = 0;
-	while(traveled1 >= 990){
+	unsigned int tempTraveled = traveled1;
+	//traveled1 += 1000;//HACKY CODE
+	while(tempTraveled >= 990){
 		unitsTraveled++;
-		traveled1 = traveled1 - 990;
+		tempTraveled = tempTraveled - 990;
 	}
-	if(unitsTraveled >= 445)
+	if(tempTraveled >= 445)
 		unitsTraveled++;
 	return unitsTraveled;
 }
@@ -822,6 +876,169 @@ void msDelay(unsigned int itime)
 }
 
 unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
+/*if(hardcodedAgent == 0 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 1 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 2 && !straightWall){
+		hardcodedAgent++;
+		return NODE_STRAIGHT;
+	}
+	else if(hardcodedAgent == 3 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 4 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 5 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 6 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 7 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 8 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 9 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 10 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 11 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 12 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 13 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 14 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 15 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 16 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 17 && !straightWall){
+		hardcodedAgent++;
+		return NODE_STRAIGHT;
+	}
+	else if(hardcodedAgent == 18 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 19 && !straightWall){
+		hardcodedAgent++;
+		return NODE_STRAIGHT;
+	}
+	else if(hardcodedAgent == 20 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 21 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 22 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 23 && !straightWall){
+		hardcodedAgent++;
+		return NODE_STRAIGHT;
+	}
+	else if(hardcodedAgent == 24 && !straightWall){
+		hardcodedAgent++;
+		return NODE_STRAIGHT;
+	}
+	else if(hardcodedAgent == 25 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 26 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 27 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 28 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 29 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 30 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 31 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 32 && !rightWall){
+		hardcodedAgent++;
+		return NODE_RIGHT;
+	}
+	else if(hardcodedAgent == 33 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 34 && !leftWall){
+		hardcodedAgent++;
+		return NODE_LEFT;
+	}
+	else if(hardcodedAgent == 35 && !straightWall){
+		hardcodedAgent++;
+		return NODE_STRAIGHT;
+	}
+	else if(hardcodedAgent == 36 && !rightWall){
+		return NODE_RIGHT;
+	}
+
+	// Previous version of the hardcoded ai
+	if(!leftWall){
+		return NODE_LEFT;
+	}
+	else if(!rightWall){
+		return NODE_RIGHT;
+	}
+	else if(!straightWall){
+		return NODE_STRAIGHT;
+	} 
+	else{
+		return NODE_BACK;
+	}
+*/
+
 	//node Rating variables
 	unsigned char leftRating = 99;
 	unsigned char rightRating = 99;
@@ -1065,8 +1282,7 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 		compass = AI_SOUTH;
 	}
 
-	return mod4(choice +1);
-
+	return mod4(choice);
 }
 
 unsigned char rateNode(char x, char y){
@@ -1082,7 +1298,7 @@ unsigned char rateNode(char x, char y){
 }
 
 unsigned char mod4(unsigned char value){
-	while(value > 4)
+	while(value >= 4)
 		value -= 4;
 	return value;
 }
