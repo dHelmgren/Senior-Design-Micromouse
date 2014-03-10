@@ -84,7 +84,7 @@
 #define CLICKS_FOR_NINETY 	0xA2
 
 // Poll 1
-#define CONTINUE_TO_CENTER_R_FIRST 18
+#define CONTINUE_TO_CENTER_R_FIRST 16
 #define CONTINUE_TO_CENTER_L_FIRST 14
 
 // Poll 2 constants for Microtaur
