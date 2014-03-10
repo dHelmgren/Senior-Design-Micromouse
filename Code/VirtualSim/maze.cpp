@@ -378,15 +378,6 @@ bool Maze::initMazeArrayTop1(int m, int n){
 	}
 
 	// Row 4
-	mazeArrayLeft[1][4] = true;
-	mazeArrayLeft[2][4] = true;
-	mazeArrayLeft[5][4] = true;
-	mazeArrayLeft[7][4] = true;
-	mazeArrayLeft[9][4] = true;
-	mazeArrayLeft[11][4] = true;
-	mazeArrayLeft[13][4] = true;
-	mazeArrayLeft[14][4] = true;
-	mazeArrayLeft[15][4] = true;
 	tempMazeArray[3][5] = true;
 	tempMazeArray[4][5] = true;
 	tempMazeArray[5][5] = true;
@@ -395,14 +386,6 @@ bool Maze::initMazeArrayTop1(int m, int n){
 	tempMazeArray[11][5] = true;
 
 	// Row 5
-	mazeArrayLeft[1][5] = true;
-	mazeArrayLeft[2][5] = true;
-	mazeArrayLeft[3][5] = true;
-	mazeArrayLeft[8][5] = true;
-	mazeArrayLeft[10][5] = true;
-	mazeArrayLeft[12][5] = true;
-	mazeArrayLeft[14][5] = true;
-	mazeArrayLeft[15][5] = true;
 	tempMazeArray[3][6] = true;
 	tempMazeArray[4][6] = true;
 	tempMazeArray[6][6] = true;
@@ -411,37 +394,17 @@ bool Maze::initMazeArrayTop1(int m, int n){
 	tempMazeArray[12][6] = true;
 
 	// Row 6
-	mazeArrayLeft[1][6] = true;
-	mazeArrayLeft[2][6] = true;
-	mazeArrayLeft[3][6] = true;
-	mazeArrayLeft[5][6] = true;
-	mazeArrayLeft[6][6] = true;
-	mazeArrayLeft[9][6] = true;
-	mazeArrayLeft[11][6] = true;
-	mazeArrayLeft[13][6] = true;
-	mazeArrayLeft[14][6] = true;
-	mazeArrayLeft[15][6] = true;
 	tempMazeArray[7][7] = true;
 	tempMazeArray[8][7] = true;
 	tempMazeArray[10][7] = true;
 	tempMazeArray[12][7] = true;
 
 	// Row 7
-	for(i = 0; i < DIMENSION - 1; i++){
-		if(i!=2 && i!=8 && i!=10 && i!=12){
-			mazeArrayLeft[i][7] = true;
-		}
-	}
 	tempMazeArray[1][8] = true;
 	tempMazeArray[9][8] = true;
 	tempMazeArray[12][8] = true;
 
 	// Row 8
-	for(i = 0; i < DIMENSION; i++){
-		if(i!=2 && i!=8 && i!=10 && i!=13 && i!=15){
-			mazeArrayLeft[i][8] = true;
-		}
-	}
 	tempMazeArray[2][9] = true;
 	tempMazeArray[7][9] = true;
 	tempMazeArray[10][9] = true;
@@ -449,14 +412,6 @@ bool Maze::initMazeArrayTop1(int m, int n){
 	tempMazeArray[14][9] = true;
 
 	// Row 9
-	mazeArrayLeft[3][9] = true;
-	mazeArrayLeft[4][9] = true;
-	mazeArrayLeft[5][9] = true;
-	mazeArrayLeft[6][9] = true;
-	mazeArrayLeft[8][9] = true;
-	mazeArrayLeft[10][9] = true;
-	mazeArrayLeft[12][9] = true;
-	mazeArrayLeft[15][9] = true;
 	tempMazeArray[1][10] = true;
 	tempMazeArray[6][10] = true;
 	tempMazeArray[8][10] = true;
@@ -530,8 +485,62 @@ bool Maze::initMazeArrayLeft1(int m, int n){
 	mazeArrayLeft[14][3] = true;
 	mazeArrayLeft[15][3] = true;
 
+	// Row 4
+	mazeArrayLeft[1][4] = true;
+	mazeArrayLeft[2][4] = true;
+	mazeArrayLeft[5][4] = true;
+	mazeArrayLeft[7][4] = true;
+	mazeArrayLeft[9][4] = true;
+	mazeArrayLeft[11][4] = true;
+	mazeArrayLeft[13][4] = true;
+	mazeArrayLeft[14][4] = true;
+	mazeArrayLeft[15][4] = true;
 
+	// Row 5
+	mazeArrayLeft[1][5] = true;
+	mazeArrayLeft[2][5] = true;
+	mazeArrayLeft[3][5] = true;
+	mazeArrayLeft[8][5] = true;
+	mazeArrayLeft[10][5] = true;
+	mazeArrayLeft[12][5] = true;
+	mazeArrayLeft[14][5] = true;
+	mazeArrayLeft[15][5] = true;
 
+	// Row 6
+	mazeArrayLeft[1][6] = true;
+	mazeArrayLeft[2][6] = true;
+	mazeArrayLeft[3][6] = true;
+	mazeArrayLeft[5][6] = true;
+	mazeArrayLeft[6][6] = true;
+	mazeArrayLeft[9][6] = true;
+	mazeArrayLeft[11][6] = true;
+	mazeArrayLeft[13][6] = true;
+	mazeArrayLeft[14][6] = true;
+	mazeArrayLeft[15][6] = true;
+
+	// Row 7
+	for(i = 0; i < DIMENSION - 1; i++){
+		if(i!=2 && i!=8 && i!=10 && i!=12){
+			mazeArrayLeft[i][7] = true;
+		}
+	}
+
+	// Row 8
+	for(i = 0; i < DIMENSION; i++){
+		if(i!=2 && i!=8 && i!=10 && i!=13 && i!=15){
+			mazeArrayLeft[i][8] = true;
+		}
+	}
+
+	// Row 9
+	mazeArrayLeft[3][9] = true;
+	mazeArrayLeft[4][9] = true;
+	mazeArrayLeft[5][9] = true;
+	mazeArrayLeft[6][9] = true;
+	mazeArrayLeft[8][9] = true;
+	mazeArrayLeft[10][9] = true;
+	mazeArrayLeft[12][9] = true;
+	mazeArrayLeft[15][9] = true;
 
 	// Row 10
 	mazeArrayLeft[1][10] = true;
