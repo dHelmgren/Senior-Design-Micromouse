@@ -35,25 +35,27 @@
 
 
 #define CLICKS_FOR_180		0xA8
+#define CLICKS_FOR_NINETY 	0x9B
 
 // Poll 1
-#define CONTINUE_TO_CENTER_R_FIRST 18
-#define CONTINUE_TO_CENTER_L_FIRST 15
+#define CONTINUE_TO_CENTER_R_FIRST 16
+#define CONTINUE_TO_CENTER_L_FIRST 14
 
 // Poll 2 constants for Fibrotaur
-#define NO_WALL_LEFT 120
-#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 150)
-#define NO_WALL_RIGHT 120
-#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 150)
+#define NO_WALL_LEFT 100
+#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 100)
+#define NO_WALL_RIGHT 180
+#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 100)
+#define TUPLE_CHANGE 1024
 
-// Poll 3: Move mouse forward 4 cm
-#define LEAVE_UNIT 5
+// Poll 3: Move mouse forward
+#define LEAVE_UNIT 4
 
 // Constants to trigger push autocorrect
-#define LR_DIFF				0
-#define ERROR_CORRECT_L_1	860
+#define LR_DIFF				250
+#define ERROR_CORRECT_L_1	780
 #define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
-#define ERROR_CORRECT_L_2	860
+#define ERROR_CORRECT_L_2	780
 #define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
 #define ERROR_CORRECT_CAP_L	340
 #define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
@@ -63,6 +65,10 @@
 #define STRAIGHT_IR_SELECT 	0b00000001
 #define RIGHT_IR_SELECT 		0b00000101
 #define LEFT_IR_SELECT 	0b00001001
+
+// Stop the mouse because it is about to run into the wall, since the
+// IR sensor readouts are too high and close to the 3 cm max readout
+#define STOP 940
 
 /****** MICROTAUR ********/
 #else // We are programming on Microtaur, not Fibrotaur
@@ -75,6 +81,7 @@
 #define BACKWARD_R_WHEEL	0b11110111
 
 #define CLICKS_FOR_180		0xB0
+#define CLICKS_FOR_NINETY 	0xA2
 
 // Poll 1
 #define CONTINUE_TO_CENTER_R_FIRST 18
@@ -82,18 +89,19 @@
 
 // Poll 2 constants for Microtaur
 #define NO_WALL_LEFT 250
-#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 150)
-#define NO_WALL_RIGHT 215
-#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 50)
+#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 100)
+#define NO_WALL_RIGHT 200
+#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 30)
+#define TUPLE_CHANGE 250
 
 // Poll 3: Move mouse forward 4 cm
 #define LEAVE_UNIT 4
 
 // Constants to trigger push autocorrect
 #define LR_DIFF				160 // Changed from 150
-#define ERROR_CORRECT_L_1	810
+#define ERROR_CORRECT_L_1	800
 #define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
-#define ERROR_CORRECT_L_2	810
+#define ERROR_CORRECT_L_2	800
 #define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
 #define ERROR_CORRECT_CAP_L	340
 #define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
@@ -103,6 +111,10 @@
 #define STRAIGHT_IR_SELECT 	0b00000001
 #define LEFT_IR_SELECT 		0b00000101
 #define RIGHT_IR_SELECT 	0b00001001
+
+// Stop the mouse because it is about to run into the wall, since the
+// IR sensor readouts are too high and close to the 3 cm max readout
+#define STOP 940
 
 #endif//////////////////END MICROTAUR//////////////////
 
@@ -114,8 +126,6 @@
 #define turnAround 	3
 #define backward	0
 #define forward		1
-
-#define CLICKS_FOR_NINETY 	0xA2
 
 #define GO_STRAIGHT 		0b11111001
 #define GO_BACKWARD 		0b11110110
@@ -133,10 +143,6 @@
 // Number of clicks to back up when we have crashed
 #define CRASH_BACK_UP	330
 
-// Stop the mouse because it is about to run into the wall, since the
-// IR sensor readouts are too high and close to the 3 cm max readout
-#define STOP 940
-
 // Constants to trigger pull autocorrect
 #define PULL_CORRECT_L_1	480
 #define PULL_CORRECT_R_1	(PULL_CORRECT_L_1 - LR_DIFF)//450-100
@@ -148,7 +154,7 @@
 #define CLICKS_FOR_AC_2		0x20//was 18
 
 // How long to wait in between states of the code
-#define DELAY 5000
+#define DELAY 2000
 
 
 // Constants for AI Program
@@ -314,7 +320,7 @@ void main(void)
 
 	/**** BEGIN! ****/
 	msDelay(10000);
-
+//PORTB=BREAK;
 	while(true) {
 
 		PORTB = GO_STRAIGHT;
@@ -337,7 +343,7 @@ void main(void)
 		// permission to make a tuple immediately, which is extremely necessary
 		// where in situations where there is a tuple after a tuple
 
-		if(irCvtL <= noWallL||irCvtLP4-irCvtL >= 250){
+		if(irCvtL <= noWallL||irCvtLP4-irCvtL >= TUPLE_CHANGE){
 			PORTB=BREAK;
 			msDelay(DELAY);
 			//blinkTest();
@@ -349,7 +355,7 @@ void main(void)
 			firstNoWall = left;
 			init4StepPoll(!IS_DEAD_END);
 		}
-		else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= 250){
+		else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= TUPLE_CHANGE){
 			PORTB=BREAK;
 			msDelay(DELAY);
 			//blinkTest();
@@ -585,9 +591,9 @@ void goForward(int distance){
 	cmTraveled = 0;
 	while(cmTraveled < distance)
 	{
-PORTB=BREAK;
+//PORTB=BREAK;
 		irCvtL = adConvert(LEFT_IR_SELECT);
-PORTB=GO_STRAIGHT;
+//PORTB=GO_STRAIGHT;
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 
 //ifAutocorrect();
@@ -1208,9 +1214,13 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 	{
 		choice = NODE_STRAIGHT;
 	}
-	else if((forwardRating == rightRating) || (forwardRating == leftRating))
+	else if(forwardRating == rightRating)
 	{
-		choice = NODE_STRAIGHT;
+		choice = NODE_RIGHT;
+	}
+	else if(forwardRating == leftRating)
+	{
+		choice = NODE_LEFT;
 	}
 	else
 	{

@@ -100,6 +100,10 @@ void Maze::updateMazeCoords(float currentTime, int angle, bool isMouseGoingFwd){
 	}
 }
 
+void Maze::drawMaze2(){
+
+}
+
 void Maze::drawMaze(){
 	int i, j;
 
