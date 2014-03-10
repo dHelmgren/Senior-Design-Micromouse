@@ -1052,7 +1052,7 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 	unsigned char choice = 0;
 	
 	if(sawDeadEndLastTime == true && deltaDist == 0){
-		sawDeadEndLastTIme = false;
+		sawDeadEndLastTime = false;
 		return NODE_RIGHT;
 	}
 	
