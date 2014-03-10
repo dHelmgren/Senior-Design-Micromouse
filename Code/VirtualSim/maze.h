@@ -52,11 +52,16 @@ public:
 	Maze();
 	// Initialize first configuration of maze by updating the 2D arrays
 	void initMazeArray();
+	bool initMazeArrayTop1(int m, int n);
+	bool initMazeArrayLeft1(int m, int n);
+	bool initMazeArrayTop2(int m, int n);
+	bool initMazeArrayLeft2(int m, int n);
 	// Initializes where tuples are located in the maze
 	void initIsTuple();
 	// Determines if the mouse had entered into a tuple zone
 	bool isTupleDetected(int mouseXGrid, int mouseYGrid);
 	void drawMaze();
+	void drawMaze2();
 	void updateMazeCoords(float currentTime, int angle, bool isMouseGoingFwd);
 	int getXCoord();
 	int getYCoord();

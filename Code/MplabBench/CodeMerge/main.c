@@ -834,10 +834,17 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 	char backPos = mod4(compass + NODE_BACK);
 	unsigned char choice = 0;
 	
-	currX = (char) (*currentNode).xOffset;
-	currY = (char) (*currentNode).yOffset;
+	if(sawDeadEndLastTime == true && deltaDist == 0){
+		sawDeadEndLastTime = false;
+		return NODE_RIGHT;
+	}
+	else if(deltaDist == 0){
+		return 4; // where four means make a 45 deg turn
+	}
 	
-	
+	if(sawDeadEndLastTime == false){
+		currX = (char) (*currentNode).xOffset;
+		currY = (char) (*currentNode).yOffset;
 
 		//travel adjustment for initial state
 		if(currX != -8 && currY != -8)
@@ -978,11 +985,36 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 		else if (backPos == AI_EAST){
 			currentNode->east = prevNode;			
 		}
+	}//end if not dead end
+	else{
+		if(compass == AI_WEST){ 
+			if(currentNode -> west != NULL){forwardRating = currentNode->west->rating;}
+			if(currentNode -> south != NULL){leftRating = currentNode->south->rating;}
+			if(currentNode -> north != NULL){rightRating = currentNode->north->rating;}
+		}
+		else if(compass == AI_NORTH){
+			if(currentNode -> north != NULL){forwardRating = currentNode->north->rating;}
+			if(currentNode -> west != NULL){leftRating = currentNode->west->rating;}
+			if(currentNode -> east != NULL){rightRating = currentNode->east->rating;}
+		}
+		else if(compass == AI_EAST){
+			if(currentNode -> east != NULL){forwardRating = currentNode->east->rating;}
+			if(currentNode -> north != NULL){leftRating = currentNode->north->rating;}
+			if(currentNode -> south != NULL){rightRating = currentNode->south->rating;}
+		}
+		else if(compass == AI_SOUTH){
+			if (currentNode->south != NULL){forwardRating = currentNode->south->rating;}
+			if (currentNode->east != NULL){leftRating = currentNode->east->rating;}
+			if (currentNode->west != NULL){rightRating = currentNode->west->rating;}
+		}
+		sawDeadEndLastTime = false;
+	}
+	
 
 	if(forwardRating == 99 && leftRating == 99 && rightRating == 99)
 	{
 		currentNode->rating = 99;
-		//sawDeadEndLastTime = true;
+		sawDeadEndLastTime = true;
 		choice = NODE_BACK;
 	}
 	else if((leftRating < rightRating) && (leftRating < forwardRating))
@@ -997,9 +1029,13 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 	{
 		choice = NODE_STRAIGHT;
 	}
-	else if((forwardRating == rightRating) || (forwardRating == leftRating))
+	else if(forwardRating == rightRating)
 	{
-		choice = NODE_STRAIGHT;
+		choice = NODE_RIGHT;
+	}
+	else if(forwardRating == leftRating)
+	{
+		choice = NODE_LEFT;
 	}
 	else
 	{
