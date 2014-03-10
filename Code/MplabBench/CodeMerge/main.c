@@ -84,7 +84,7 @@
 #define CLICKS_FOR_NINETY 	0xA2
 
 // Poll 1
-#define CONTINUE_TO_CENTER_R_FIRST 16
+#define CONTINUE_TO_CENTER_R_FIRST 17
 #define CONTINUE_TO_CENTER_L_FIRST 14
 
 // Poll 2 constants for Microtaur
@@ -99,9 +99,9 @@
 
 // Constants to trigger push autocorrect
 #define LR_DIFF				160 // Changed from 150
-#define ERROR_CORRECT_L_1	800
+#define ERROR_CORRECT_L_1	760
 #define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
-#define ERROR_CORRECT_L_2	800
+#define ERROR_CORRECT_L_2	760
 #define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
 #define ERROR_CORRECT_CAP_L	340
 #define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
