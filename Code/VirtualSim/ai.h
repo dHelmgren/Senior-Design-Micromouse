@@ -53,4 +53,5 @@ public:
 	int rateNode(int x, int y);
 	NavNode* buildNode(int turnDir, int currX, int currY);
 	int modFour(int val);
+	int numChildern(NavNode* check, int compass);
 };

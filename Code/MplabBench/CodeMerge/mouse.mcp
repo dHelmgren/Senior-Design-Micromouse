@@ -33,7 +33,6 @@ file_005=.
 file_006=.
 file_007=.
 file_008=.
-file_009=.
 [GENERATED_FILES]
 file_000=no
 file_001=no
@@ -44,7 +43,6 @@ file_005=no
 file_006=no
 file_007=no
 file_008=no
-file_009=no
 [OTHER_FILES]
 file_000=no
 file_001=no
@@ -55,7 +53,6 @@ file_005=no
 file_006=no
 file_007=no
 file_008=no
-file_009=no
 [FILE_INFO]
 file_000=main.c
 file_001=C:\Program Files (x86)\Microchip\mplabc18\v3.46\h\p18f27j13.h
@@ -65,8 +62,7 @@ file_004=..\..\..\..\..\..\..\..\..\Program Files (x86)\Microchip\mplabc18\v3.46
 file_005=C:\Program Files (x86)\Microchip\mplabc18\v3.46\h\math.h
 file_006=..\..\..\..\..\..\..\..\..\Program Files (x86)\Microchip\mplabc18\v3.46\h\p18cxxx.h
 file_007=..\..\..\..\..\..\..\..\..\Program Files (x86)\Microchip\mplabc18\v3.46\h\pconfig.h
-file_008=mouse.h
-file_009=18f27j13_g.lkr
+file_008=18f27j13_g.lkr
 [SUITE_INFO]
 suite_guid={5B7D72DD-9861-47BD-9F60-2BE967BF8416}
 suite_state=

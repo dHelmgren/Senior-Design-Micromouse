@@ -234,7 +234,7 @@ NavNode * ram mazeArray[16][16];
 #pragma udata
 //#pragma idata emptyNodes
 #pragma udata BIGDATA2
-NavNode ram emptyNodes[93];
+NavNode ram emptyNodes[116];
 #pragma udata
 
 

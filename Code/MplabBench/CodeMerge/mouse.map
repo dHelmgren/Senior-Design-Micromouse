@@ -1,5 +1,5 @@
 MPLINK 4.48, Linker
-Linker Map File - Created Sun Mar 09 14:29:08 2014
+Linker Map File - Created Sun Mar 09 17:16:27 2014
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
@@ -32,15 +32,15 @@ Linker Map File - Created Sun Mar 09 14:29:08 2014
                 DELAYDAT1      udata   0x000018       data   0x000001
             .idata_main.o      idata   0x000060       data   0x000049
            .udata_c018i.o      udata   0x0000a9       data   0x00000a
-            .udata_main.o      udata   0x0000b3       data   0x000004
-                 BIGDATA2      udata   0x000300       data   0x0003ff
-           .idata_c018i.o      idata   0x0006ff       data   0x000000
-          .idata___init.o      idata   0x0006ff       data   0x000000
-          .udata___init.o      udata   0x0006ff       data   0x000000
-         .idata_adcread.o      idata   0x0006ff       data   0x000000
-         .udata_adcread.o      udata   0x0006ff       data   0x000000
-        .idata_adcclose.o      idata   0x0006ff       data   0x000000
-        .udata_adcclose.o      udata   0x0006ff       data   0x000000
+           .idata_c018i.o      idata   0x0000b3       data   0x000000
+          .idata___init.o      idata   0x0000b3       data   0x000000
+          .udata___init.o      udata   0x0000b3       data   0x000000
+         .idata_adcread.o      idata   0x0000b3       data   0x000000
+         .udata_adcread.o      udata   0x0000b3       data   0x000000
+        .idata_adcclose.o      idata   0x0000b3       data   0x000000
+        .udata_adcclose.o      udata   0x0000b3       data   0x000000
+                 BIGDATA2      udata   0x000200       data   0x0004fc
+            .udata_main.o      udata   0x0006fc       data   0x000004
                  BIGDATA1      udata   0x000700       data   0x000200
                    .stack      udata   0x000d00       data   0x000100
               SFR_BANKED0      udata   0x000eb8       data   0x000005
@@ -630,9 +630,9 @@ Linker Map File - Created Sun Mar 09 14:29:08 2014
                   compass   0x00008a       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                 curr_byte   0x0000ac       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                curr_entry   0x0000ae       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-              currentNode   0x0000b3       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              currentNode   0x0006fc       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                  data_ptr   0x0000b0       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-               emptyNodes   0x000300       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+               emptyNodes   0x000200       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
               firstNoWall   0x000065       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
            hardcodedAgent   0x000089       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                         i   0x0000a5       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
@@ -653,7 +653,7 @@ Linker Map File - Created Sun Mar 09 14:29:08 2014
                  memIndex   0x00008c       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                   noWallL   0x00007c       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                   noWallR   0x00007e       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 prevNode   0x0000b5       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 prevNode   0x0006fe       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                      prom   0x0000a9       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                 rightWall   0x000062       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                      root   0x00008f       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
@@ -844,9 +844,9 @@ Linker Map File - Created Sun Mar 09 14:29:08 2014
                 curr_byte   0x0000ac       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                curr_entry   0x0000ae       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                  data_ptr   0x0000b0       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-              currentNode   0x0000b3       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 prevNode   0x0000b5       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-               emptyNodes   0x000300       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+               emptyNodes   0x000200       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              currentNode   0x0006fc       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 prevNode   0x0006fe       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                 mazeArray   0x000700       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                   ADCTRIG   0x000eb8       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
               ADCTRIGbits   0x000eb8       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
