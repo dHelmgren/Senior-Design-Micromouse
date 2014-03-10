@@ -43,6 +43,7 @@ public:
 	NavNode* currentNode;
 	NavNode* prevNode;
 	NavNode emptyNodes[100];
+	unsigned char lastDecisions[3];
 	// Default constructor initializes all of the above variables. See ai.cpp for more info
 	AI();
 	// TRUE = YES WALL
