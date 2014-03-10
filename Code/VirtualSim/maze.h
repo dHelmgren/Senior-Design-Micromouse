@@ -52,6 +52,10 @@ public:
 	Maze();
 	// Initialize first configuration of maze by updating the 2D arrays
 	void initMazeArray();
+	bool initMazeArrayTop1(int i, int j);
+	bool initMazeArrayLeft1(int i, int j);
+	bool initMazeArrayTop2(int i, int j);
+	bool initMazeArrayLeft2(int i, int j);
 	// Initializes where tuples are located in the maze
 	void initIsTuple();
 	// Determines if the mouse had entered into a tuple zone

@@ -1,26 +1,16 @@
-﻿Build started 2/7/2014 3:24:06 PM.
-     1>Project "C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\VirtualSim\project\project\project.vcxproj" on node 2 (build target(s)).
+﻿Build started 3/10/2014 12:57:00 PM.
+     1>Project "C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\VirtualSim\project\project\project.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Creating "Debug\project.unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Debug\project.unsuccessfulbuild".
        ClCompile:
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\main.cpp ..\..\mouse.cpp
-         mouse.cpp
-         main.cpp
-         Generating Code...
-       Link:
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\VirtualSim\project\Debug\project.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\project.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\VirtualSim\project\Debug\project.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\VirtualSim\project\Debug\project.lib" /MACHINE:X86 Debug\ai.obj
-         Debug\main.obj
-         Debug\maze.obj
-         Debug\mouse.obj
-         LINK : C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\VirtualSim\project\Debug\project.exe not found or not built by the last incremental link; performing full link
-         project.vcxproj -> C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\VirtualSim\project\Debug\project.exe
-       Manifest:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\VirtualSim\project\Debug\project.exe;#1" /manifest Debug\project.exe.intermediate.manifest
-       FinalizeBuildStatus:
-         Deleting file "Debug\project.unsuccessfulbuild".
-         Touching "Debug\project.lastbuildstate".
-     1>Done Building Project "C:\Users\Devin\Documents\GitHub\Senior-Design-Micromouse\code\VirtualSim\project\project\project.vcxproj" (build target(s)).
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\maze.cpp
+         maze.cpp
+     1>c:\users\tim\documents\emilia\githubrepos\senior-design-micromouse\code\virtualsim\maze.cpp(12): error C2440: '=' : cannot convert from 'void' to 'bool'
+                 Expressions of type void cannot be converted to other types
+     1>c:\users\tim\documents\emilia\githubrepos\senior-design-micromouse\code\virtualsim\maze.cpp(13): error C2440: '=' : cannot convert from 'void' to 'bool'
+                 Expressions of type void cannot be converted to other types
+     1>Done Building Project "C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\VirtualSim\project\project\project.vcxproj" (build target(s)) -- FAILED.
 
-Build succeeded.
+Build FAILED.
 
-Time Elapsed 00:00:04.24
+Time Elapsed 00:00:02.39
