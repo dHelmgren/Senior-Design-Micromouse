@@ -39,6 +39,10 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	int forwardRating = 99;
 	int backPos = (compass + NODE_BACK) %4;
 
+	if(sawDeadEndLastTime && deltaDist == 0){
+		return NODE_RIGHT;
+	}
+
 	if(!sawDeadEndLastTime){
 		int currX = (int) currentNode->xOffset;
 		int currY = (int) currentNode->yOffset;
