@@ -9,7 +9,7 @@
 
 // Commenting in and commenting out the below #define will determine
 // if we are programming on Fibrotaur right now or on Microtaur
-#define FIBROTAUR 1
+//#define FIBROTAUR 1
 #ifdef FIBROTAUR
 
 /****** FIBROTAUR ********/
@@ -78,13 +78,13 @@
 
 // Poll 1
 #define CONTINUE_TO_CENTER_R_FIRST 18
-#define CONTINUE_TO_CENTER_L_FIRST 13
+#define CONTINUE_TO_CENTER_L_FIRST 14
 
 // Poll 2 constants for Microtaur
 #define NO_WALL_LEFT 250
 #define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 150)
 #define NO_WALL_RIGHT 215
-#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 150)
+#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 50)
 
 // Poll 3: Move mouse forward 4 cm
 #define LEAVE_UNIT 4
@@ -168,6 +168,7 @@
 #define NODE_LEFT 3
 
 #define NULL 0
+#define BLANK {0,0,0,0,0,0,0}
 
 /****** STRUCT ******/
 
@@ -175,11 +176,12 @@ typedef struct NavNode{
 	char rating;
 	char xOffset;
 	char yOffset;
-	struct NavNode* west;
-	struct NavNode* north;
-	struct NavNode* east;
-	struct NavNode* south;
+	struct NavNode * west;
+	struct NavNode * north;
+	struct NavNode * east;
+	struct NavNode * south;
 }NavNode;
+
 
 /****** FUNCTION DEFINITIONS ******/
 
@@ -263,19 +265,28 @@ int compass = AI_NORTH;
 //Temporary stopgap to access the memory array
 int memIndex = 0;
 
-unsigned char sawDeadEndLastTime = false;
 
-struct NavNode root = {14, -8,-8, 0, 0, 0, 0}; 
-struct NavNode blank = {0,0,0,0,0,0,0};
-struct NavNode* currentNode;
-struct NavNode* prevNode;
+unsigned char sawDeadEndLastTime = false;
+NavNode root = {14, -8,-8, 0, 0, 0, 0}; 
+NavNode blank = {0,0,0,0,0,0,0};
+NavNode* currentNode;
+NavNode* prevNode;
 unsigned int i = 0;
 unsigned int j = 0;
-struct NavNode* rom mazeArray[16][16];
-struct NavNode rom emptyNodes[100];
+
+//#pragma idata mazeArray
+#pragma udata BIGDATA1
+NavNode * ram mazeArray[16][16];
+#pragma udata
+//#pragma idata emptyNodes
+#pragma udata BIGDATA2
+NavNode ram emptyNodes[116];
+#pragma udata
+
+
+
 
 /****** CODE ******/
-
 #pragma code 
 
 void main(void)
@@ -290,10 +301,11 @@ void main(void)
 	unsigned char oldIrCvtL = 0;
 	unsigned char oldIrCvtR = 0;
 	unsigned char oldIrCvtS = 0;
+	for(i = 0; i < 116; i++){emptyNodes[i] = blank;}
+	for(i = 0; i < 16; i++){for(j=0; j < 16; j++){mazeArray[i][j] = NULL;}}
+
 	currentNode = &root;
 	prevNode = &root;
-	for(i = 0; i < 100; i++){emptyNodes[i] = blank;}
-	for(i = 0; i < 16; i++){for(j=0; j < 16; j++){mazeArray[i][j] = NULL;}}
 	mazeArray[0][0] = &root;
 
 
@@ -817,11 +829,13 @@ void readTimersToTraveled(void){
 
 unsigned char calcUnitsTraveled(void){
 	unsigned char unitsTraveled = 0;
-	while(traveled1 >= 990){
+	unsigned int tempTraveled = traveled1;
+	//traveled1 += 1000;//HACKY CODE
+	while(tempTraveled >= 990){
 		unitsTraveled++;
-		traveled1 = traveled1 - 990;
+		tempTraveled = tempTraveled - 990;
 	}
-	if(unitsTraveled >= 445)
+	if(tempTraveled >= 445)
 		unitsTraveled++;
 	return unitsTraveled;
 }
@@ -856,7 +870,7 @@ void msDelay(unsigned int itime)
 }
 
 unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
-if(hardcodedAgent == 0 && !rightWall){
+/*if(hardcodedAgent == 0 && !rightWall){
 		hardcodedAgent++;
 		return NODE_RIGHT;
 	}
@@ -1017,9 +1031,9 @@ if(hardcodedAgent == 0 && !rightWall){
 	else{
 		return NODE_BACK;
 	}
+*/
 
-
-/*	//node Rating variables
+	//node Rating variables
 	unsigned char leftRating = 99;
 	unsigned char rightRating = 99;
 	unsigned char forwardRating = 99;
@@ -1229,8 +1243,7 @@ if(hardcodedAgent == 0 && !rightWall){
 		compass = AI_SOUTH;
 	}
 
-	return mod4(choice +1);
-*/
+	return mod4(choice);
 }
 
 unsigned char rateNode(char x, char y){
@@ -1246,7 +1259,7 @@ unsigned char rateNode(char x, char y){
 }
 
 unsigned char mod4(unsigned char value){
-	while(value > 4)
+	while(value >= 4)
 		value -= 4;
 	return value;
 }
