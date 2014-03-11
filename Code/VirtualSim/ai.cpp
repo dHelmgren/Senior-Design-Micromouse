@@ -21,6 +21,13 @@ AI::AI(){
 	{
 		emptyNodes[i] = blank;
 	}
+	for(i = 0; i < 16; i++)
+	{
+		for(int j = 0; j < 16; j++)
+		{
+			mazeArray[i][j] = NULL;
+		}
+	}
 	mazeArray[0][0] = &root;
 
 	// TEMPORARY dead end fix
@@ -289,87 +296,87 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 		sawDeadEndLastTime = true;
 		choice = NODE_BACK;
 	}
-	else
+	/*else
 	{
-		int exploredValue[3] = {0,0,0}; //Number of children forward, left, right
+		int exploredChildren[3] = {4,4,4}; //Number of children forward, left, right
 		int exploredScore[3] = {0,0,0}; //Score forward, left, right
 		if(compass == AI_WEST){ 
 			if(currentNode -> west != NULL){
-				exploredValue[0] = numChildern(currentNode->west,compass);
+				exploredChildren[0] = numChildern(currentNode->west,compass);
 				exploredScore[0] = currentNode->west->rating;
 			}
 			if(currentNode -> south != NULL){
-				exploredValue[1] = numChildern(currentNode->south, compass);
+				exploredChildren[1] = numChildern(currentNode->south, compass);
 				exploredScore[1] = currentNode->south->rating;
 			}
 			if(currentNode -> north != NULL){
-				exploredValue[2] = numChildern(currentNode->north, compass);
+				exploredChildren[2] = numChildern(currentNode->north, compass);
 				exploredScore[2] = currentNode->north->rating;
 			}
 		}
 		else if(compass == AI_NORTH){
 			if(currentNode -> north != NULL){
-				exploredValue[0] = numChildern(currentNode->north, compass);
+				exploredChildren[0] = numChildern(currentNode->north, compass);
 				exploredScore[0] = currentNode->north->rating;
 			}
 			if(currentNode -> west != NULL){
-				exploredValue[1] = numChildern(currentNode->west, compass);
+				exploredChildren[1] = numChildern(currentNode->west, compass);
 				exploredScore[1] = currentNode->west->rating;
 			}
 			if(currentNode -> east != NULL){
-				exploredValue[2] = numChildern(currentNode->east,compass);
+				exploredChildren[2] = numChildern(currentNode->east,compass);
 				exploredScore[2] = currentNode->east->rating;
 			}
 		}
 		else if(compass == AI_EAST){
 			if(currentNode -> east != NULL){
-				exploredValue[0] = numChildern(currentNode->east,compass);
+				exploredChildren[0] = numChildern(currentNode->east,compass);
 				exploredScore[0] = currentNode->east->rating;
 			}
 			if(currentNode -> north != NULL){
-				exploredValue[1] = numChildern(currentNode->north,compass);
+				exploredChildren[1] = numChildern(currentNode->north,compass);
 				exploredScore[1] = currentNode->north->rating;
 			}
 			if(currentNode -> south != NULL){
-				exploredValue[2] = numChildern(currentNode->south,compass);
+				exploredChildren[2] = numChildern(currentNode->south,compass);
 				exploredScore[2] = currentNode->south->rating;
 			}
 		}
 		else if(compass == AI_SOUTH){
 			if (currentNode->south != NULL){
-				exploredValue[0] = numChildern(currentNode->south,compass);
+				exploredChildren[0] = numChildern(currentNode->south,compass);
 				exploredScore[0] = currentNode->south->rating;
 			}
 			if (currentNode->east != NULL){
-				exploredValue[1] = numChildern(currentNode->east,compass);
+				exploredChildren[1] = numChildern(currentNode->east,compass);
 				exploredScore[1] = currentNode->east->rating;
 			}
 			if (currentNode->west != NULL){
-				exploredValue[2] = numChildern(currentNode->west,compass);
+				exploredChildren[2] = numChildern(currentNode->west,compass);
 				exploredScore[2] = currentNode->west->rating;
 			}
 		}
 
 		//check to see if left is least explored
-		if((exploredValue[1] < exploredValue[0]) && (exploredValue[1] < exploredValue[2]) && exploredScore[1] != 99)
+		if((exploredChildren[1] < exploredChildren[0]) && (exploredChildren[1] < exploredChildren[2]) && exploredScore[1] != 99)
 		{
 			choice = NODE_LEFT;
 			pickedMade = 1;
 		}
-		else if((exploredValue[2] < exploredValue[1]) && (exploredValue[2] < exploredValue[0]) && exploredScore[2] != 99)
+		else if((exploredChildren[2] < exploredChildren[1]) && (exploredChildren[2] < exploredChildren[0]) && exploredScore[2] != 99)
 		{
 			choice = NODE_RIGHT;
 			pickedMade = 1;
 		}
-		else if((exploredValue[0] < exploredValue[2]) && (exploredValue[0] < exploredValue[1]) && exploredScore[0] != 99)
+		else if((exploredChildren[0] < exploredChildren[2]) && (exploredChildren[0] < exploredChildren[1]) && exploredScore[0] != 99)
 		{
 			choice = NODE_STRAIGHT;
 			pickedMade = 1;
 		}
 	}
 	if(pickedMade != 1)
-	{
-		if((leftRating < rightRating) && (leftRating < forwardRating))
+	{*/
+		else if((leftRating < rightRating) && (leftRating < forwardRating))
 		{
 			choice = NODE_LEFT;
 		}
@@ -389,7 +396,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 		{
 			choice = NODE_RIGHT;
 		}
-	}
+	//}
 
 	//make the node I chose the current node
 	int picked = (compass + choice)%4;
