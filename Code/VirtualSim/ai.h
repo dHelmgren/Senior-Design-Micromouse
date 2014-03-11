@@ -43,6 +43,7 @@ public:
 	NavNode* currentNode;
 	NavNode* prevNode;
 	NavNode emptyNodes[100];
+	unsigned char lastDecisions[3];
 	// Default constructor initializes all of the above variables. See ai.cpp for more info
 	AI();
 	// TRUE = YES WALL
@@ -53,4 +54,5 @@ public:
 	int rateNode(int x, int y);
 	NavNode* buildNode(int turnDir, int currX, int currY);
 	int modFour(int val);
+	int numChildern(NavNode* check, int compass);
 };

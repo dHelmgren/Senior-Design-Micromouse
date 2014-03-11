@@ -281,31 +281,114 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 		printf(" south\n");
 	}
 
+	unsigned char pickedMade = 0;
+
 	if(forwardRating == 99 && leftRating == 99 && rightRating == 99)
 	{
 		currentNode->rating = 99;
 		sawDeadEndLastTime = true;
 		choice = NODE_BACK;
 	}
-	else if((leftRating < rightRating) && (leftRating < forwardRating))
-	{
-		choice = NODE_LEFT;
-	}
-	else if((rightRating < leftRating) && (rightRating < forwardRating))
-	{
-		choice = NODE_RIGHT;
-	}
-	else if((forwardRating < leftRating) && (forwardRating < rightRating))
-	{
-		choice = NODE_STRAIGHT;
-	}
-	else if((forwardRating == rightRating) || (forwardRating == leftRating))
-	{
-		choice = NODE_STRAIGHT;
-	}
 	else
 	{
-		choice = NODE_RIGHT;
+		int exploredValue[3] = {0,0,0}; //Number of children forward, left, right
+		int exploredScore[3] = {0,0,0}; //Score forward, left, right
+		if(compass == AI_WEST){ 
+			if(currentNode -> west != NULL){
+				exploredValue[0] = numChildern(currentNode->west,compass);
+				exploredScore[0] = currentNode->west->rating;
+			}
+			if(currentNode -> south != NULL){
+				exploredValue[1] = numChildern(currentNode->south, compass);
+				exploredScore[1] = currentNode->south->rating;
+			}
+			if(currentNode -> north != NULL){
+				exploredValue[2] = numChildern(currentNode->north, compass);
+				exploredScore[2] = currentNode->north->rating;
+			}
+		}
+		else if(compass == AI_NORTH){
+			if(currentNode -> north != NULL){
+				exploredValue[0] = numChildern(currentNode->north, compass);
+				exploredScore[0] = currentNode->north->rating;
+			}
+			if(currentNode -> west != NULL){
+				exploredValue[1] = numChildern(currentNode->west, compass);
+				exploredScore[1] = currentNode->west->rating;
+			}
+			if(currentNode -> east != NULL){
+				exploredValue[2] = numChildern(currentNode->east,compass);
+				exploredScore[2] = currentNode->east->rating;
+			}
+		}
+		else if(compass == AI_EAST){
+			if(currentNode -> east != NULL){
+				exploredValue[0] = numChildern(currentNode->east,compass);
+				exploredScore[0] = currentNode->east->rating;
+			}
+			if(currentNode -> north != NULL){
+				exploredValue[1] = numChildern(currentNode->north,compass);
+				exploredScore[1] = currentNode->north->rating;
+			}
+			if(currentNode -> south != NULL){
+				exploredValue[2] = numChildern(currentNode->south,compass);
+				exploredScore[2] = currentNode->south->rating;
+			}
+		}
+		else if(compass == AI_SOUTH){
+			if (currentNode->south != NULL){
+				exploredValue[0] = numChildern(currentNode->south,compass);
+				exploredScore[0] = currentNode->south->rating;
+			}
+			if (currentNode->east != NULL){
+				exploredValue[1] = numChildern(currentNode->east,compass);
+				exploredScore[1] = currentNode->east->rating;
+			}
+			if (currentNode->west != NULL){
+				exploredValue[2] = numChildern(currentNode->west,compass);
+				exploredScore[2] = currentNode->west->rating;
+			}
+		}
+
+		//check to see if left is least explored
+		if((exploredValue[1] < exploredValue[0]) && (exploredValue[1] < exploredValue[2]) && exploredScore[1] != 99)
+		{
+			choice = NODE_LEFT;
+			pickedMade = 1;
+		}
+		else if((exploredValue[2] < exploredValue[1]) && (exploredValue[2] < exploredValue[0]) && exploredScore[2] != 99)
+		{
+			choice = NODE_RIGHT;
+			pickedMade = 1;
+		}
+		else if((exploredValue[0] < exploredValue[2]) && (exploredValue[0] < exploredValue[1]) && exploredScore[0] != 99)
+		{
+			choice = NODE_STRAIGHT;
+			pickedMade = 1;
+		}
+	}
+	if(pickedMade != 1)
+	{
+		if((leftRating < rightRating) && (leftRating < forwardRating))
+		{
+			choice = NODE_LEFT;
+		}
+		else if((rightRating < leftRating) && (rightRating < forwardRating))
+		{
+			choice = NODE_RIGHT;
+		}
+		else if((forwardRating < leftRating) && (forwardRating < rightRating))
+		{
+			choice = NODE_STRAIGHT;
+		}
+		else if((forwardRating == rightRating) || (forwardRating == leftRating))
+		{
+			choice = NODE_STRAIGHT;
+		}
+		else
+		{
+			choice = NODE_RIGHT;
+		}
 	}
 
 	//make the node I chose the current node
@@ -343,6 +426,29 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 int AI::rateNode(int x, int y)
 {
 	return abs(x)+abs(y)-1;
+}
+
+int AI::numChildern(NavNode* check, int compass)
+{
+	int numChildern = 0;
+	if(check->east != NULL && compass != AI_WEST)
+	{
+		numChildern = numChildern +1;
+	}
+	if(check->west != NULL && compass != AI_EAST)
+	{
+		numChildern = numChildern +1;
+	}
+	if(check->north != NULL && compass != AI_SOUTH)
+	{
+		numChildern = numChildern +1;
+	}
+	if(check->south != NULL && compass != AI_NORTH)
+	{
+		numChildern = numChildern +1;
+	}
+	return numChildern;
+
 }
 
 NavNode* AI::buildNode(int turnDir, int currX, int currY)
