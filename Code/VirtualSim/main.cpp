@@ -39,7 +39,7 @@ void drawScene() {
 	glTranslatef(-maze.getXCoord(), -maze.getYCoord(), 0);
 
 	// Draw the maze!
-	maze.initMazeArray();
+	//maze.initMazeArray();
 	maze.drawMaze();
 
 	// Only process if the mouse is in the center of the grid

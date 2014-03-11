@@ -51,11 +51,11 @@ public:
 	// Ctor
 	Maze();
 	// Initialize first configuration of maze by updating the 2D arrays
-	void initMazeArray();
-	bool initMazeArrayTop1(int m, int n);
-	bool initMazeArrayLeft1(int m, int n);
-	bool initMazeArrayTop2(int m, int n);
-	bool initMazeArrayLeft2(int m, int n);
+//	void initMazeArray();
+	void initMazeArrayTop1(bool (&mazeArray)[17][17], int m, int n);
+	void initMazeArrayLeft1(bool (&mazeArray)[17][17], int m, int n);
+	void initMazeArrayTop2(bool (&mazeArray)[17][17], int m, int n);
+	void initMazeArrayLeft2(bool (&mazeArray)[17][17], int m, int n);
 	// Initializes where tuples are located in the maze
 	void initIsTuple();
 	// Determines if the mouse had entered into a tuple zone

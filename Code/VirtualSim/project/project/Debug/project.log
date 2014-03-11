@@ -1,16 +1,17 @@
-﻿Build started 3/10/2014 12:57:00 PM.
+﻿Build started 3/11/2014 9:49:50 AM.
      1>Project "C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\VirtualSim\project\project\project.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Touching "Debug\project.unsuccessfulbuild".
+         Creating "Debug\project.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\maze.cpp
-         maze.cpp
-     1>c:\users\tim\documents\emilia\githubrepos\senior-design-micromouse\code\virtualsim\maze.cpp(12): error C2440: '=' : cannot convert from 'void' to 'bool'
-                 Expressions of type void cannot be converted to other types
-     1>c:\users\tim\documents\emilia\githubrepos\senior-design-micromouse\code\virtualsim\maze.cpp(13): error C2440: '=' : cannot convert from 'void' to 'bool'
-                 Expressions of type void cannot be converted to other types
-     1>Done Building Project "C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\VirtualSim\project\project\project.vcxproj" (build target(s)) -- FAILED.
+         All outputs are up-to-date.
+       Link:
+         All outputs are up-to-date.
+         project.vcxproj -> C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\VirtualSim\project\Debug\project.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\project.unsuccessfulbuild".
+         Touching "Debug\project.lastbuildstate".
+     1>Done Building Project "C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\VirtualSim\project\project\project.vcxproj" (build target(s)).
 
-Build FAILED.
+Build succeeded.
 
-Time Elapsed 00:00:02.39
+Time Elapsed 00:00:00.18
