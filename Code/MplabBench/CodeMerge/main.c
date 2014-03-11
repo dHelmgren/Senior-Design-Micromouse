@@ -1,3 +1,4 @@
+/****** INCLUDES ******/
 #include <p18f27j13.h>
 #include <timers.h>
 #include <delays.h>
@@ -6,24 +7,118 @@
 
 /****** MACROS ******/
 
+// Commenting in and commenting out the below #define will determine
+// if we are programming on Fibrotaur right now or on Microtaur
 //#define FIBROTAUR 1
 #ifdef FIBROTAUR
-#define DIFF 100
+
+/****** FIBROTAUR ********/
+// Navigation constants for Fibrotaur
+
+/*
 #define GO_RIGHT 			0b11101010
 #define GO_LEFT 			0b11110101
 #define BREAK_R_WHEEL		0b11111011
 #define BREAK_L_WHEEL 		0b11111101
 #define BACKWARD_R_WHEEL	0b11111110
 #define BACKWARD_L_WHEEL	0b11110111
-#else
-#define DIFF 0
+*/
+
+/*TESTING*/
 #define GO_LEFT 			0b11101010
 #define GO_RIGHT 			0b11110101
 #define BREAK_L_WHEEL		0b11111011
 #define BREAK_R_WHEEL 		0b11111101
 #define BACKWARD_L_WHEEL	0b11111110
 #define BACKWARD_R_WHEEL	0b11110111
-#endif
+/*END TESTING*/
+
+
+#define CLICKS_FOR_180		0xA8
+#define CLICKS_FOR_NINETY 	0x9B
+#define CLICKS_FOR_45		0x4C
+
+// Poll 1
+#define CONTINUE_TO_CENTER_R_FIRST 16
+#define CONTINUE_TO_CENTER_L_FIRST 14
+
+// Poll 2 constants for Fibrotaur
+#define NO_WALL_LEFT 100
+#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 100)
+#define NO_WALL_RIGHT 180
+#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 100)
+#define TUPLE_CHANGE 1024
+
+// Poll 3: Move mouse forward
+#define LEAVE_UNIT 4
+
+// Constants to trigger push autocorrect
+#define LR_DIFF				250
+#define ERROR_CORRECT_L_1	780
+#define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
+#define ERROR_CORRECT_L_2	780
+#define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
+#define ERROR_CORRECT_CAP_L	340
+#define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
+#define RIGHT_BUFFER		30
+
+// Constants for reading from the ADC
+#define STRAIGHT_IR_SELECT 	0b00000001
+#define RIGHT_IR_SELECT 		0b00000101
+#define LEFT_IR_SELECT 	0b00001001
+
+// Stop the mouse because it is about to run into the wall, since the
+// IR sensor readouts are too high and close to the 3 cm max readout
+#define STOP 940
+
+/****** MICROTAUR ********/
+#else // We are programming on Microtaur, not Fibrotaur
+// Navigation constants for Microtaur
+#define GO_LEFT 			0b11101010
+#define GO_RIGHT 			0b11110101
+#define BREAK_L_WHEEL		0b11111011
+#define BREAK_R_WHEEL 		0b11111101
+#define BACKWARD_L_WHEEL	0b11111110
+#define BACKWARD_R_WHEEL	0b11110111
+
+#define CLICKS_FOR_180		0xB0
+#define CLICKS_FOR_NINETY 	0xA4
+#define CLICKS_FOR_45		0x3C
+
+// Poll 1
+#define CONTINUE_TO_CENTER_R_FIRST 17
+#define CONTINUE_TO_CENTER_L_FIRST 14
+
+// Poll 2 constants for Microtaur
+#define NO_WALL_LEFT 250
+#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 100)
+#define NO_WALL_RIGHT 200
+#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 30)
+#define TUPLE_CHANGE 250
+
+// Poll 3: Move mouse forward 4 cm
+#define LEAVE_UNIT 4
+
+// Constants to trigger push autocorrect
+#define LR_DIFF				160 // Changed from 150
+#define ERROR_CORRECT_L_1	760
+#define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
+#define ERROR_CORRECT_L_2	760
+#define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
+#define ERROR_CORRECT_CAP_L	340
+#define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
+#define RIGHT_BUFFER		30
+
+// Constants for reading from the ADC
+#define STRAIGHT_IR_SELECT 	0b00000001
+#define LEFT_IR_SELECT 		0b00000101
+#define RIGHT_IR_SELECT 	0b00001001
+
+// Stop the mouse because it is about to run into the wall, since the
+// IR sensor readouts are too high and close to the 3 cm max readout
+#define STOP 940
+
+#endif//////////////////END MICROTAUR//////////////////
 
 #define true    	1 
 #define false   	0 
@@ -33,13 +128,6 @@
 #define turnAround 	3
 #define backward	0
 #define forward		1
-
-
-#define STRAIGHT_IR_SELECT 	0b00000001
-#define LEFT_IR_SELECT 		0b00000101
-#define RIGHT_IR_SELECT 	0b00001001
-#define CLICKS_FOR_NINETY 	0xA2
-#define CLICKS_FOR_180		0xB0
 
 #define GO_STRAIGHT 		0b11111001
 #define GO_BACKWARD 		0b11110110
@@ -52,35 +140,10 @@
 #define IS_DEAD_END 	1
 
 // Poll 2: No wall means wall is farther than digital value 250
-// TODO: We may need to adjust this value lower, depending on testing
 #define NO_WALL_STRAIGHT 350
-#define NO_WALL_LEFT 250
-#define NO_WALL_LEFT_IN_TUPLE (NO_WALL_LEFT + 150)
-#define NO_WALL_RIGHT 215
-#define NO_WALL_RIGHT_IN_TUPLE (NO_WALL_RIGHT + 150)
-
-// Poll 3: Move mouse forward 4 cm
-#define LEAVE_UNIT 4
-
-#define CONTINUE_TO_CENTER_R_FIRST 18  // Unsure about this value....................
-#define CONTINUE_TO_CENTER_L_FIRST 13
 
 // Number of clicks to back up when we have crashed
 #define CRASH_BACK_UP	330
-
-// Stop the mouse because it is about to run into the wall, since the
-// IR sensor readouts are too high and close to the 3 cm max readout
-#define STOP 940
-
-// Constants to trigger push autocorrect
-#define LR_DIFF				160 // Changed from 150
-#define ERROR_CORRECT_L_1	810-DIFF
-#define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
-#define ERROR_CORRECT_L_2	810-DIFF
-#define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
-#define ERROR_CORRECT_CAP_L	340-DIFF
-#define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
-#define RIGHT_BUFFER		30
 
 // Constants to trigger pull autocorrect
 #define PULL_CORRECT_L_1	480
@@ -93,7 +156,7 @@
 #define CLICKS_FOR_AC_2		0x20//was 18
 
 // How long to wait in between states of the code
-#define DELAY 5000
+#define DELAY 2000
 
 
 // Constants for AI Program
@@ -118,8 +181,6 @@
 
 /****** STRUCT ******/
 
-//NavNode Struct
-
 typedef struct NavNode{
 	char rating;
 	char xOffset;
@@ -139,7 +200,7 @@ void blinkTest(void);
 unsigned char calcUnitsTraveled(void);
 void clearTimers(void);
 void goForward(int distance); // Step 2 of 4 step polling process
-void ifAutocorrect(void);
+unsigned char ifAutocorrect(void);
 void ifSuicide(void);
 void initial(void);
 void init4StepPoll(unsigned char isDeadEnd);
@@ -196,13 +257,6 @@ int noWallR = -1;
 unsigned int traveled0 = 0;
 unsigned int traveled1 = 0;
 
-/* Timer values which indicate how long the mouse has been stuck in
-   the for loop (and is therefore probably stuck in front a wall) */
-unsigned char stuck0L = 0;
-unsigned char stuck0H = 0;
-unsigned char stuck1L = 0;
-unsigned char stuck1H = 0;
-
 /* Since we have run into trouble when the mouse has tried to autocorrect
    immediately after a tuple, wait just a few moments to make sure there isn't
    another tuple ahead of us */
@@ -256,7 +310,7 @@ void main(void)
 	unsigned char oldIrCvtL = 0;
 	unsigned char oldIrCvtR = 0;
 	unsigned char oldIrCvtS = 0;
-	for(i = 0; i < 93; i++){emptyNodes[i] = blank;}
+	for(i = 0; i < 116; i++){emptyNodes[i] = blank;}
 	for(i = 0; i < 16; i++){for(j=0; j < 16; j++){mazeArray[i][j] = NULL;}}
 
 	currentNode = &root;
@@ -269,7 +323,7 @@ void main(void)
 
 	/**** BEGIN! ****/
 	msDelay(10000);
-
+//PORTB=BREAK;
 	while(true) {
 
 		PORTB = GO_STRAIGHT;
@@ -282,6 +336,7 @@ void main(void)
 		irCvtS = adConvert(STRAIGHT_IR_SELECT);
 
 		PORTB = BREAK;
+		Nop();
 
 		// Determine if the L or R sensors have seen the absence of
 		// a wall. If they have, then initiate the 4-step polling process
@@ -292,7 +347,22 @@ void main(void)
 		// permission to make a tuple immediately, which is extremely necessary
 		// where in situations where there is a tuple after a tuple
 
-		if(irCvtL <= noWallL||irCvtLP4-irCvtL >= 250){
+		if(irCvtS >= STOP){
+			PORTB=BREAK;
+			msDelay(DELAY);
+			straightWall = true;
+			init4StepPoll(IS_DEAD_END);
+		}
+
+		// Determine if we need to autocorrect, and if we do, then do so.
+		// Do not autocorrect if we haven't traveled far enough away from the
+		// current tuple, because statistically, immediate post-turn autocorrect
+		// has put the mouse at an incorrect angle (turns are very accurate)
+		if(ifAutocorrect()==true){
+			continue;
+		}
+
+		if(irCvtL <= noWallL||irCvtLP4-irCvtL >= TUPLE_CHANGE){
 			PORTB=BREAK;
 			msDelay(DELAY);
 			//blinkTest();
@@ -304,7 +374,7 @@ void main(void)
 			firstNoWall = left;
 			init4StepPoll(!IS_DEAD_END);
 		}
-		else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= 250){
+		else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= TUPLE_CHANGE){
 			PORTB=BREAK;
 			msDelay(DELAY);
 			//blinkTest();
@@ -313,18 +383,6 @@ void main(void)
 			firstNoWall = right;
 			init4StepPoll(!IS_DEAD_END);		
 		}
-		else if(irCvtS >= STOP){
-			PORTB=BREAK;
-			msDelay(DELAY);
-			straightWall = true;
-			init4StepPoll(IS_DEAD_END);
-		}
-
-		// Determine if we need to autocorrect, and if we do, then do so.
-		// Do not autocorrect if we haven't traveled far enough away from the
-		// current tuple, because statistically, immediate post-turn autocorrect
-		// has put the mouse at an incorrect angle (turns are very accurate)
-		ifAutocorrect();
 
 		irCvtLP4 = irCvtLP3;
 		irCvtRP4 = irCvtRP3;
@@ -339,26 +397,31 @@ void main(void)
 
 }//main
 
-void ifAutocorrect(void){
+unsigned char ifAutocorrect(void){
 	// Determine if autocorrect is needed
 	// If we're too close on the left side or too far on the right side
 	if(irCvtL >= ERROR_CORRECT_L_1/* || (irCvtR <= PULL_CORRECT_R_1 && irCvtR >= NO_WALL_RIGHT)*/){
 		if(irCvtL >= ERROR_CORRECT_L_2/* || (irCvtR <= PULL_CORRECT_R_2 && irCvtR >= NO_WALL_RIGHT)*/){
 			autocorrect(left, CLICKS_FOR_AC_2, forward);
+			return true;
 		}
 		else{
 			autocorrect(left, CLICKS_FOR_AC_1, forward);
+			return true;
 		}
 	}
 	// Else if we're too close on the right side or too far on the left side
 	else if(irCvtR >= ERROR_CORRECT_R_1/* || (irCvtL <= PULL_CORRECT_L_1 && irCvtL >= NO_WALL_LEFT)*/){
 		if(irCvtR >= ERROR_CORRECT_R_2/* || (irCvtL <= PULL_CORRECT_L_2 && irCvtL >= NO_WALL_LEFT)*/){
 			autocorrect(right, CLICKS_FOR_AC_2, forward);
+			return true;
 		}
 		else{
 			autocorrect(right, CLICKS_FOR_AC_1, forward);
+			return true;
 		}
 	}
+	return false;
 }
 
 void autocorrect(unsigned char direction, unsigned char clicks, unsigned char howAutocorrect){
@@ -540,9 +603,9 @@ void goForward(int distance){
 	cmTraveled = 0;
 	while(cmTraveled < distance)
 	{
-PORTB=BREAK;
+//PORTB=BREAK;
 		irCvtL = adConvert(LEFT_IR_SELECT);
-PORTB=GO_STRAIGHT;
+//PORTB=GO_STRAIGHT;
 		irCvtR = adConvert(RIGHT_IR_SELECT);
 
 //ifAutocorrect();
@@ -684,8 +747,8 @@ void turn(unsigned char direction)
 		// directly against a wall. Thus, go backward first
 		PORTB=GO_BACKWARD;
 
-		Delay10TCYx(2000); //10ms delay
-		while(countA < 100 && countB < 100) {
+		Delay10TCYx(10);
+		while(countA < 90 && countB < 90) {
 			// check again and repeat.
 			countA = TMR0L;
 			countB = TMR1L;
@@ -693,6 +756,7 @@ void turn(unsigned char direction)
 		countA = 0;
 		countB = 0;
 		PORTB=BREAK;
+		msDelay(DELAY);
 
 		clearTimers();
 
@@ -706,6 +770,8 @@ void turn(unsigned char direction)
 		else{
 			PORTB=GO_RIGHT;
 		}
+		
+		turnClicks = CLICKS_FOR_45;
 	}//else
 
 	for(i = 0; i < numTurns; ++i){
@@ -720,10 +786,6 @@ void turn(unsigned char direction)
 		countA = 0;
 		countB = 0;
     	clearTimers();
-
-		if(direction == NODE_45){
-			break;
-		}
 
 		Delay10TCYx(2000); //10ms delay
 
@@ -816,11 +878,13 @@ void readTimersToTraveled(void){
 
 unsigned char calcUnitsTraveled(void){
 	unsigned char unitsTraveled = 0;
-	while(traveled1 >= 990){
+	unsigned int tempTraveled = traveled1;
+	//traveled1 += 1000;//HACKY CODE
+	while(tempTraveled >= 990){
 		unitsTraveled++;
-		traveled1 = traveled1 - 990;
+		tempTraveled = tempTraveled - 990;
 	}
-	if(unitsTraveled >= 445)
+	if(tempTraveled >= 445)
 		unitsTraveled++;
 	return unitsTraveled;
 }
@@ -872,7 +936,7 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 		return NODE_RIGHT;
 	}
 	else if(deltaDist == 0){
-		return 4; // where four means make a 45 deg turn
+		return NODE_45; // make a 45 deg turn
 	}
 	
 	if(sawDeadEndLastTime == false){
@@ -1101,9 +1165,257 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 		compass = AI_SOUTH;
 	}
 
-	return mod4(choice +1);
-
+	return mod4(choice);
 }
+
+
+
+/*unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsigned char straightWall, unsigned char rightWall){
+	//node Rating variables
+	unsigned char leftRating = 99;
+	unsigned char rightRating = 99;
+	unsigned char forwardRating = 99;
+	
+	//location variables
+	char currX = 0;
+	char currY = 0;
+	char nodePos = 0;
+	char backPos = mod4(compass + NODE_BACK);
+	unsigned char choice = 0;
+	
+	if(sawDeadEndLastTime == true && deltaDist == 0){
+		sawDeadEndLastTime = false;
+		return NODE_RIGHT;
+	}
+	
+	if(sawDeadEndLastTime == false){
+		currX = (char) (*currentNode).xOffset;
+		currY = (char) (*currentNode).yOffset;
+
+		//travel adjustment for initial state
+		if(currX != -8 && currY != -8)
+		{
+			deltaDist--;
+		}
+	
+		//determine the proper deltaDistance so that we can get an accurate location in the maze
+		if(compass == AI_NORTH)
+		{
+			//deals with crossing the origin, as each square is measured by the outermost corner
+			if((*currentNode).yOffset < 0 && deltaDist > -(*currentNode).yOffset)
+			{
+				//if we cross the origin, we modify the distance to skip zero
+				deltaDist++;
+			}
+			currY += deltaDist;
+		}
+		else if(compass == AI_SOUTH)
+		{
+			if((*currentNode).yOffset > 0 && deltaDist > (*currentNode).yOffset)
+			{
+				deltaDist++;
+			}
+			currY -= deltaDist;
+		}
+		else if(compass == AI_EAST)
+		{
+			if((*currentNode).xOffset < 0 && deltaDist > -(*currentNode).xOffset)
+			{
+				deltaDist++;
+			}
+			currX += deltaDist;
+		}
+		else if(compass == AI_WEST)
+		{
+			if((*currentNode).xOffset > 0 && deltaDist > (*currentNode).xOffset)
+			{
+				deltaDist++;
+			}
+			currX -= deltaDist;
+		}
+
+		//Fix the node's position to match its real world location and store it in the maze array.
+		currentNode -> xOffset = currX;
+		currentNode -> yOffset = currY;
+
+		//Make adjustments to the index based on location
+		//Add 8 so that the position can be indexed into the double array
+		if(currX > 0 && currY > 0){
+			//currX -1 currY -1
+			mazeArray[currX+7][currY+7] = currentNode;
+		}
+		else if (currX > 0)
+		{
+			//currX -1
+			mazeArray[currX+7][currY+8] = currentNode;
+		}
+		else if (currY > 0)
+		{
+			//currY -1
+			mazeArray[currX+8][currY+7] = currentNode;
+		}
+		else{
+			//No adjustments
+			mazeArray[currX+8][currY+8] = currentNode;
+		}
+	
+		if (leftWall == false){
+			int nodePos = mod4(compass + NODE_LEFT);
+			if (nodePos == AI_WEST){
+				(*currentNode).west = buildNode(AI_WEST, currX, currY);
+				leftRating = currentNode->west->rating;
+			}
+			else if (nodePos == AI_NORTH){
+				(*currentNode).north = buildNode(AI_NORTH, currX, currY);
+				leftRating = currentNode->north->rating;
+			}
+			else if (nodePos == AI_SOUTH){
+				(*currentNode).south = buildNode(AI_SOUTH, currX, currY);
+				leftRating = currentNode->south->rating;
+			}
+			else if (nodePos == AI_EAST){
+				currentNode->east = buildNode(AI_EAST, currX, currY);
+				leftRating = currentNode->east->rating;
+			}
+		}
+		if (straightWall == false){
+			int nodePos = mod4(compass + NODE_STRAIGHT);
+			if (nodePos == AI_WEST){
+				currentNode->west = buildNode(AI_WEST, currX, currY);
+				forwardRating = currentNode->west->rating;
+			}
+			else if (nodePos == AI_NORTH){
+				currentNode->north = buildNode(AI_NORTH, currX, currY);
+				forwardRating = currentNode->north->rating;
+			}
+			else if (nodePos == AI_SOUTH){
+				currentNode->south = buildNode(AI_SOUTH, currX, currY);
+				forwardRating = currentNode->south->rating;
+			}
+			else if (nodePos == AI_EAST){
+				currentNode->east = buildNode(AI_EAST, currX, currY);
+				forwardRating = currentNode->east->rating;
+			}
+		}
+		if (rightWall == false){
+			int nodePos = mod4(compass + NODE_RIGHT);
+			if (nodePos == AI_WEST){
+				currentNode->west = buildNode(AI_WEST, currX, currY);
+				rightRating = currentNode->west->rating;
+			}
+			else if (nodePos == AI_NORTH){
+				currentNode->north = buildNode(AI_NORTH, currX, currY);
+				rightRating = currentNode->north->rating;
+			}
+			else if (nodePos == AI_SOUTH){
+				currentNode->south = buildNode(AI_SOUTH, currX, currY);
+				rightRating = currentNode->south->rating;
+			}
+			else if (nodePos == AI_EAST){
+				currentNode->east = buildNode(AI_EAST, currX, currY);
+				rightRating = currentNode->east->rating;
+			}
+		}
+
+		//originally was here		int backPos = (compass + NODE_BACK) %4;
+
+		if (backPos == AI_WEST){
+			currentNode->west = prevNode;
+		}
+		else if (backPos == AI_NORTH){
+			currentNode->north = prevNode;
+		}
+		else if (backPos == AI_SOUTH){
+			currentNode->south = prevNode;
+		}
+		else if (backPos == AI_EAST){
+			currentNode->east = prevNode;			
+		}
+	}//end if not dead end
+	else{
+		if(compass == AI_WEST){ 
+			if(currentNode -> west != NULL){forwardRating = currentNode->west->rating;}
+			if(currentNode -> south != NULL){leftRating = currentNode->south->rating;}
+			if(currentNode -> north != NULL){rightRating = currentNode->north->rating;}
+		}
+		else if(compass == AI_NORTH){
+			if(currentNode -> north != NULL){forwardRating = currentNode->north->rating;}
+			if(currentNode -> west != NULL){leftRating = currentNode->west->rating;}
+			if(currentNode -> east != NULL){rightRating = currentNode->east->rating;}
+		}
+		else if(compass == AI_EAST){
+			if(currentNode -> east != NULL){forwardRating = currentNode->east->rating;}
+			if(currentNode -> north != NULL){leftRating = currentNode->north->rating;}
+			if(currentNode -> south != NULL){rightRating = currentNode->south->rating;}
+		}
+		else if(compass == AI_SOUTH){
+			if (currentNode->south != NULL){forwardRating = currentNode->south->rating;}
+			if (currentNode->east != NULL){leftRating = currentNode->east->rating;}
+			if (currentNode->west != NULL){rightRating = currentNode->west->rating;}
+		}
+		sawDeadEndLastTime = false;
+	}
+	
+
+	if(forwardRating == 99 && leftRating == 99 && rightRating == 99)
+	{
+		currentNode->rating = 99;
+		sawDeadEndLastTime = true;
+		choice = NODE_BACK;
+	}
+	else if((leftRating < rightRating) && (leftRating < forwardRating))
+	{
+		choice = NODE_LEFT;
+	}
+	else if((rightRating < leftRating) && (rightRating < forwardRating))
+	{
+		choice = NODE_RIGHT;
+	}
+	else if((forwardRating < leftRating) && (forwardRating < rightRating))
+	{
+		choice = NODE_STRAIGHT;
+	}
+	else if(forwardRating == rightRating)
+	{
+		choice = NODE_RIGHT;
+	}
+	else if(forwardRating == leftRating)
+	{
+		choice = NODE_LEFT;
+	}
+	else
+	{
+		choice = NODE_RIGHT;
+	}
+
+	
+	if(mod4(compass + choice) == AI_WEST)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).west;
+		compass = AI_WEST;
+	}
+	else if(mod4(compass + choice) == AI_NORTH)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).north;
+		compass = AI_NORTH;
+	}
+	else if(mod4(compass + choice) == AI_EAST)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).east;
+		compass = AI_EAST;
+	}
+	else if(mod4(compass + choice) == AI_SOUTH)
+	{
+		prevNode = currentNode;
+		currentNode = (*currentNode).south;// dont do if backtracking
+		compass = AI_SOUTH;
+	}
+
+	return mod4(choice);
+}*/
 
 unsigned char rateNode(char x, char y){
 	//Make sure we are using positive values
@@ -1118,7 +1430,7 @@ unsigned char rateNode(char x, char y){
 }
 
 unsigned char mod4(unsigned char value){
-	while(value > 4)
+	while(value >= 4)
 		value -= 4;
 	return value;
 }
