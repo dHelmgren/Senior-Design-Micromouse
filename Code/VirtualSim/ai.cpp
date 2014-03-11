@@ -34,7 +34,6 @@ AI::AI(){
 	// TEMPORARY dead end fix
 	sawDeadEndLastTime = false;
 	newLocation = true;
-
 }
 
 
@@ -92,6 +91,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 			}
 			currX -= deltaDist;
 		}
+		
 
 
 		//Make adjustments to the index based on location (CAN BE DONE WITHOUT INDX AND INDY as in Main.c on microtaur code)
@@ -223,7 +223,6 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 
 			//Add 8 so that the position can be indexed into the double array
 			mazeArray[indX][indY] = currentNode;
-
 
 			//The next chuck of code is somewhat convoluted, but also repetitive, here's the rundown:
 			//If a direction is open, figure out which compass direction that node is in.
