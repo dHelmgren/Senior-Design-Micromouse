@@ -9,8 +9,16 @@ Maze::Maze(){
 	int i, j;
 	for(i = 0; i < DIMENSION; i++){
 		for(j = 0; j < DIMENSION; j++){
-			initMazeArrayTop1(mazeArrayTop, i, j);
-			initMazeArrayLeft1(mazeArrayLeft, i, j);
+			// Determines which maze we are currently building. See maze.h for the 
+			// WHICH_MAZE constant.
+			if(WHICH_MAZE == 1){
+				initMazeArrayTop1(mazeArrayTop, i, j);
+				initMazeArrayLeft1(mazeArrayLeft, i, j);
+			}
+			else if(WHICH_MAZE == 2){
+				initMazeArrayTop2(mazeArrayTop, i, j);
+				initMazeArrayLeft2(mazeArrayLeft, i, j);
+			}
 		}
 	}
 }
@@ -99,10 +107,6 @@ void Maze::updateMazeCoords(float currentTime, int angle, bool isMouseGoingFwd){
 	}
 }
 
-void Maze::drawMaze2(){
-
-}
-
 void Maze::drawMaze(){
 	int i, j;
 
@@ -130,7 +134,7 @@ void Maze::drawMaze(){
 	glPopMatrix();
 }
 
-void Maze::initMazeArrayTop1(bool (&mazeArray)[17][17], int m, int n){
+void Maze::initMazeArrayTop1(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n){
 
 	//bool mazeArray[DIMENSION][DIMENSION];
 	// Initialize all the walls on the sides of the maze
@@ -250,7 +254,7 @@ void Maze::initMazeArrayTop1(bool (&mazeArray)[17][17], int m, int n){
 	}
 }
 
-void Maze::initMazeArrayLeft1(bool (&mazeArray)[17][17], int m, int n){
+void Maze::initMazeArrayLeft1(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n){
 
 	int i;
 	for(i = 0; i < DIMENSION -1 ; i++){
@@ -383,41 +387,41 @@ void Maze::initMazeArrayLeft1(bool (&mazeArray)[17][17], int m, int n){
 	mazeArrayLeft[2][15] = true;
 }
 
-void Maze::initMazeArrayTop2(bool (&mazeArray)[17][17], int m, int n){
-	bool tempMazeArray[17][17] = {
+void Maze::initMazeArrayTop2(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n){
+	bool tempMazeArray[DIMENSION][DIMENSION] = {
 		{true,	false,	false,	false,	false,	true,	false,	false,	false,	true,	false,	false,	false,	false,	false,	false,	true},
 
 		{true,	false,	false,	false,	false,	false,	false,	false,	true,	false,	false,	false,	false,	true,	false,	true,	true},
 		{true,	true,	false,	false,	false,	false,	false,	true,	true,	true,	false,	false,	true,	false,	true,	false,	true},
-		{true,	true,	false,	false,	false,	false,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
-		{true,	false,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
+		{true,	true,	false,	false,	false,	false,	true,	true,	true,	true,	true,	false,	true,	false,	false,	false,	true},
 
-		{true,	false,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
-		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
-		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
-		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
+		{true,	false,	true,	true,	false,	true,	true,	true,	true,	true,	false,	true,	false,	false,	true,	true,	true},
+		{true,	false,	true,	true,	true,	true,	true,	false,	true,	false,	true,	true,	true,	false,	false,	true,	true},
+		{true,	true,	true,	true,	true,	true,	false,	true,	false,	false,	true,	false,	false,	true,	false,	false,	true},
+		{true,	true,	true,	true,	true,	true,	true,	true,	false,	false,	false,	true,	true,	true,	true,	false,	true},
 
-		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
-		{true,	false,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
-		{true,	false,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
-		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
+		{true,	true,	true,	true,	true,	true,	true,	true,	false,	true,	true,	true,	true,	true,	false,	false,	true},
+		{true,	true,	false,	true,	true,	true,	true,	false,	false,	false,	true,	true,	true,	false,	true,	true,	true},
+		{true,	false,	false,	false,	true,	false,	true,	true,	false,	false,	false,	true,	true,	true,	true,	true,	true},
+		{true,	false,	true,	false,	true,	true,	false,	true,	true,	false,	true,	true,	true,	true,	true,	true,	true},
 
-		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
-		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
-		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true},
+		{true,	true,	true,	true,	true,	true,	true,	true,	true,	false,	true,	true,	true,	true,	true,	true,	true},
+		{true,	true,	true,	true,	true,	true,	true,	false,	true,	false,	true,	true,	true,	true,	true,	true,	true},
+		{true,	true,	false,	true,	false,	false,	false,	false,	false,	false,	true,	true,	false,	true,	false,	true,	true},
 
-		{false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	true,	false,	false,	false}};
+		{true,	false,	false,	false,	false,	false,	false,	false,	false,	false,	true,	false,	false,	false,	false,	false,	true},
+		{false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false}};
 
-	// Perform reassignment because C++ can't cast from type (&mazeArray)[][] to tempMazeArray[17][17]
-	for(int i = 0; i < 17; i++){
-		for(int j = 0; j < 17; j++){
+	// Perform reassignment because C++ can't cast from type (&mazeArray)[][] to tempMazeArray[DIMENSION][DIMENSION]
+	for(int i = 0; i < DIMENSION; i++){
+		for(int j = 0; j < DIMENSION; j++){
 			mazeArray[i][j] = tempMazeArray[i][j];
 		}
 	}
 }
 
-void Maze::initMazeArrayLeft2(bool (&mazeArray)[17][17], int m, int n){
-	bool tempMazeArray[17][17] = {
+void Maze::initMazeArrayLeft2(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n){
+	bool tempMazeArray[DIMENSION][DIMENSION] = {
 		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	false},
 		
 		{true,	true,	true,	true,	false,	false,	true,	true,	false,	false,	true,	true,	true,	true,	true,	false,	false},
@@ -436,14 +440,14 @@ void Maze::initMazeArrayLeft2(bool (&mazeArray)[17][17], int m, int n){
 		{false,	false,	false,	false,	false,	false,	false,	false,	false,	true,	false,	false,	false,	false,	false,	false,	false},
 		
 		{false,	false,	false,	false,	false,	false,	false,	false,	true,	false,	false,	false,	false,	false,	false,	false,	false},
-		{false,	false,	false,	false,	false,	false,	false,	true,	true,	false,	true,	false,	false,	false,	false,	false,	false},
+		{false,	false,	false,	false,	false,	false,	true,	true,	false,	true,	false,	false,	false,	false,	false,	false,	false},
 		{false,	true,	true,	false,	true,	true,	true,	true,	true,	false,	false,	true,	true,	true,	true,	false,	false},
 
 		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	false}};
 
-	// Perform reassignment because C++ can't cast from type (&mazeArray)[][] to tempMazeArray[17][17]
-	for(int i = 0; i < 17; i++){
-		for(int j = 0; j < 17; j++){
+	// Perform reassignment because C++ can't cast from type (&mazeArray)[][] to tempMazeArray[DIMENSION][DIMENSION]
+	for(int i = 0; i < DIMENSION; i++){
+		for(int j = 0; j < DIMENSION; j++){
 			mazeArray[i][j] = tempMazeArray[i][j];
 		}
 	}
