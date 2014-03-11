@@ -111,6 +111,7 @@
 #define NODE_RIGHT 1
 #define NODE_BACK 2
 #define NODE_LEFT 3
+#define NODE_45	4
 
 #define NULL 0
 #define BLANK {0,0,0,0,0,0,0}
@@ -674,10 +675,38 @@ void turn(unsigned char direction)
 		turnClicks = CLICKS_FOR_180;
 		PORTB=GO_RIGHT;
 	}
-	else{ //(direction == straight){
+	else if(direction == NODE_STRAIGHT){
 		PORTB=GO_STRAIGHT;
 		return;
 	}
+	else { // direction == NODE_45
+		// Because we are turning 45 degrees, we don't want to turn
+		// directly against a wall. Thus, go backward first
+		PORTB=GO_BACKWARD;
+
+		Delay10TCYx(2000); //10ms delay
+		while(countA < 100 && countB < 100) {
+			// check again and repeat.
+			countA = TMR0L;
+			countB = TMR1L;
+		}
+		countA = 0;
+		countB = 0;
+		PORTB=BREAK;
+
+		clearTimers();
+
+		// Now initiate the 45 degree turn by setting the port and continuing
+		// in the for loop below
+		irCvtL = adConvert(LEFT_IR_SELECT);
+		irCvtR = adConvert(RIGHT_IR_SELECT);
+		if(irCvtL <= irCvtR){
+			PORTB=GO_LEFT;
+		}
+		else{
+			PORTB=GO_RIGHT;
+		}
+	}//else
 
 	for(i = 0; i < numTurns; ++i){
 
@@ -691,6 +720,10 @@ void turn(unsigned char direction)
 		countA = 0;
 		countB = 0;
     	clearTimers();
+
+		if(direction == NODE_45){
+			break;
+		}
 
 		Delay10TCYx(2000); //10ms delay
 
