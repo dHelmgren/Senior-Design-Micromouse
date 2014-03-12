@@ -46,309 +46,148 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	int leftRating = 99;
 	int rightRating = 99;
 	int forwardRating = 99;
+	int choice = 5;
 	int backPos = (compass + NODE_BACK) %4;
 
-	if(!sawDeadEndLastTime){
-		int currX = (int) currentNode->xOffset;
-		int currY = (int) currentNode->yOffset;
-		//travel adjustment for initial state
-		if(currX != -8 && currY != -8)
-		{
-			deltaDist--;
-		}
+	int currX = (int) currentNode->xOffset;
+	int currY = (int) currentNode->yOffset;
+	//travel adjustment for initial state
+	if(currX != -8 && currY != -8)
+	{
+		//deltaDist--;
+	}
 	
-		//determine the proper deltaDistance so that we can get an accurate location in the maze
-		if(compass == AI_NORTH)
+	//determine the proper deltaDistance so that we can get an accurate location in the maze
+	if(compass == AI_NORTH)
+	{
+		//deals with crossing the origin, as each square is measured by the outermost corner
+		if(currentNode->yOffset < 0 && deltaDist >= -currentNode->yOffset)
 		{
-			//deals with crossing the origin, as each square is measured by the outermost corner
-			if(currentNode->yOffset < 0 && deltaDist > -currentNode->yOffset)
-			{
-				//if we cross the origin, we modify the distance to skip zero
-				deltaDist++;
-			}
-			currY += deltaDist;
+			//if we cross the origin, we modify the distance to skip zero
+			deltaDist++;
 		}
-		else if(compass == AI_SOUTH)
+		currY += deltaDist;
+		
+	}
+	else if(compass == AI_SOUTH)
+	{
+		if(currentNode->yOffset > 0 && deltaDist >= currentNode->yOffset)
 		{
-			if(currentNode->yOffset > 0 && deltaDist > currentNode->yOffset)
-			{
-				deltaDist++;
-			}
-			currY -= deltaDist;
+			deltaDist++;
 		}
-		else if(compass == AI_EAST)
+		currY -= deltaDist;
+	}
+	else if(compass == AI_EAST)
+	{
+		if(currentNode->xOffset < 0 && deltaDist >= -currentNode->xOffset)
 		{
-			if(currentNode->xOffset < 0 && deltaDist > -currentNode->xOffset)
-			{
-				deltaDist++;
-			}
-			currX += deltaDist;
+			deltaDist++;
 		}
-		else if(compass == AI_WEST)
+		currX += deltaDist;
+	}
+	else if(compass == AI_WEST)
+	{
+		if(currentNode->xOffset > 0 && deltaDist >= currentNode->xOffset)
 		{
-			if(currentNode->xOffset > 0 && deltaDist > currentNode->xOffset)
-			{
-				deltaDist++;
-			}
-			currX -= deltaDist;
+			deltaDist++;
 		}
+		currX -= deltaDist;
+	}
 		
 
-		//Make adjustments to the index based on location (CAN BE DONE WITHOUT INDX AND INDY as in Main.c on microtaur code)
-		int indX = currX;
-		int indY = currY;
-		if (indX > 0)
-		{
-			indX--;
-		}
-		if (indY > 0)
-		{
-			indY--;
-		}
-
-		indY += 8;
-		indX += 8;
-		int nodeLocX = currentNode->xOffset;
-		int nodeLocY = currentNode->yOffset;
-		if (nodeLocX > 0)
-		{
-			nodeLocX--;
-		}
-		if (nodeLocY > 0)
-		{
-			nodeLocY--;
-		}
-
-		nodeLocY += 8;
-		nodeLocX += 8;
-
-		if(mazeArray[indX][indY] != NULL || (mazeArray[nodeLocX][nodeLocY] != NULL && memIndex != 0 && numChildren(currentNode, compass) != 0)){
-			NavNode* tempNode = currentNode;
-			if(mazeArray[indX][indY] != NULL && numChildren(currentNode, compass) == 0)
-			{	
-				currentNode = mazeArray[indX][indY];
-				//find the node we are re-using 
-				if(deltaDist == 1 && prevNode->rating == 98){
-					int nodeIndex = 0;
-					while(&emptyNodes[nodeIndex] != tempNode){
-						nodeIndex++;
-					}
-
-					memIndex = nodeIndex;
-				}
-			}
-			if(compass == AI_WEST){
-				currentNode->east = prevNode;
-				prevNode->west = currentNode;
-			}
-			else if(compass == AI_EAST){
-				currentNode->west = prevNode;
-				prevNode->east = currentNode;
-			}
-			else if(compass == AI_NORTH){
-				currentNode->south = prevNode;
-				prevNode->north = currentNode;
-			}
-			else if(compass == AI_SOUTH){ 
-				currentNode->north = prevNode;
-				prevNode->south = currentNode;
-			}
-
-			prevNode ->rating = 98;
-
-			int nodePos = (compass + NODE_LEFT)%4;
-			if(!left){
-				if (nodePos == AI_WEST && currentNode->west != NULL)
-				{
-					leftRating = currentNode->west->rating;
-				}
-				else if (nodePos == AI_NORTH && currentNode->north != NULL)
-				{
-					leftRating = currentNode->north->rating;
-				}
-				else if (nodePos == AI_SOUTH && currentNode->south != NULL)
-				{
-					leftRating = currentNode->south->rating;
-				}
-				else if (nodePos == AI_EAST && currentNode->east != NULL)
-				{
-					leftRating = currentNode->east->rating;
-				}
-			}
-			nodePos = (compass + NODE_STRAIGHT)%4;
-			if(!straight){
-				if (nodePos == AI_WEST && currentNode->west != NULL)
-				{
-					forwardRating = currentNode->west->rating;
-				}
-				else if (nodePos == AI_NORTH && currentNode->north != NULL)
-				{
-					forwardRating = currentNode->north->rating;
-				}
-				else if (nodePos == AI_SOUTH && currentNode->south != NULL)
-				{
-					forwardRating = currentNode->south->rating;
-				}
-				else if (nodePos == AI_EAST && currentNode->east != NULL)
-				{
-					forwardRating = currentNode->east->rating;
-				}
-			}
-			nodePos = (compass + NODE_RIGHT)%4;
-			if(!right){
-				if (nodePos == AI_WEST && currentNode->west != NULL)
-				{
-					rightRating = currentNode->west->rating;
-				}
-				else if (nodePos == AI_NORTH && currentNode->north != NULL)
-				{
-					rightRating = currentNode->north->rating;
-				}
-				else if (nodePos == AI_SOUTH && currentNode->south != NULL)
-				{
-					rightRating = currentNode->south->rating;
-				}
-				else if (nodePos == AI_EAST && currentNode->east != NULL)
-				{
-					rightRating = currentNode->east->rating;
-				}
-			}
-
-		}//if (seen node already)
-		else{
-			//Fix the node's position to match its real world location and store it in the maze array.
-			currentNode -> xOffset = currX;
-			currentNode -> yOffset = currY;
-			printf("X: %d Y: %d ", currX, currY);
-
-			//Add 8 so that the position can be indexed into the double array
-			mazeArray[indX][indY] = currentNode;
-	
-
-			//The next chuck of code is somewhat convoluted, but also repetitive, here's the rundown:
-			//If a direction is open, figure out which compass direction that node is in.
-			//fill it in with the data, and link it to the current node.
-			if (!left)
-			{
-				int nodePos = (compass + NODE_LEFT)%4;
-				if (nodePos == AI_WEST)
-				{
-					currentNode->west = buildNode(AI_WEST, currX, currY);
-					leftRating = currentNode->west->rating;
-				}
-				else if (nodePos == AI_NORTH)
-				{
-					currentNode->north = buildNode(AI_NORTH, currX, currY);
-					leftRating = currentNode->north->rating;
-				}
-				else if (nodePos == AI_SOUTH)
-				{
-					currentNode->south = buildNode(AI_SOUTH, currX, currY);
-					leftRating = currentNode->south->rating;
-				}
-				else if (nodePos == AI_EAST)
-				{
-					currentNode->east = buildNode(AI_EAST, currX, currY);
-					leftRating = currentNode->east->rating;
-				}
-			}
-			if (!straight)
-			{
-				int nodePos = (compass + NODE_STRAIGHT)%4;
-				if (nodePos == AI_WEST)
-				{
-					currentNode->west = buildNode(AI_WEST, currX, currY);
-					forwardRating = currentNode->west->rating;
-				}
-				else if (nodePos == AI_NORTH)
-				{
-					currentNode->north = buildNode(AI_NORTH, currX, currY);
-					forwardRating = currentNode->north->rating;
-				}
-				else if (nodePos == AI_SOUTH)
-				{
-					currentNode->south = buildNode(AI_SOUTH, currX, currY);
-					forwardRating = currentNode->south->rating;
-				}
-				else if (nodePos == AI_EAST)
-				{
-					currentNode->east = buildNode(AI_EAST, currX, currY);
-					forwardRating = currentNode->east->rating;
-				}
-			}
-			if (!right)
-			{
-				int nodePos = (compass + NODE_RIGHT)%4;
-				if (nodePos == AI_WEST)
-				{
-					currentNode->west = buildNode(AI_WEST, currX, currY);
-					rightRating = currentNode->west->rating;
-				}
-				else if (nodePos == AI_NORTH)
-				{
-					currentNode->north = buildNode(AI_NORTH, currX, currY);
-					rightRating = currentNode->north->rating;
-				}
-				else if (nodePos == AI_SOUTH)
-				{
-					currentNode->south = buildNode(AI_SOUTH, currX, currY);
-					rightRating = currentNode->south->rating;
-				}
-				else if (nodePos == AI_EAST)
-				{
-					currentNode->east = buildNode(AI_EAST, currX, currY);
-					rightRating = currentNode->east->rating;
-				}
-			}
-
-			if (backPos == AI_WEST)
-			{
-				currentNode->west = prevNode;
-			}
-			else if (backPos == AI_NORTH)
-			{
-				currentNode->north = prevNode;
-			}
-			else if (backPos == AI_SOUTH)
-			{
-				currentNode->south = prevNode;
-			}
-			else if (backPos == AI_EAST)
-			{
-				currentNode->east = prevNode;			
-			}
-		}//Haven't been here yet
+	//Make adjustments to the index based on location (CAN BE DONE WITHOUT INDX AND INDY as in Main.c on microtaur code)
+	int indX = currX;
+	int indY = currY;
+	if (indX > 0)
+	{
+		indX--;
 	}
-	else{ //BELONGS WITH THE IF DEAD END
-		int backDir = modFour(compass+NODE_BACK);
+	if (indY > 0)
+	{
+		indY--;
+	}
 
-		if(compass == AI_WEST){ 
-			if(currentNode -> west != NULL){forwardRating = currentNode->west->rating;}
-			if(currentNode -> south != NULL){leftRating = currentNode->south->rating;}
-			if(currentNode -> north != NULL){rightRating = currentNode->north->rating;}
+	indY += 8;
+	indX += 8;
+		
+	//We come to a totally new tuple
+	if(mazeArray[indX][indY] == NULL)
+	{
+		//BUILD A NEW NODE
+		mazeArray[indX][indY] = buildNode(currX, currY);
+		prevNode = currentNode;
+		currentNode = mazeArray[indX][indY];
+		//LINK THE NODE IN THE APPROPRIATE DIRECTION
+		if(backPos == AI_WEST){			
+			currentNode->west = prevNode;
+			prevNode->east = currentNode;
 		}
-		else if(compass == AI_NORTH){
-			if(currentNode -> north != NULL){forwardRating = currentNode->north->rating;}
-			if(currentNode -> west != NULL){leftRating = currentNode->west->rating;}
-			if(currentNode -> east != NULL){rightRating = currentNode->east->rating;}
+		else if(backPos == AI_NORTH){
+			currentNode->north = prevNode;
+			prevNode->south = currentNode;
 		}
-		else if(compass == AI_EAST){
-			if(currentNode -> east != NULL){forwardRating = currentNode->east->rating;}
-			if(currentNode -> north != NULL){leftRating = currentNode->north->rating;}
-			if(currentNode -> south != NULL){rightRating = currentNode->south->rating;}
+		else if(backPos == AI_EAST){
+			currentNode->east = prevNode;
+			prevNode->west = currentNode;
 		}
-		else if(compass == AI_SOUTH){
-			if (currentNode->south != NULL){forwardRating = currentNode->south->rating;}
-			if (currentNode->east != NULL){leftRating = currentNode->east->rating;}
-			if (currentNode->west != NULL){rightRating = currentNode->west->rating;}
+		else if(backPos == AI_SOUTH){
+			currentNode->south = prevNode;
+			prevNode->north = currentNode;
 		}
-		sawDeadEndLastTime = false;
+
+		//rate the directions given to us
+		if(!left){
+			leftRating = rateDir(compass, NODE_LEFT, currX, currY);	
+		}
+		if(!straight){
+			forwardRating = rateDir(compass, NODE_STRAIGHT, currX, currY);
+		}
+		if(!right){
+			rightRating = rateDir(compass, NODE_RIGHT, currX, currY);
+		}
+
+		choice = pickPath(leftRating, forwardRating, rightRating);
+	}
+	else{
+		//ALWAYS LINK NODES: input mistakes will happen, but will take care of themselves
+		prevNode = currentNode;
+		currentNode = mazeArray[indX][indY];
+		//LINK THE NODE IN THE APPROPRIATE DIRECTION
+		if(backPos == AI_WEST){			
+			currentNode->west = prevNode;
+			prevNode->east = currentNode;
+		}
+		else if(backPos == AI_NORTH){
+			currentNode->north = prevNode;
+			prevNode->south = currentNode;
+		}
+		else if(backPos == AI_EAST){
+			currentNode->east = prevNode;
+			prevNode->west = currentNode;
+		}
+		else if(backPos == AI_SOUTH){
+			currentNode->south = prevNode;
+			prevNode->north = currentNode;
+		} 
+
+			
+		if(!left){
+			leftRating = rateVisitedNode(currentNode, compass, NODE_LEFT);
+		}
+		if(!straight){
+			forwardRating = rateVisitedNode(currentNode, compass, NODE_STRAIGHT);
+		}
+		if(!right){
+			rightRating = rateVisitedNode(currentNode, compass, NODE_RIGHT);
+		}
+
+		choice = pickPath(leftRating, forwardRating, rightRating);
+
 	}
 	
-	
-	int choice;
 
-	printf("left: %d right: %d forward: %d Compass:", leftRating, rightRating, forwardRating);
+	
+	/*printf("left: %d right: %d forward: %d Compass:", leftRating, rightRating, forwardRating);
 	if (compass == AI_WEST)
 	{
 		printf(" west\n");
@@ -364,60 +203,25 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	else if (compass == AI_SOUTH)
 	{
 		printf(" south\n");
-	}
-
-	if(forwardRating == 99 && leftRating == 99 && rightRating == 99)
-	{
-		currentNode->rating = 99;
-		sawDeadEndLastTime = true;
-		choice = NODE_BACK;
-	}
-	else if((leftRating < rightRating) && (leftRating < forwardRating))
-	{
-		choice = NODE_LEFT;
-	}
-	else if((rightRating < leftRating) && (rightRating < forwardRating))
-	{
-		choice = NODE_RIGHT;
-	}
-	else if((forwardRating < leftRating) && (forwardRating < rightRating))
-	{
-		choice = NODE_STRAIGHT;
-	}
-	else if((forwardRating == rightRating) || (forwardRating == leftRating))
-	{
-		choice = NODE_STRAIGHT;
-	}
-	else
-	{
-		choice = NODE_RIGHT;
-	}
-
+	}*/
+	
 	//make the node I chose the current node
 	int picked = (compass + choice)%4;
 
 	if(picked == AI_WEST)
 	{
-		prevNode = currentNode;
-		currentNode = currentNode->west;
 		compass = AI_WEST;
 	}
 	else if(picked == AI_NORTH)
 	{
-		prevNode = currentNode;
-		currentNode = currentNode->north;
 		compass = AI_NORTH;
 	}
 	else if(picked == AI_EAST)
 	{
-		prevNode = currentNode;
-		currentNode = currentNode->east;
 		compass = AI_EAST;
 	}
 	else if(picked == AI_SOUTH)
 	{
-		prevNode = currentNode;
-		currentNode = currentNode->south;// dont do if backtracking
 		compass = AI_SOUTH;
 	}
 
@@ -428,6 +232,125 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 int AI::rateNode(int x, int y)
 {
 	return abs(x)+abs(y)-1;
+}
+
+//Helper method that rates an adjacent square based on its location
+unsigned char AI::rateDir(int compass, int turnDir, int xx, int yy)
+{
+	int resultDir = modFour(compass+turnDir);
+
+	int newX = xx;
+	int newY = yy;
+	if(resultDir == AI_WEST)
+	{
+		newX--;
+		if(newX == 0)
+		{
+			newX = -1;
+		}
+	}
+	else if(resultDir == AI_NORTH)
+	{
+		newY++;
+		if(newY == 0)
+		{
+			newY = 1;
+		}
+	}
+	else if(resultDir == AI_EAST)
+	{
+		newX++;
+		if(newX == 0)
+		{
+			newX = 1;
+		}
+	}
+	else if(resultDir == AI_SOUTH)
+	{
+		newY--;
+		if(newY == 0)
+		{
+			newY = -1;
+		}
+	}
+
+	return rateNode(newX, newY);
+}
+
+int AI::pickPath(int left, int forward, int right){
+	int choice = NODE_RIGHT;
+	if(forward == 99 && left == 99 && right == 99)
+	{
+		currentNode->rating = 99;
+		sawDeadEndLastTime = true;
+		choice = NODE_BACK;
+	}
+	else if((left < right) && (left < forward))
+	{
+		choice = NODE_LEFT;
+	}
+	else if((right < left) && (right < forward))
+	{
+		choice = NODE_RIGHT;
+	}
+	else if((forward < left) && (forward < right))
+	{
+		choice = NODE_STRAIGHT;
+	}
+	else if((forward == left))
+	{
+		choice = NODE_LEFT;
+	}
+	else if (forward == right)
+	{
+		choice = NODE_RIGHT;
+	}
+	return choice;
+}
+
+//rates a node that the AI has seen before for a cardinal direction. If the direction has a node attached, it rates that, otherwise, it rates the square
+//ratings for nodes that have been explored more have a higher (and therefore worse) rating
+unsigned char AI::rateVisitedNode(NavNode* node, int compass, int turnDir){
+	int nodePos = modFour(compass+turnDir);
+	if(nodePos == AI_WEST){
+		if(node->west != NULL)
+		{
+			return node->west->rating + CHILD_PENALTY * (1 + numChildren(node->west, compass)); 
+		}
+		else{
+			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
+		}
+	}
+	else if(nodePos == AI_NORTH){
+		if(node->north != NULL)
+		{
+			return node->north->rating + CHILD_PENALTY * (1 + numChildren(node->north, compass)); 
+		}
+		else{
+			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
+		}
+	}
+	else if(nodePos == AI_EAST){
+		if(node->east != NULL)
+		{
+			return node->east->rating + CHILD_PENALTY * (1 + numChildren(node->east, compass)); 
+		}
+		else{
+			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
+		}
+	}
+	else if(nodePos == AI_SOUTH){
+		if(node->south != NULL)
+		{
+			return node->south->rating + CHILD_PENALTY * (1 + numChildren(node->south, compass)); 
+		}
+		else{
+			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
+		}
+	}
+	//something has gone terribly wrong, this should catch it
+	unsigned char* badThings = NULL;
+	return *badThings;
 }
 
 int AI::numChildren(NavNode* check, int compass)
@@ -453,70 +376,21 @@ int AI::numChildren(NavNode* check, int compass)
 
 }
 
-NavNode* AI::buildNode(int turnDir, int currX, int currY)
+NavNode* AI::buildNode(int currX, int currY)
 {
 	int newX = currX;
 	int newY = currY;
-	if(turnDir == AI_WEST)
-		{
-			newX--;
-			if(newX == 0)
-			{
-				newX = -1;
-			}
-		}
-	else if(turnDir == AI_NORTH)
-		{
-			newY++;
-			if(newY == 0)
-			{
-				newY = 1;
-			}
-		}
-	else if(turnDir == AI_EAST)
-		{
-			newX++;
-			if(newX == 0)
-			{
-				newX = 1;
-			}
-		}
-	else if(turnDir == AI_SOUTH)
-		{
-			newY--;
-			if(newY == 0)
-			{
-				newY = -1;
-			}
-		}
 
 	NavNode newNode = {rateNode(newX, newY), newX, newY, 0, 0, 0, 0};
 	
-	if(turnDir == AI_WEST)
-		{
-			newNode.east = currentNode;
-		}
-	else if(turnDir == AI_NORTH)
-		{
-			newNode.south = currentNode;
-		}
-	else if(turnDir == AI_EAST)
-		{
-			newNode.west = currentNode;
-		}
-	else if(turnDir == AI_SOUTH)
-		{
-			newNode.north = currentNode;
-		}
-
 	emptyNodes[memIndex] = newNode;
-	NavNode* index = &emptyNodes[memIndex];
+	NavNode* nodePtr = &emptyNodes[memIndex];
 	memIndex++;
-	return index;
+	return nodePtr;
 }
 
 int AI::modFour(int val){
-	if(val > 4){
+	while(val > 3){
 		val -= 4;
 	}
 	return val;

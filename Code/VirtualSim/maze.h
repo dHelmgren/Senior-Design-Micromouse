@@ -31,7 +31,7 @@
 // ***** In order to change which maze we are currently building,
 // change this constant. 
 // OPTIONS: 1, 2
-#define WHICH_MAZE 1
+#define WHICH_MAZE 2
 
 #define PI 3.14159265
 
