@@ -1,35 +1,35 @@
 MPLINK 4.48, Linker
-Linker Map File - Created Wed Mar 12 09:31:53 2014
+Linker Map File - Created Wed Mar 12 13:55:17 2014
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
                 ---------  ---------  ---------  ---------  ---------
                _entry_scn       code   0x000000    program   0x000006
                    .cinit    romdata   0x000006    program   0x00000e
-             .code_main.o       code   0x000014    program   0x0020ba
-                     PROG       code   0x0020ce    program   0x0000e2
-               _cinit_scn       code   0x0021b0    program   0x00009e
-         .code_fxd1616u.o       code   0x00224e    program   0x00002c
-                    .code       code   0x00227a    program   0x000020
-             _startup_scn       code   0x00229a    program   0x00001c
-             D100TCYXCODE       code   0x0022b6    program   0x00001c
-              D10TCYXCODE       code   0x0022d2    program   0x000016
-          .code_adcread.o       code   0x0022e8    program   0x000012
-         .code_adcclose.o       code   0x0022fa    program   0x000006
-           .code___init.o       code   0x002300    program   0x000002
-        .romdata___init.o    romdata   0x002302    program   0x000000
-       .romdata_adcread.o    romdata   0x002302    program   0x000000
-         .romdata_c018i.o    romdata   0x002302    program   0x000000
-      .romdata_fxd1616u.o    romdata   0x002302    program   0x000000
-          .idata_main.o_i    romdata   0x002302    program   0x000045
-      .romdata_adcclose.o    romdata   0x002302    program   0x000000
-          .romdata_main.o    romdata   0x002302    program   0x000000
-      .idata_fxd1616u.o_i    romdata   0x002347    program   0x000000
-       .idata_adcread.o_i    romdata   0x002347    program   0x000000
-        .idata___init.o_i    romdata   0x002347    program   0x000000
-      .idata_adcclose.o_i    romdata   0x002347    program   0x000000
-         .idata_c018i.o_i    romdata   0x002347    program   0x000000
-            .code_c018i.o       code   0x002348    program   0x000000
+             .code_main.o       code   0x000014    program   0x0020d2
+                     PROG       code   0x0020e6    program   0x0000e2
+               _cinit_scn       code   0x0021c8    program   0x00009e
+         .code_fxd1616u.o       code   0x002266    program   0x00002c
+                    .code       code   0x002292    program   0x000020
+             _startup_scn       code   0x0022b2    program   0x00001c
+             D100TCYXCODE       code   0x0022ce    program   0x00001c
+              D10TCYXCODE       code   0x0022ea    program   0x000016
+          .code_adcread.o       code   0x002300    program   0x000012
+         .code_adcclose.o       code   0x002312    program   0x000006
+           .code___init.o       code   0x002318    program   0x000002
+        .romdata___init.o    romdata   0x00231a    program   0x000000
+       .romdata_adcread.o    romdata   0x00231a    program   0x000000
+         .romdata_c018i.o    romdata   0x00231a    program   0x000000
+      .romdata_fxd1616u.o    romdata   0x00231a    program   0x000000
+          .idata_main.o_i    romdata   0x00231a    program   0x000045
+      .romdata_adcclose.o    romdata   0x00231a    program   0x000000
+          .romdata_main.o    romdata   0x00231a    program   0x000000
+      .idata_fxd1616u.o_i    romdata   0x00235f    program   0x000000
+       .idata_adcread.o_i    romdata   0x00235f    program   0x000000
+        .idata___init.o_i    romdata   0x00235f    program   0x000000
+      .idata_adcclose.o_i    romdata   0x00235f    program   0x000000
+         .idata_c018i.o_i    romdata   0x00235f    program   0x000000
+            .code_c018i.o       code   0x002360    program   0x000000
                 MATH_DATA      udata   0x000000       data   0x000014
                  .tmpdata      udata   0x000014       data   0x000008
                 DELAYDAT1      udata   0x00001c       data   0x000001
@@ -65,38 +65,38 @@ Linker Map File - Created Wed Mar 12 09:31:53 2014
                               Program Memory Usage 
                                Start         End      
                            ---------   ---------      
-                            0x000000    0x002346      
-            9031 out of 131074 program addresses used, program memory utilization is 6%
+                            0x000000    0x00235e      
+            9055 out of 131074 program addresses used, program memory utilization is 6%
 
 
 
                               Symbols - Sorted by Name
                      Name    Address   Location    Storage File                     
                 ---------  ---------  ---------  --------- ---------                
-                 CloseADC   0x0022fa    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcclose.c
-                   D100_1   0x0022c4    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-                    D100x   0x0022c2    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-                    D10_1   0x0022e2    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-                     D10x   0x0022da    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-                   D1616S   0x0020f0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-                D1616SNEG   0x0020fe    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-                 D1616SOK   0x0020fa    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-                  D1616SX   0x002110    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-                  DA1616S   0x0020e0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-             Delay100TCYx   0x0022b6    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-              Delay10TCYx   0x0022d2    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-                 FXD1616S   0x0020ce    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-                 FXD1616U   0x00224e    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616u.c
-                 FXM1616S   0x00211a    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616s.asm
-                 FXM1616U   0x002174    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616u.asm
-                  ReadADC   0x0022e8    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
-               TSIGN1616A   0x002166    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616s.asm
-       _D100TCYXCODE_0008   0x0022be    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-       _D100TCYXCODE_0012   0x0022c8    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-       _D100TCYXCODE_0018   0x0022ce    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-        _D10TCYXCODE_000A   0x0022dc    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-        _D10TCYXCODE_000C   0x0022de    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-        _D10TCYXCODE_000E   0x0022e0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                 CloseADC   0x002312    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcclose.c
+                   D100_1   0x0022dc    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+                    D100x   0x0022da    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+                    D10_1   0x0022fa    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                     D10x   0x0022f2    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                   D1616S   0x002108    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+                D1616SNEG   0x002116    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+                 D1616SOK   0x002112    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+                  D1616SX   0x002128    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+                  DA1616S   0x0020f8    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+             Delay100TCYx   0x0022ce    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+              Delay10TCYx   0x0022ea    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                 FXD1616S   0x0020e6    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+                 FXD1616U   0x002266    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616u.c
+                 FXM1616S   0x002132    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616s.asm
+                 FXM1616U   0x00218c    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616u.asm
+                  ReadADC   0x002300    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
+               TSIGN1616A   0x00217e    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616s.asm
+       _D100TCYXCODE_0008   0x0022d6    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+       _D100TCYXCODE_0012   0x0022e0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+       _D100TCYXCODE_0018   0x0022e6    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+        _D10TCYXCODE_000A   0x0022f4    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+        _D10TCYXCODE_000C   0x0022f6    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+        _D10TCYXCODE_000E   0x0022f8    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
          ___else_lbl00020   0x000272    program     static                          
          ___else_lbl00031   0x0003b8    program     static                          
          ___else_lbl00038   0x00040a    program     static                          
@@ -110,12 +110,12 @@ Linker Map File - Created Wed Mar 12 09:31:53 2014
           ___for_lbl00007   0x00011a    program     static                          
           ___for_lbl00008   0x0000c6    program     static                          
           ___for_lbl00009   0x0000b4    program     static                          
-          ___for_lbl00127   0x000df2    program     static                          
-          ___for_lbl00128   0x000dfc    program     static                          
-          ___for_lbl00129   0x000dec    program     static                          
-          ___for_lbl00130   0x000df2    program     static                          
-          ___for_lbl00131   0x000dd2    program     static                          
-          ___for_lbl00132   0x000db0    program     static                          
+          ___for_lbl00127   0x000df6    program     static                          
+          ___for_lbl00128   0x000e00    program     static                          
+          ___for_lbl00129   0x000df0    program     static                          
+          ___for_lbl00130   0x000df6    program     static                          
+          ___for_lbl00131   0x000dd6    program     static                          
+          ___for_lbl00132   0x000db4    program     static                          
            ___if_lbl00013   0x0001ce    program     static                          
            ___if_lbl00014   0x000200    program     static                          
            ___if_lbl00015   0x000208    program     static                          
@@ -124,14 +124,14 @@ Linker Map File - Created Wed Mar 12 09:31:53 2014
            ___if_lbl00030   0x0003bc    program     static                          
            ___if_lbl00037   0x00040e    program     static                          
            ___if_lbl00044   0x00044e    program     static                          
+       ___return_lbl00000   0x002290    program     static                          
        ___return_lbl00000   0x00031a    program     static                          
-       ___return_lbl00000   0x002278    program     static                          
        ___return_lbl00000   0x000004    program     static                          
-       ___return_lbl00001   0x0022b4    program     static                          
-       ___return_lbl00002   0x00224c    program     static                          
+       ___return_lbl00001   0x0022cc    program     static                          
+       ___return_lbl00002   0x002264    program     static                          
        ___return_lbl00029   0x000452    program     static                          
        ___return_lbl00056   0x0005f2    program     static                          
-       ___return_lbl00126   0x000dfc    program     static                          
+       ___return_lbl00126   0x000e00    program     static                          
         ___while_lbl00010   0x000158    program     static                          
         ___while_lbl00011   0x00031a    program     static                          
         ___while_lbl00032   0x0003bc    program     static                          
@@ -140,7 +140,7 @@ Linker Map File - Created Wed Mar 12 09:31:53 2014
         ___while_lbl00040   0x00044e    program     static                          
         ___while_lbl00057   0x0005c8    program     static                          
         ___while_lbl00058   0x0005d0    program     static                          
-                   __init   0x002300    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\stdclib\__init.c
+                   __init   0x002318    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\stdclib\__init.c
                __tmplbl_0   0x0001be    program     static                          
                __tmplbl_1   0x0001b6    program     static                          
               __tmplbl_10   0x00044a    program     static                          
@@ -157,43 +157,44 @@ Linker Map File - Created Wed Mar 12 09:31:53 2014
                __tmplbl_7   0x0003e2    program     static                          
                __tmplbl_8   0x0003da    program     static                          
                __tmplbl_9   0x0003c4    program     static                          
-            __zero_memory   0x00227a    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                _do_cinit   0x0021b0    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+            __zero_memory   0x002292    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                _do_cinit   0x0021c8    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                    _entry   0x000000    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-                 _startup   0x00229a    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-                adConvert   0x0005a2    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-              autocorrect   0x000390    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                blinkTest   0x000d5a    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                buildNode   0x001f54    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-        calcUnitsTraveled   0x000cd4    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-              clearTimers   0x000c44    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                compare_l   0x002290    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                copy_loop   0x002222    program     static                          
-            copy_one_byte   0x002228    program     static                          
-                     done   0x00224c    program     static                          
-             done_copying   0x002236    program     static                          
-                  endloop   0x002274    program     static                          
-                goForward   0x000606    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-            ifAutocorrect   0x00032e    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-            init4StepPoll   0x00045a    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  initial   0x000bfe    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                     loop   0x002258    program     static                          
-                     loop   0x0022aa    program     static                          
-                   loop_h   0x002288    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   loop_l   0x002292    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                     main   0x000014    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-             makeDecision   0x000e10    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                     mod4   0x00209c    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  msDelay   0x000da0    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-              numChildren   0x001e04    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 pickPath   0x001866    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  rateDir   0x0016ea    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 rateNode   0x001648    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-          rateVisitedNode   0x001a52    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-     readTimersToTraveled   0x000c4e    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                     test   0x0021ca    program     static                          
-                     turn   0x00097e    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-               zero_block   0x002288    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                 _startup   0x0022b2    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+                adConvert   0x0005a2    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              autocorrect   0x000390    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                blinkTest   0x000d5e    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                buildNode   0x001f58    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+        calcUnitsTraveled   0x000cd8    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              clearTimers   0x000c48    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                compare_l   0x0022a8    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                copy_loop   0x00223a    program     static                          
+            copy_one_byte   0x002240    program     static                          
+                     done   0x002264    program     static                          
+             done_copying   0x00224e    program     static                          
+                  endloop   0x00228c    program     static                          
+                fwdNoJerk   0x0020a0    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                goForward   0x000606    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+            ifAutocorrect   0x00032e    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+            init4StepPoll   0x00045a    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  initial   0x000c02    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     loop   0x002270    program     static                          
+                     loop   0x0022c2    program     static                          
+                   loop_h   0x0022a0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   loop_l   0x0022aa    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                     main   0x000014    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+             makeDecision   0x000e14    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     mod4   0x0020b4    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  msDelay   0x000da4    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              numChildren   0x001e08    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 pickPath   0x00186a    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  rateDir   0x0016ee    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 rateNode   0x00164c    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+          rateVisitedNode   0x001a56    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+     readTimersToTraveled   0x000c52    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     test   0x0021e2    program     static                          
+                     turn   0x00097e    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+               zero_block   0x0022a0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    ADCON0   0x000fc2       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                ADCON0bits   0x000fc2       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                    ADCON1   0x000fc1       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
@@ -643,46 +644,46 @@ Linker Map File - Created Wed Mar 12 09:31:53 2014
                  __TEMPB1   0x000012       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
                  __TEMPB2   0x000011       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
                  __TEMPB3   0x000010       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
-                  __tmp_0   0x000014       data     static C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  __tmp_0   0x000014       data     static C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                   __tmp_0   0x000014       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
-                    blank   0x000096       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-             canCallTuple   0x000064       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-               cmTraveled   0x000060       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  compass   0x000086       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                    blank   0x000096       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+             canCallTuple   0x000064       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+               cmTraveled   0x000060       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  compass   0x000086       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                 curr_byte   0x0000a8       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                curr_entry   0x0000aa       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-              currentNode   0x0006fc       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              currentNode   0x0006fc       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                  data_ptr   0x0000ac       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-               emptyNodes   0x000200       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-              firstNoWall   0x000065       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-           hardcodedAgent   0x000085       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                        i   0x0000a1       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                   irCvtL   0x000066       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtLP1   0x00006c       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtLP2   0x000070       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtLP3   0x000074       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtLP4   0x000078       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                   irCvtR   0x000068       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtRP1   0x00006e       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtRP2   0x000072       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtRP3   0x000076       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtRP4   0x00007a       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                   irCvtS   0x00006a       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                        j   0x0000a3       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 leftWall   0x000061       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                mazeArray   0x000700       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 memIndex   0x000088       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  noWallL   0x00007c       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  noWallR   0x00007e       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 prevNode   0x0006fe       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+               emptyNodes   0x000200       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              firstNoWall   0x000065       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+           hardcodedAgent   0x000085       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                        i   0x0000a1       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                   irCvtL   0x000066       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtLP1   0x00006c       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtLP2   0x000070       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtLP3   0x000074       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtLP4   0x000078       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                   irCvtR   0x000068       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtRP1   0x00006e       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtRP2   0x000072       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtRP3   0x000076       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtRP4   0x00007a       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                   irCvtS   0x00006a       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                        j   0x0000a3       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 leftWall   0x000061       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                mazeArray   0x000700       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 memIndex   0x000088       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  noWallL   0x00007c       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  noWallR   0x00007e       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 prevNode   0x0006fe       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                      prom   0x0000a5       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-                rightWall   0x000062       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                     root   0x00008b       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-       sawDeadEndLastTime   0x00008a       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-             straightWall   0x000063       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                traveled0   0x000080       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                traveled1   0x000082       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-        waitToAutocorrect   0x000084       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                rightWall   0x000062       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     root   0x00008b       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+       sawDeadEndLastTime   0x00008a       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+             straightWall   0x000063       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                traveled0   0x000080       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                traveled1   0x000082       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+        waitToAutocorrect   0x000084       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
 
 
 
@@ -691,7 +692,7 @@ Linker Map File - Created Wed Mar 12 09:31:53 2014
                 ---------  ---------  ---------  --------- ---------                
                    _entry   0x000000    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
        ___return_lbl00000   0x000004    program     static                          
-                     main   0x000014    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     main   0x000014    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
           ___for_lbl00003   0x000048    program     static                          
           ___for_lbl00001   0x0000a4    program     static                          
           ___for_lbl00002   0x0000ae    program     static                          
@@ -718,11 +719,11 @@ Linker Map File - Created Wed Mar 12 09:31:53 2014
            ___if_lbl00019   0x0002d8    program     static                          
        ___return_lbl00000   0x00031a    program     static                          
         ___while_lbl00011   0x00031a    program     static                          
-            ifAutocorrect   0x00032e    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-              autocorrect   0x000390    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+            ifAutocorrect   0x00032e    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              autocorrect   0x000390    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
          ___else_lbl00031   0x0003b8    program     static                          
-        ___while_lbl00032   0x0003bc    program     static                          
            ___if_lbl00030   0x0003bc    program     static                          
+        ___while_lbl00032   0x0003bc    program     static                          
                __tmplbl_9   0x0003c4    program     static                          
                __tmplbl_8   0x0003da    program     static                          
                __tmplbl_7   0x0003e2    program     static                          
@@ -730,8 +731,8 @@ Linker Map File - Created Wed Mar 12 09:31:53 2014
         ___while_lbl00033   0x0003fc    program     static                          
          ___else_lbl00045   0x0003fe    program     static                          
          ___else_lbl00038   0x00040a    program     static                          
-           ___if_lbl00037   0x00040e    program     static                          
         ___while_lbl00039   0x00040e    program     static                          
+           ___if_lbl00037   0x00040e    program     static                          
               __tmplbl_13   0x000416    program     static                          
               __tmplbl_12   0x00042c    program     static                          
               __tmplbl_11   0x000434    program     static                          
@@ -739,77 +740,78 @@ Linker Map File - Created Wed Mar 12 09:31:53 2014
         ___while_lbl00040   0x00044e    program     static                          
            ___if_lbl00044   0x00044e    program     static                          
        ___return_lbl00029   0x000452    program     static                          
-            init4StepPoll   0x00045a    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                adConvert   0x0005a2    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+            init4StepPoll   0x00045a    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                adConvert   0x0005a2    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
         ___while_lbl00057   0x0005c8    program     static                          
         ___while_lbl00058   0x0005d0    program     static                          
        ___return_lbl00056   0x0005f2    program     static                          
-                goForward   0x000606    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                     turn   0x00097e    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  initial   0x000bfe    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-              clearTimers   0x000c44    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-     readTimersToTraveled   0x000c4e    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-        calcUnitsTraveled   0x000cd4    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                blinkTest   0x000d5a    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  msDelay   0x000da0    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-          ___for_lbl00132   0x000db0    program     static                          
-          ___for_lbl00131   0x000dd2    program     static                          
-          ___for_lbl00129   0x000dec    program     static                          
-          ___for_lbl00127   0x000df2    program     static                          
-          ___for_lbl00130   0x000df2    program     static                          
-          ___for_lbl00128   0x000dfc    program     static                          
-       ___return_lbl00126   0x000dfc    program     static                          
-             makeDecision   0x000e10    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 rateNode   0x001648    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  rateDir   0x0016ea    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 pickPath   0x001866    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-          rateVisitedNode   0x001a52    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-              numChildren   0x001e04    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                buildNode   0x001f54    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                     mod4   0x00209c    program     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 FXD1616S   0x0020ce    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-                  DA1616S   0x0020e0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-                   D1616S   0x0020f0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-                 D1616SOK   0x0020fa    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-                D1616SNEG   0x0020fe    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-                  D1616SX   0x002110    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
-                 FXM1616S   0x00211a    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616s.asm
-               TSIGN1616A   0x002166    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616s.asm
-                 FXM1616U   0x002174    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616u.asm
-                _do_cinit   0x0021b0    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-                     test   0x0021ca    program     static                          
-                copy_loop   0x002222    program     static                          
-            copy_one_byte   0x002228    program     static                          
-             done_copying   0x002236    program     static                          
-                     done   0x00224c    program     static                          
-       ___return_lbl00002   0x00224c    program     static                          
-                 FXD1616U   0x00224e    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616u.c
-                     loop   0x002258    program     static                          
-                  endloop   0x002274    program     static                          
-       ___return_lbl00000   0x002278    program     static                          
-            __zero_memory   0x00227a    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   loop_h   0x002288    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-               zero_block   0x002288    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                compare_l   0x002290    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                   loop_l   0x002292    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
-                 _startup   0x00229a    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-                     loop   0x0022aa    program     static                          
-       ___return_lbl00001   0x0022b4    program     static                          
-             Delay100TCYx   0x0022b6    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-       _D100TCYXCODE_0008   0x0022be    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-                    D100x   0x0022c2    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-                   D100_1   0x0022c4    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-       _D100TCYXCODE_0012   0x0022c8    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-       _D100TCYXCODE_0018   0x0022ce    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
-              Delay10TCYx   0x0022d2    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-                     D10x   0x0022da    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-        _D10TCYXCODE_000A   0x0022dc    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-        _D10TCYXCODE_000C   0x0022de    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-        _D10TCYXCODE_000E   0x0022e0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-                    D10_1   0x0022e2    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
-                  ReadADC   0x0022e8    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
-                 CloseADC   0x0022fa    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcclose.c
-                   __init   0x002300    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\stdclib\__init.c
+                goForward   0x000606    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     turn   0x00097e    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  initial   0x000c02    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              clearTimers   0x000c48    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+     readTimersToTraveled   0x000c52    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+        calcUnitsTraveled   0x000cd8    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                blinkTest   0x000d5e    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  msDelay   0x000da4    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+          ___for_lbl00132   0x000db4    program     static                          
+          ___for_lbl00131   0x000dd6    program     static                          
+          ___for_lbl00129   0x000df0    program     static                          
+          ___for_lbl00130   0x000df6    program     static                          
+          ___for_lbl00127   0x000df6    program     static                          
+          ___for_lbl00128   0x000e00    program     static                          
+       ___return_lbl00126   0x000e00    program     static                          
+             makeDecision   0x000e14    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 rateNode   0x00164c    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  rateDir   0x0016ee    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 pickPath   0x00186a    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+          rateVisitedNode   0x001a56    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              numChildren   0x001e08    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                buildNode   0x001f58    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                fwdNoJerk   0x0020a0    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     mod4   0x0020b4    program     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 FXD1616S   0x0020e6    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+                  DA1616S   0x0020f8    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+                   D1616S   0x002108    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+                 D1616SOK   0x002112    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+                D1616SNEG   0x002116    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+                  D1616SX   0x002128    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616s.asm
+                 FXM1616S   0x002132    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616s.asm
+               TSIGN1616A   0x00217e    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616s.asm
+                 FXM1616U   0x00218c    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxm1616u.asm
+                _do_cinit   0x0021c8    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+                     test   0x0021e2    program     static                          
+                copy_loop   0x00223a    program     static                          
+            copy_one_byte   0x002240    program     static                          
+             done_copying   0x00224e    program     static                          
+                     done   0x002264    program     static                          
+       ___return_lbl00002   0x002264    program     static                          
+                 FXD1616U   0x002266    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\fxd1616u.c
+                     loop   0x002270    program     static                          
+                  endloop   0x00228c    program     static                          
+       ___return_lbl00000   0x002290    program     static                          
+            __zero_memory   0x002292    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   loop_h   0x0022a0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+               zero_block   0x0022a0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                compare_l   0x0022a8    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                   loop_l   0x0022aa    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
+                 _startup   0x0022b2    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
+                     loop   0x0022c2    program     static                          
+       ___return_lbl00001   0x0022cc    program     static                          
+             Delay100TCYx   0x0022ce    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+       _D100TCYXCODE_0008   0x0022d6    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+                    D100x   0x0022da    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+                   D100_1   0x0022dc    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+       _D100TCYXCODE_0012   0x0022e0    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+       _D100TCYXCODE_0018   0x0022e6    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d100tcyx.asm
+              Delay10TCYx   0x0022ea    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                     D10x   0x0022f2    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+        _D10TCYXCODE_000A   0x0022f4    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+        _D10TCYXCODE_000C   0x0022f6    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+        _D10TCYXCODE_000E   0x0022f8    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                    D10_1   0x0022fa    program     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\d10tcyx.asm
+                  ReadADC   0x002300    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
+                 CloseADC   0x002312    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcclose.c
+                   __init   0x002318    program     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\stdclib\__init.c
                      SIGN   0x000000       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\cmath18.asm
                 __FPFLAGS   0x000001       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\cmath18.asm
             __FPFLAGSbits   0x000001       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\cmath18.asm
@@ -836,47 +838,47 @@ Linker Map File - Created Wed Mar 12 09:31:53 2014
                  __TEMPB1   0x000012       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
                    __TEMP   0x000013       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
                  __TEMPB0   0x000013       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\math\temparg.asm
-                  __tmp_0   0x000014       data     static C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  __tmp_0   0x000014       data     static C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                   __tmp_0   0x000014       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\pmc_common\ADC\adcread.c
             DelayCounter1   0x00001c       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\delays\delayd1.asm
-               cmTraveled   0x000060       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 leftWall   0x000061       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                rightWall   0x000062       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-             straightWall   0x000063       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-             canCallTuple   0x000064       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-              firstNoWall   0x000065       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                   irCvtL   0x000066       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                   irCvtR   0x000068       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                   irCvtS   0x00006a       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtLP1   0x00006c       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtRP1   0x00006e       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtLP2   0x000070       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtRP2   0x000072       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtLP3   0x000074       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtRP3   0x000076       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtLP4   0x000078       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 irCvtRP4   0x00007a       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  noWallL   0x00007c       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  noWallR   0x00007e       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                traveled0   0x000080       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                traveled1   0x000082       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-        waitToAutocorrect   0x000084       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-           hardcodedAgent   0x000085       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                  compass   0x000086       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 memIndex   0x000088       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-       sawDeadEndLastTime   0x00008a       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                     root   0x00008b       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                    blank   0x000096       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                        i   0x0000a1       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                        j   0x0000a3       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+               cmTraveled   0x000060       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 leftWall   0x000061       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                rightWall   0x000062       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+             straightWall   0x000063       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+             canCallTuple   0x000064       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              firstNoWall   0x000065       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                   irCvtL   0x000066       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                   irCvtR   0x000068       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                   irCvtS   0x00006a       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtLP1   0x00006c       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtRP1   0x00006e       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtLP2   0x000070       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtRP2   0x000072       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtLP3   0x000074       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtRP3   0x000076       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtLP4   0x000078       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 irCvtRP4   0x00007a       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  noWallL   0x00007c       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  noWallR   0x00007e       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                traveled0   0x000080       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                traveled1   0x000082       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+        waitToAutocorrect   0x000084       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+           hardcodedAgent   0x000085       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                  compass   0x000086       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 memIndex   0x000088       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+       sawDeadEndLastTime   0x00008a       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                     root   0x00008b       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                    blank   0x000096       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                        i   0x0000a1       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                        j   0x0000a3       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
                      prom   0x0000a5       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                 curr_byte   0x0000a8       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                curr_entry   0x0000aa       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
                  data_ptr   0x0000ac       data     static E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\startup\c018i.c
-               emptyNodes   0x000200       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-              currentNode   0x0006fc       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                 prevNode   0x0006fe       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
-                mazeArray   0x000700       data     extern C:\Users\Janel\Documents\GitHub\SeniorDesign_microtaur\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+               emptyNodes   0x000200       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+              currentNode   0x0006fc       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                 prevNode   0x0006fe       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
+                mazeArray   0x000700       data     extern C:\Users\Tim\Documents\Emilia\githubRepos\Senior-Design-Micromouse\Code\MplabBench\CodeMerge\main.c
               ADCTRIGbits   0x000eb8       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                   ADCTRIG   0x000eb8       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm
                       PD0   0x000eb9       data     extern E:\c18v3.46\pic18-lt\cxx-framework\src\traditional\proc\p18f27j13.asm

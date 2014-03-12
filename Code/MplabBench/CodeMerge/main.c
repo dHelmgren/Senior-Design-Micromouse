@@ -15,27 +15,16 @@
 /****** FIBROTAUR ********/
 // Navigation constants for Fibrotaur
 
-/*
-#define GO_RIGHT 			0b11101010
-#define GO_LEFT 			0b11110101
-#define BREAK_R_WHEEL		0b11111011
-#define BREAK_L_WHEEL 		0b11111101
-#define BACKWARD_R_WHEEL	0b11111110
-#define BACKWARD_L_WHEEL	0b11110111
-*/
-
-/*TESTING*/
 #define GO_LEFT 			0b11101010
 #define GO_RIGHT 			0b11110101
 #define BREAK_L_WHEEL		0b11111011
 #define BREAK_R_WHEEL 		0b11111101
 #define BACKWARD_L_WHEEL	0b11111110
 #define BACKWARD_R_WHEEL	0b11110111
-/*END TESTING*/
-
 
 #define CLICKS_FOR_180		0xA8
-#define CLICKS_FOR_NINETY 	0x9B
+#define CLICKS_FOR_NINETY_L	0x9B
+#define CLICKS_FOR_NINETY_R	0x9B
 #define CLICKS_FOR_45		0x4C
 
 // Poll 1
@@ -82,11 +71,12 @@
 #define BACKWARD_R_WHEEL	0b11110111
 
 #define CLICKS_FOR_180		0xB0
-#define CLICKS_FOR_NINETY 	0xA4
+#define CLICKS_FOR_NINETY_L 0xAC //Was A8
+#define CLICKS_FOR_NINETY_R	0xA0 //Was A4
 #define CLICKS_FOR_45		0x3C
 
 // Poll 1
-#define CONTINUE_TO_CENTER_R_FIRST 17
+#define CONTINUE_TO_CENTER_R_FIRST 16
 #define CONTINUE_TO_CENTER_L_FIRST 14
 
 // Poll 2 constants for Microtaur
@@ -158,6 +148,10 @@
 // How long to wait in between states of the code
 #define DELAY 2000
 
+// How long to make the right wheel to move before the left wheel moves
+// because the left wheel tends to jerk the robot left
+#define DELAY_JERK 100
+
 
 // Constants for AI Program
 #define AI_WEST 0
@@ -200,6 +194,7 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char ho
 void blinkTest(void);
 unsigned char calcUnitsTraveled(void);
 void clearTimers(void);
+void fwdNoJerk(void);
 void goForward(int distance); // Step 2 of 4 step polling process
 unsigned char ifAutocorrect(void);
 void ifSuicide(void);
@@ -331,6 +326,8 @@ void main(void)
 //PORTB=BREAK;
 	while(true) {
 
+//		PORTB = GO_LEFT;
+//		Delay10TCYx(100);
 		PORTB = GO_STRAIGHT;
 
 		Delay10TCYx(1);
@@ -371,6 +368,8 @@ void main(void)
 			PORTB=BREAK;
 			msDelay(DELAY);
 			//blinkTest();
+//		PORTB = GO_LEFT;
+//		Delay10TCYx(100);
 			PORTB=GO_STRAIGHT;
 			leftWall = false;
 			// Set this value so that we can how far to continue to center,
@@ -383,6 +382,8 @@ void main(void)
 			PORTB=BREAK;
 			msDelay(DELAY);
 			//blinkTest();
+//PORTB=GO_LEFT;
+//Delay10TCYx(100);
 			PORTB=GO_STRAIGHT;
 			rightWall = false;
 			firstNoWall = right;
@@ -560,6 +561,8 @@ PORTB=BREAK;
 	msDelay(DELAY);
 
 	// Start polling process again
+//	PORTB=GO_LEFT;
+//	Delay10TCYx(100);
 	PORTB=GO_STRAIGHT;
 }
 
@@ -604,6 +607,8 @@ void goForward(int distance){
 	// in this method because these variables are "local"
 	clearTimers();
 
+//PORTB=GO_LEFT;
+//Delay10TCYx(100);
 	PORTB=GO_STRAIGHT; //Drive forward
 	cmTraveled = 0;
 	while(cmTraveled < distance)
@@ -725,7 +730,7 @@ PORTB=BREAK;
 void turn(unsigned char direction)
 {
 	// local variables
-	unsigned char turnClicks = CLICKS_FOR_NINETY;
+	unsigned char turnClicks = CLICKS_FOR_NINETY_L;
 	unsigned char numTurns = 1;
 	unsigned char i = 0;
 	int countA = 0;
@@ -736,6 +741,7 @@ void turn(unsigned char direction)
 		PORTB=GO_LEFT;
 	}
 	else if(direction == NODE_RIGHT){
+		turnClicks = CLICKS_FOR_NINETY_R;
 		PORTB=GO_RIGHT;
 	}
 	else if(direction == NODE_BACK){
@@ -1260,6 +1266,12 @@ NavNode* buildNode(int currX, int currY)
 	nodePtr = &emptyNodes[memIndex];
 	memIndex++;
 	return nodePtr;
+}
+
+void fwdNoJerk(void){
+	PORTB=GO_LEFT;
+	Delay10TCYx(DELAY_JERK);
+	PORTB=GO_STRAIGHT;
 }
 
 unsigned char mod4(unsigned char val){
