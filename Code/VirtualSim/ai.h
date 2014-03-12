@@ -17,6 +17,8 @@
 #define NODE_RIGHT 1
 #define NODE_BACK 2
 #define NODE_LEFT 3
+
+#define CHILD_PENALTY 5
 typedef struct NavNode
 {
 	int rating;
@@ -53,7 +55,10 @@ public:
 	// Just FYI, this method is called in drawScene() in main.cpp
 	int makeDecision(int deltaDist, bool left, bool straight, bool right, bool back);
 	int rateNode(int x, int y);
-	NavNode* buildNode(int turnDir, int currX, int currY);
+	unsigned char rateDir(int compass, int turnDir, int xx, int yy);
+	unsigned char rateVisitedNode(NavNode* node, int compass, int turnDir);
+	NavNode* buildNode(int currX, int currY);
 	int modFour(int val);
 	int numChildren(NavNode* check, int compass);
+	int pickPath(int left, int forward, int right);
 };
