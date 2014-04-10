@@ -39,7 +39,6 @@ void drawScene() {
 	glTranslatef(-maze.getXCoord(), -maze.getYCoord(), 0);
 
 	// Draw the maze!
-	//maze.initMazeArray();
 	maze.drawMaze();
 
 	// Only process if the mouse is in the center of the grid
@@ -104,6 +103,7 @@ void drawScene() {
 				printf("Angle %d, Left %d, straight %d, right %d, back %d\n", angle, left, straight, right, back);
 				//printf("Tuple's delta distance is %d\n", mouseRobot.getDeltaDistance());
 			
+				// Actually call the AI as a function with the relevant parameters
 				int decision = ai.makeDecision(mouseRobot.getDeltaDistance(), left, straight, right, back);
 					
 				// Now that we have made a decision, reset the delta distance
@@ -123,6 +123,8 @@ void drawScene() {
 				}
 				else if(decision == AI_BACK){
 					mouseRobot.back();
+					// If you ever implement the functionality of the robot going backwards,
+					// then pass in false to this function
 					mouseRobot.updateIsGoingForward(true);
 				}
 			}//if mouse is in a grid with a tuple

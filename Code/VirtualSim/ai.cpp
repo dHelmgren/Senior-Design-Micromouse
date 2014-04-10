@@ -186,7 +186,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 	}
 
 
-
+	// DEBUG statements
 	/*printf("left: %d right: %d forward: %d Compass:", leftRating, rightRating, forwardRating);
 	if (compass == AI_WEST)
 	{

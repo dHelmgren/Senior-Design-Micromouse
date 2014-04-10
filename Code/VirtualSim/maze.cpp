@@ -12,6 +12,7 @@ Maze::Maze(){
 			// Determines which maze we are currently building. See maze.h for the 
 			// WHICH_MAZE constant.
 			if(WHICH_MAZE == 1){
+				// Call the functions associated with this maze
 				initMazeArrayTop1(mazeArrayTop, i, j);
 				initMazeArrayLeft1(mazeArrayLeft, i, j);
 			}
@@ -38,22 +39,23 @@ void Maze::initIsTuple(){
 			// There is a tuple
 			else{
 				isTuple[i][j] = true;
-				//DEBUG
+				//DEBUG statement
 				//printf("Tuple at %d, %d: WEST: %d, NORTH: %d, EAST: %d, SOUTH: %d\n", i, j, mazeArrayLeft[i][j], mazeArrayTop[i][j+1], mazeArrayLeft[i+1][j], mazeArrayTop[i][j]);
 			}
-			for(k = 0; k < 4; k++){
-				if(mazeArrayTop[i][j+1]){
-					isWallWNES[i][j][NORTH] = true;
-				}
-				if(mazeArrayTop[i][j]){
-					isWallWNES[i][j][SOUTH] = true;
-				}
-				if(mazeArrayLeft[i+1][j]){
-					isWallWNES[i][j][EAST] = true;
-				}
-				if(mazeArrayLeft[i][j]){
-					isWallWNES[i][j][WEST] = true;
-				}
+			// Populate yet another data structure with maze wall information. Yes, this is yet another
+			// data structure to store the same information, but it compacts the information into a more
+			// readable format
+			if(mazeArrayTop[i][j+1]){
+				isWallWNES[i][j][NORTH] = true;
+			}
+			if(mazeArrayTop[i][j]){
+				isWallWNES[i][j][SOUTH] = true;
+			}
+			if(mazeArrayLeft[i+1][j]){
+				isWallWNES[i][j][EAST] = true;
+			}
+			if(mazeArrayLeft[i][j]){
+				isWallWNES[i][j][WEST] = true;
 			}
 		}
 	}
@@ -70,6 +72,13 @@ void Maze::updateMazeCoords(float currentTime, int angle, bool isMouseGoingFwd){
 	int sine = (int)sin((float)angle*PI/180);
 	int cose = (int)cos((float)angle*PI/180);
 
+	// Mouse is always going forward because of the fact that we took away the back
+	// IR sensor. However, this code remains if ever teams do add a back IR sensor
+	// and would like to simulate the mouse going backward (to simulate the mouse
+	// moving backward, all you have to do is change the isMouseGoingFwd boolean)
+	
+	// Otherwise, this code just determines where the mouse is located in the maze
+	// in order to draw it based on the AI's decision
 	if(sine == 0 && cose == 1){
 		if(isMouseGoingFwd){
 			xCoord -= PIXEL_INCR;
@@ -135,8 +144,10 @@ void Maze::drawMaze(){
 }
 
 void Maze::initMazeArrayTop1(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n){
+	// This is the old and very not fun way of initializing the maze array. The new
+	// and still confusing but better way to initialize the maze array is seen in
+	// initMazeArrayTop2
 
-	//bool mazeArray[DIMENSION][DIMENSION];
 	// Initialize all the walls on the sides of the maze
 	int i;
 	int j;
@@ -388,6 +399,15 @@ void Maze::initMazeArrayLeft1(bool (&mazeArray)[DIMENSION][DIMENSION], int m, in
 }
 
 void Maze::initMazeArrayTop2(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n){
+	/* This is important information from the users manual:
+	   1) The first and last columns of the 2D top array (ie. tempMazeArray[x][0] and 
+	       tempMazeArray[x][15]) should have all values equal to true, except for x = 16 
+	       because this top maze array is off the screen.
+	   2) The last row of the 2D top array (ie. tempMazeArray[16][x]) should all have 
+	       values equal to false, because this would create a wall outside of the 
+	       boundaries of the maze. */
+	
+	
 	bool tempMazeArray[DIMENSION][DIMENSION] = {
 		{true,	false,	false,	false,	false,	true,	false,	false,	false,	true,	false,	false,	false,	false,	false,	false,	true},
 
@@ -421,6 +441,14 @@ void Maze::initMazeArrayTop2(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int
 }
 
 void Maze::initMazeArrayLeft2(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n){
+	/* This is important information from the users manual:
+	   3) The first and last rows of the 2D left array (ie. tempMazeArray[0][x] and 
+	       tempMazeArray[15][x]) should have all values equal to true, except for x = 16 
+		   because this left maze array is off the screen.
+       4) The last column of the 2D left array (ie. tempMazeArray[x][15]) should all 
+	       have values equal to false because this would create a wall outside of the 
+		   boundaries of the maze. */
+
 	bool tempMazeArray[DIMENSION][DIMENSION] = {
 		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	false},
 		

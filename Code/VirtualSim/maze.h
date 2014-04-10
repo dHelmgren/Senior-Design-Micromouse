@@ -30,8 +30,8 @@
 
 // ***** In order to change which maze we are currently building,
 // change this constant. 
-// OPTIONS: 1, 2
-#define WHICH_MAZE 2
+// OPTIONS: 1, 2, 3 (this is an incomplete maze)
+#define WHICH_MAZE 1
 
 #define PI 3.14159265
 

@@ -3,7 +3,7 @@
 #include <timers.h>
 #include <delays.h>
 #include <adc.h>
-#include <math.h>
+//#include <math.h>
 
 /****** MACROS ******/
 
@@ -39,13 +39,13 @@
 #define TUPLE_CHANGE 1024
 
 // Poll 3: Move mouse forward
-#define LEAVE_UNIT 4
+#define LEAVE_UNIT 5
 
 // Constants to trigger push autocorrect
 #define LR_DIFF				250
-#define ERROR_CORRECT_L_1	780
+#define ERROR_CORRECT_L_1	700 //780
 #define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
-#define ERROR_CORRECT_L_2	780
+#define ERROR_CORRECT_L_2	700 //780
 #define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
 #define ERROR_CORRECT_CAP_L	340
 #define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
@@ -58,7 +58,7 @@
 
 // Stop the mouse because it is about to run into the wall, since the
 // IR sensor readouts are too high and close to the 3 cm max readout
-#define STOP 940
+#define STOP 980
 
 /****** MICROTAUR ********/
 #else // We are programming on Microtaur, not Fibrotaur
@@ -70,14 +70,14 @@
 #define BACKWARD_L_WHEEL	0b11111110
 #define BACKWARD_R_WHEEL	0b11110111
 
-#define CLICKS_FOR_180		0xB0
-#define CLICKS_FOR_NINETY_L 0xAC //Was A8
-#define CLICKS_FOR_NINETY_R	0xA0 //Was A4
+#define CLICKS_FOR_180		0xAC //AC is optimal for competition maze
+#define CLICKS_FOR_NINETY_L 0xB1 //B1 is optimal for competition maze
+#define CLICKS_FOR_NINETY_R	0xA7 //A7 is optimal for competition maze
 #define CLICKS_FOR_45		0x3C
 
 // Poll 1
-#define CONTINUE_TO_CENTER_R_FIRST 16
-#define CONTINUE_TO_CENTER_L_FIRST 14
+#define CONTINUE_TO_CENTER_R_FIRST 16 // was 16
+#define CONTINUE_TO_CENTER_L_FIRST 14 // was 12
 
 // Poll 2 constants for Microtaur
 #define NO_WALL_LEFT 250
@@ -87,7 +87,7 @@
 #define TUPLE_CHANGE 250
 
 // Poll 3: Move mouse forward 4 cm
-#define LEAVE_UNIT 4
+#define LEAVE_UNIT 5
 
 // Constants to trigger push autocorrect
 #define LR_DIFF				160 // Changed from 150
@@ -146,7 +146,7 @@
 #define CLICKS_FOR_AC_2		0x20//was 18
 
 // How long to wait in between states of the code
-#define DELAY 2000
+#define DELAY 70
 
 // How long to make the right wheel to move before the left wheel moves
 // because the left wheel tends to jerk the robot left
@@ -710,7 +710,7 @@ PORTB=BREAK;
 	if(distance == CONTINUE_TO_CENTER_L_FIRST || distance == CONTINUE_TO_CENTER_R_FIRST){
 		Delay10TCYx(1);
 	  	tempIrCvtS = adConvert(STRAIGHT_IR_SELECT);
-	  	if(highestIrCvtS >= 550 && highestIrCvtS < STOP){// && irCvtS - prevIrCvtS > 0){
+	  	if(highestIrCvtS >= 300 && highestIrCvtS < STOP){// && irCvtS - prevIrCvtS > 0){
 			// Our stopping point is a wall ahead of us in this same tuple, so
 			// track to that wall
 	  		straightWall = true;
@@ -946,6 +946,15 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 	int currX = (int) currentNode->xOffset;
 	int currY = (int) currentNode->yOffset;
 
+	// Need to correct if deltaDist == 0?
+
+	if(deltaDist == 0 && sawDeadEndLastTime == true){
+		compass = mod4(compass+1);
+		return NODE_RIGHT;
+	}
+
+	sawDeadEndLastTime = false;
+
 	//determine the proper deltaDistance so that we can get an accurate location in the maze
 	if(compass == AI_NORTH)
 	{
@@ -1055,8 +1064,9 @@ unsigned char makeDecision(unsigned char deltaDist, unsigned char leftWall, unsi
 		else if(backPos == AI_SOUTH){
 			currentNode->south = prevNode;
 			prevNode->north = currentNode;
-		} 
-
+		}
+		 
+		currentNode->rating += 5;
 
 		if(leftWall == 0){
 			leftRating = rateVisitedNode(currentNode, compass, NODE_LEFT);
@@ -1191,7 +1201,7 @@ unsigned char rateVisitedNode(NavNode* node, int compass, int turnDir){
 	if(nodePos == AI_WEST){
 		if(node->west != NULL)
 		{
-			return node->west->rating + CHILD_PENALTY * (1 + numChildren(node->west, compass)); 
+			return node->west->rating + CHILD_PENALTY * (1 + numChildren(node->west, AI_EAST)); 
 		}
 		else{
 			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
@@ -1200,7 +1210,7 @@ unsigned char rateVisitedNode(NavNode* node, int compass, int turnDir){
 	else if(nodePos == AI_NORTH){
 		if(node->north != NULL)
 		{
-			return node->north->rating + CHILD_PENALTY * (1 + numChildren(node->north, compass)); 
+			return node->north->rating + CHILD_PENALTY * (1 + numChildren(node->north, AI_SOUTH)); 
 		}
 		else{
 			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
@@ -1209,7 +1219,7 @@ unsigned char rateVisitedNode(NavNode* node, int compass, int turnDir){
 	else if(nodePos == AI_EAST){
 		if(node->east != NULL)
 		{
-			return node->east->rating + CHILD_PENALTY * (1 + numChildren(node->east, compass)); 
+			return node->east->rating + CHILD_PENALTY * (1 + numChildren(node->east, AI_WEST)); 
 		}
 		else{
 			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
@@ -1218,7 +1228,7 @@ unsigned char rateVisitedNode(NavNode* node, int compass, int turnDir){
 	else if(nodePos == AI_SOUTH){
 		if(node->south != NULL)
 		{
-			return node->south->rating + CHILD_PENALTY * (1 + numChildren(node->south, compass)); 
+			return node->south->rating + CHILD_PENALTY * (1 + numChildren(node->south, AI_NORTH)); 
 		}
 		else{
 			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
