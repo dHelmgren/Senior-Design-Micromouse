@@ -3,7 +3,8 @@
 #include <timers.h>
 #include <delays.h>
 #include <adc.h>
-//#include <math.h>
+//#include <math.h> // This is not used because we implemented our
+                    // own mod function
 
 /****** MACROS ******/
 
@@ -12,7 +13,7 @@
 //#define FIBROTAUR 1
 #ifdef FIBROTAUR
 
-/****** FIBROTAUR ********/
+/********************* FIBROTAUR ********************/
 // Navigation constants for Fibrotaur
 
 #define GO_LEFT 			0b11101010
@@ -43,9 +44,9 @@
 
 // Constants to trigger push autocorrect
 #define LR_DIFF				250
-#define ERROR_CORRECT_L_1	700 //780
+#define ERROR_CORRECT_L_1	700 //used to be 780
 #define ERROR_CORRECT_R_1	(ERROR_CORRECT_L_1 - LR_DIFF)
-#define ERROR_CORRECT_L_2	700 //780
+#define ERROR_CORRECT_L_2	700 //used to be 780
 #define ERROR_CORRECT_R_2	(ERROR_CORRECT_L_2 - LR_DIFF)
 #define ERROR_CORRECT_CAP_L	340
 #define ERROR_CORRECT_CAP_R	(ERROR_CORRECT_CAP_L - LR_DIFF)
@@ -60,7 +61,9 @@
 // IR sensor readouts are too high and close to the 3 cm max readout
 #define STOP 980
 
-/****** MICROTAUR ********/
+//////////////////END FIBROTAUR//////////////////
+
+/***************** MICROTAUR ********************/
 #else // We are programming on Microtaur, not Fibrotaur
 // Navigation constants for Microtaur
 #define GO_LEFT 			0b11101010
@@ -108,7 +111,8 @@
 // IR sensor readouts are too high and close to the 3 cm max readout
 #define STOP 940
 
-#endif//////////////////END MICROTAUR//////////////////
+#endif
+//////////////////////////END MICROTAUR///////////////////////
 
 #define true    	1 
 #define false   	0 
@@ -137,13 +141,13 @@
 
 // Constants to trigger pull autocorrect
 #define PULL_CORRECT_L_1	480
-#define PULL_CORRECT_R_1	(PULL_CORRECT_L_1 - LR_DIFF)//450-100
+#define PULL_CORRECT_R_1	(PULL_CORRECT_L_1 - LR_DIFF)
 #define PULL_CORRECT_L_2	480
-#define PULL_CORRECT_R_2	(PULL_CORRECT_L_2 - LR_DIFF)//380-100
+#define PULL_CORRECT_R_2	(PULL_CORRECT_L_2 - LR_DIFF)
 
 // Constants to define how much to autocorrect
 #define CLICKS_FOR_AC_1		0x20
-#define CLICKS_FOR_AC_2		0x20//was 18
+#define CLICKS_FOR_AC_2		0x20//was 0x18
 
 // How long to wait in between states of the code
 #define DELAY 70
@@ -323,13 +327,12 @@ void main(void)
 
 	/**** BEGIN! ****/
 	msDelay(10000);
-//PORTB=BREAK;
 	while(true) {
 
-//		PORTB = GO_LEFT;
-//		Delay10TCYx(100);
 		PORTB = GO_STRAIGHT;
 
+		// Insert a delay due to the fact that without the delay, unrealiable
+		// variations in IR sensor readings would be read
 		Delay10TCYx(1);
 		irCvtL = adConvert(LEFT_IR_SELECT);
 		Delay10TCYx(1);
@@ -349,6 +352,8 @@ void main(void)
 		// permission to make a tuple immediately, which is extremely necessary
 		// where in situations where there is a tuple after a tuple
 
+		// If we are about to run into a wall, and we have not seen the absence
+		// of a wall to the right or left, then we know we have hit a dead end
 		if(irCvtS >= STOP){
 			PORTB=BREAK;
 			msDelay(DELAY);
@@ -364,12 +369,13 @@ void main(void)
 			continue;
 		}
 
+		// Either the left IR sensor value is smaller than a certain threshold
+		// or the IR sensor value has dropped drastically, telling Microtaur
+		// that it has reached a decision point (a tuple). The drastic drop
+		// is computed based on the last 5 IR sensor readings.
 		if(irCvtL <= noWallL||irCvtLP4-irCvtL >= TUPLE_CHANGE){
 			PORTB=BREAK;
 			msDelay(DELAY);
-			//blinkTest();
-//		PORTB = GO_LEFT;
-//		Delay10TCYx(100);
 			PORTB=GO_STRAIGHT;
 			leftWall = false;
 			// Set this value so that we can how far to continue to center,
@@ -381,15 +387,13 @@ void main(void)
 		else if(irCvtR <= noWallR||irCvtRP4-irCvtR >= TUPLE_CHANGE){
 			PORTB=BREAK;
 			msDelay(DELAY);
-			//blinkTest();
-//PORTB=GO_LEFT;
-//Delay10TCYx(100);
 			PORTB=GO_STRAIGHT;
 			rightWall = false;
 			firstNoWall = right;
 			init4StepPoll(!IS_DEAD_END);		
 		}
 
+		// Reinitialize the last 5 IR sensor readings.
 		irCvtLP4 = irCvtLP3;
 		irCvtRP4 = irCvtRP3;
 		irCvtLP3 = irCvtLP2;
@@ -406,6 +410,11 @@ void main(void)
 unsigned char ifAutocorrect(void){
 	// Determine if autocorrect is needed
 	// If we're too close on the left side or too far on the right side
+
+	// The commented-out code in the if-statements is the pull autocorrect
+	// code left there left there, in case a future team decides to use it.
+	// Currently, the non-commented-out code is the push autocorrect (we push
+	// away from a wall when it is too close to us).
 	if(irCvtL >= ERROR_CORRECT_L_1/* || (irCvtR <= PULL_CORRECT_R_1 && irCvtR >= NO_WALL_RIGHT)*/){
 		if(irCvtL >= ERROR_CORRECT_L_2/* || (irCvtR <= PULL_CORRECT_R_2 && irCvtR >= NO_WALL_RIGHT)*/){
 			autocorrect(left, CLICKS_FOR_AC_2, forward);
@@ -481,13 +490,16 @@ void autocorrect(unsigned char direction, unsigned char clicks, unsigned char ho
 }//autocorrect
 
 void init4StepPoll(unsigned char isDeadEnd){
-	// local variables
+	// local variables must be declared at the top of the function in C18
 	char decision;
 	unsigned char i = 0;
 
+	// Please note that the first step in the four step polling process was
+	// to recognize the presence of a decision point (a tuple)
+
 	if(!isDeadEnd){
 
-		// Step 2
+		// Step 2 of four step polling process
 		if(firstNoWall == left){
 			goForward(CONTINUE_TO_CENTER_L_FIRST*2);
 		}
@@ -495,11 +507,19 @@ void init4StepPoll(unsigned char isDeadEnd){
 			goForward(CONTINUE_TO_CENTER_R_FIRST*2);
 		}
 
+		// Delay for our own debug purposes (so we can understand where
+		// Microtaur is in the code when watching it run around the maze)
 		msDelay(DELAY);
+
+		// We inserted this for loop because we were getting weird readings
+		// from the front IR sensor (readings that were clearly larger than
+		// the allowed max value 1024)
 		for(i=0;i<5;++i) {
 			Delay10TCYx(10);
 			irCvtS = adConvert(STRAIGHT_IR_SELECT);
 		}
+
+		// This straight sensor reading is correct, so use it to test
 		if(irCvtS <= (int)NO_WALL_STRAIGHT){
 			straightWall = false;
 		}
@@ -508,7 +528,9 @@ void init4StepPoll(unsigned char isDeadEnd){
 		}
 	}
 
-PORTB=BREAK;
+	// Debug break
+	PORTB=BREAK;
+
 	// This if statement is just to be safe; it can be removed once
 	// this information is verified
 	if(isDeadEnd){
@@ -551,24 +573,26 @@ PORTB=BREAK;
 	traveled0 = 0;
 	traveled1 = 0;
 
+	// Break and delay code such as the following two lines are typically
+	// used as debug so that we, watching Microtaur run around in the maze,
+	// can see where exactly it is in the code. In order for the delays to 
+	// be visible, the DELAY variable will probably need to be increased
 	PORTB=BREAK;
 	msDelay(DELAY);
 
 	// Step 4: Continue a little past current unit
 	goForward((LEAVE_UNIT-1)*2+1);
 
+	// Debug break
 	PORTB=BREAK;
 	msDelay(DELAY);
 
-	// Start polling process again
-//	PORTB=GO_LEFT;
-//	Delay10TCYx(100);
 	PORTB=GO_STRAIGHT;
 }
 
 unsigned int adConvert(unsigned char channel)
 {
-	/*unsigned */int irValue;
+	int irValue;
 	//set's the Analog input channel to the given input
 	ADCON0 = 0;
 	ADCON1 = 0b10100001; //0xa1
@@ -596,6 +620,9 @@ unsigned int adConvert(unsigned char channel)
 }
 
 void goForward(int distance){
+	// Note that this function is used both to get Microtaur to the center
+	// of the tupled unit (step 2 of four step polling process) and to get
+	// Microtaur out of the current unit (step 4 of the polling process)
 	unsigned int highestIrCvtS = 0;
 	unsigned int tempIrCvtS = 0;
 
@@ -607,33 +634,37 @@ void goForward(int distance){
 	// in this method because these variables are "local"
 	clearTimers();
 
-//PORTB=GO_LEFT;
-//Delay10TCYx(100);
 	PORTB=GO_STRAIGHT; //Drive forward
 	cmTraveled = 0;
+
+	// While Microtaur has not traveled as far as the function's parameter
+	// desires
 	while(cmTraveled < distance)
 	{
-//PORTB=BREAK;
+		// Get the values for the left and right IR sensors
 		irCvtL = adConvert(LEFT_IR_SELECT);
-//PORTB=GO_STRAIGHT;
 		irCvtR = adConvert(RIGHT_IR_SELECT);
-
-//ifAutocorrect();
 
 		// Continue to gather information about our tuple, specifically if
 		// there is a wall to the left or the right
 		if(cmTraveled <= 5 && (distance == CONTINUE_TO_CENTER_R_FIRST || distance == CONTINUE_TO_CENTER_L_FIRST)){
+			// This constant, NO_WALL_LEFT_IN_TUPLE is necessary because
+			// as soon as Microtaur has entered a tupled unit, then Microtaur
+			// continues to drive closer and closer to (possibly) a wall ahead.
+			// Therefore, if Microtaur has not yet seen the absence of a wall
+			// on one of its sides, a smaller constant cutoff is used to see the
+			// wall absence.
 			if((irCvtL <= NO_WALL_LEFT_IN_TUPLE || irCvtLP4 - irCvtL >= 250) && leftWall==true){
+				// Debug break
 				PORTB=BREAK;
 				msDelay(DELAY);
-				//blinkTest();
 				PORTB=GO_STRAIGHT;
 				leftWall = false;
 			}
 			else if((irCvtR <= NO_WALL_RIGHT_IN_TUPLE || irCvtRP4 - irCvtR >= 250) && rightWall==true){
+				// Debug break
 				PORTB=BREAK;
 				msDelay(DELAY);
-				//blinkTest();
 				PORTB=GO_STRAIGHT;
 				rightWall = false;
 			}
@@ -650,6 +681,8 @@ void goForward(int distance){
 			irCvtRP1 = irCvtR;
 		}//if
 
+		// Use even a different wall constant cutoff (details in the previous 
+		// comment above the "if") while traveling between 5 and 7 cm
 		else if(cmTraveled > 5 && cmTraveled <=7 && (distance == CONTINUE_TO_CENTER_R_FIRST*2 || distance == CONTINUE_TO_CENTER_L_FIRST*2)){
 			if((irCvtL <= (NO_WALL_LEFT_IN_TUPLE+50) || irCvtLP4 - irCvtL >= 250) && leftWall==true){
 				PORTB=BREAK;
@@ -679,15 +712,21 @@ void goForward(int distance){
 		}//if
 
 
+		// This if statement will be executed only when we have traveled
+		// have a centimeter
 		if(TMR0L >= CLICKS_PER_HALF_CM){
-			cmTraveled++;
+			cmTraveled++; // The name of this variable really should be
+						  // "halfCmTraveled", since we shortened the 
+						  // measuring factor to 1/2 a cm very soon before
+						  // competition
+			// Reset the timer
 			TMR0L = TMR0L - CLICKS_PER_HALF_CM;
 			tempIrCvtS = 0;
 			Delay10TCYx(1);
 			tempIrCvtS = adConvert(STRAIGHT_IR_SELECT);
 			if(tempIrCvtS >= highestIrCvtS){
 				if(tempIrCvtS >= STOP){
-PORTB=BREAK;
+					PORTB=BREAK;
 					highestIrCvtS = tempIrCvtS;
 					// Prevents Microtaur from crashing into a wall when the
 					// constant CONTINUE_TO_CENTER may be too high
@@ -737,6 +776,7 @@ void turn(unsigned char direction)
 	int countB = 0;
     clearTimers();
 
+	// Execute the decision made by the AI agent
 	if(direction == NODE_LEFT){
 		PORTB=GO_LEFT;
 	}
@@ -787,6 +827,10 @@ void turn(unsigned char direction)
 
 	for(i = 0; i < numTurns; ++i){
 
+		// As you can see, the following lines of code are copied and 
+		// pasted twice. This is because Microtaur would go in circles
+		// and never stop if we just multiplied turnClicks by two. This
+		// is due to overflow of countA.
 		Delay10TCYx(2000); //10ms delay
 
 		while(countA < turnClicks && countB < turnClicks) {
@@ -811,7 +855,7 @@ void turn(unsigned char direction)
     	clearTimers();
 	}
 
-	PORTB=BREAK; //break
+	PORTB=BREAK;
 }
 
 void initial(void)
@@ -852,7 +896,7 @@ void initial(void)
 
 	//ANCON1 = 0b10000000;
 	
-	
+	// Even with this issue, Microtaur worked just fine.
 		
 	//Set RC0 and RC1 as inputs
 	TRISC = 0b00000011;
@@ -869,6 +913,7 @@ void clearTimers(void){
 	// due to buffer updates in the background. Else, code won't work. 
 	TMR0H = 0; //Right wheel
 	TMR0L = 0;
+
 	TMR1H = 0; //Left wheel
 	TMR1L = 0;
 }
@@ -890,7 +935,9 @@ void readTimersToTraveled(void){
 unsigned char calcUnitsTraveled(void){
 	unsigned char unitsTraveled = 0;
 	unsigned int tempTraveled = traveled1;
-	//traveled1 += 1000;//HACKY CODE
+	
+	// The PIC microcontroller is not very good at division by a non
+	// power of two. Therefore, we implemented our own.
 	while(tempTraveled >= 990){
 		unitsTraveled++;
 		tempTraveled = tempTraveled - 990;
