@@ -19,6 +19,10 @@ Maze::Maze(){
 				initMazeArrayTop2(mazeArrayTop, i, j);
 				initMazeArrayLeft2(mazeArrayLeft, i, j);
 			}
+			else if(WHICH_MAZE == 3){
+				initMazeArrayTop3(mazeArrayTop, i, j);
+				initMazeArrayLeft3(mazeArrayLeft, i, j);
+			}
 		}
 	}
 }
@@ -264,6 +268,7 @@ void Maze::initMazeArrayLeft1(bool (&mazeArray)[DIMENSION][DIMENSION], int m, in
 
 	// Row 1
 	mazeArrayLeft[1][1] = true;
+	mazeArrayLeft[0][1] = true;
 	mazeArrayLeft[5][1] = true;
 	mazeArrayLeft[6][1] = true;
 	mazeArrayLeft[8][1] = true;
@@ -441,7 +446,7 @@ void Maze::initMazeArrayLeft2(bool (&mazeArray)[DIMENSION][DIMENSION], int m, in
 		
 		{false,	false,	false,	false,	false,	false,	false,	false,	true,	false,	false,	false,	false,	false,	false,	false,	false},
 		{false,	false,	false,	false,	false,	false,	true,	true,	false,	true,	false,	false,	false,	false,	false,	false,	false},
-		{false,	true,	true,	false,	true,	true,	true,	true,	true,	false,	false,	true,	true,	true,	true,	false,	false},
+		{false,	false,	true,	false,	true,	true,	true,	true,	true,	false,	false,	true,	true,	true,	true,	false,	false},
 
 		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	false}};
 
@@ -452,6 +457,73 @@ void Maze::initMazeArrayLeft2(bool (&mazeArray)[DIMENSION][DIMENSION], int m, in
 		}
 	}
 }
+
+void Maze::initMazeArrayTop3(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n){
+	bool tempMazeArray[DIMENSION][DIMENSION] = {
+		{true,	false,	true,	false,	false,	true,	false,	false,	false,	true,	false,	false,	false,	false,	false,	false,	true},
+
+		{true,	false,	true,	false,	false,	false,	false,	false,	true,	false,	false,	false,	false,	true,	false,	true,	true},
+		{true,	true,	false,	false,	false,	false,	false,	true,	true,	true,	false,	false,	true,	false,	true,	false,	true},
+		{true,	true,	false,	false,	false,	false,	true,	true,	true,	true,	true,	false,	true,	false,	false,	false,	true},
+
+		{true,	false,	true,	false,	false,	false,	true,	true,	true,	true,	false,	true,	false,	false,	true,	true,	true},
+		{true,	true,	false,	true,	false,	true,	true,	false,	true,	false,	true,	true,	true,	false,	false,	true,	true},
+		{true,	false,	true,	false,	true,	false,	true,	false,	true,	false,	true,	false,	false,	true,	false,	false,	true},
+		{true,	false,	false,	true,	false,	false,	false,	true,	false,	true,	false,	true,	true,	true,	true,	false,	true},
+
+		{true,	false,	true,	false,	true,	false,	true,	true,	false,	true,	true,	true,	true,	true,	false,	false,	true},
+		{true,	false,	true,	true,	false,	true,	false,	true,	false,	false,	true,	true,	true,	false,	true,	true,	true},
+		{true,	false,	true,	true,	false,	true,	false,	true,	false,	false,	false,	true,	true,	true,	true,	true,	true},
+		{true,	false,	true,	false,	true,	true,	false,	true,	true,	false,	true,	true,	true,	true,	true,	true,	true},
+
+		{true,	true,	true,	true,	true,	true,	true,	true,	true,	false,	true,	true,	true,	true,	true,	true,	true},
+		{true,	true,	true,	true,	true,	true,	true,	false,	true,	false,	true,	true,	true,	true,	true,	true,	true},
+		{true,	true,	false,	true,	false,	false,	false,	false,	false,	false,	true,	true,	false,	true,	false,	true,	true},
+
+		{true,	false,	false,	false,	false,	false,	false,	false,	false,	false,	true,	false,	false,	false,	false,	false,	true},
+		{false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false,	false}};
+
+	// Perform reassignment because C++ can't cast from type (&mazeArray)[][] to tempMazeArray[DIMENSION][DIMENSION]
+	for(int i = 0; i < DIMENSION; i++){
+		for(int j = 0; j < DIMENSION; j++){
+			mazeArray[i][j] = tempMazeArray[i][j];
+		}
+	}
+}
+
+void Maze::initMazeArrayLeft3(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n){
+	bool tempMazeArray[DIMENSION][DIMENSION] = {
+		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	false},
+		
+		{true,	false,	true,	true,	false,	false,	true,	true,	false,	false,	true,	true,	true,	true,	true,	false,	false},
+		{false,	true,	true,	true,	true,	true,	true,	false,	false,	true,	false,	true,	false,	false,	false,	false,	false},
+		{false,	false,	true,	true,	true,	true,	false,	false,	false,	false,	true,	false,	true,	true,	true,	false,	false},
+		{false,	true,	true,	true,	true,	true,	false,	false,	false,	true,	false,	true,	false,	true,	false,	false,	false},
+		
+		{false,	true,	false,	true,	false,	false,	false,	false,	false,	false,	false,	false,	true,	false,	false,	false,	false},
+		{false,	false,	true,	false,	false,	false,	true,	true,	true,	false,	false,	true,	true,	true,	false,	true,	false},
+		{true,	true,	false,	false,	false,	true,	false,	true,	true,	true,	true,	false,	false,	false,	true,	false,	false},
+		{false,	true,	false,	false,	true,	false,	false,	false,	false,	true,	false,	false,	false,	false,	true,	false,	false},
+		
+		{false,	false,	false,	true,	true,	false,	false,	true,	true,	false,	false,	false,	false,	true,	false,	false,	false},
+		{false,	false,	false,	false,	false,	true,	true,	true,	true,	true,	false,	false,	false,	false,	false,	false,	false},
+		{false,	true,	true,	true,	false,	true,	false,	false,	true,	false,	false,	false,	false,	false,	false,	false,	false},
+		{false,	false,	false,	false,	false,	false,	false,	false,	false,	true,	false,	false,	false,	false,	false,	false,	false},
+		
+		{false,	false,	false,	false,	false,	false,	false,	false,	true,	false,	false,	false,	false,	false,	false,	false,	false},
+		{false,	false,	false,	false,	false,	false,	true,	true,	false,	true,	false,	false,	false,	false,	false,	false,	false},
+		{false,	false,	true,	false,	true,	true,	true,	true,	true,	false,	false,	true,	true,	true,	true,	false,	false},
+
+		{true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	true,	false}};
+
+	// Perform reassignment because C++ can't cast from type (&mazeArray)[][] to tempMazeArray[DIMENSION][DIMENSION]
+	for(int i = 0; i < DIMENSION; i++){
+		for(int j = 0; j < DIMENSION; j++){
+			mazeArray[i][j] = tempMazeArray[i][j];
+		}
+	}
+}
+
 
 int Maze::getXCoord(){
 	return xCoord;

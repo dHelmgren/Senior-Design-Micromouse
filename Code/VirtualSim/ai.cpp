@@ -170,7 +170,8 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 			prevNode->north = currentNode;
 		} 
 
-			
+		currentNode->rating += 2;
+
 		if(!left){
 			leftRating = rateVisitedNode(currentNode, compass, NODE_LEFT);
 		}
@@ -180,6 +181,7 @@ int AI::makeDecision(int deltaDist, bool left, bool straight, bool right, bool b
 		if(!right){
 			rightRating = rateVisitedNode(currentNode, compass, NODE_RIGHT);
 		}
+
 
 		choice = pickPath(leftRating, forwardRating, rightRating);
 
@@ -315,7 +317,7 @@ unsigned char AI::rateVisitedNode(NavNode* node, int compass, int turnDir){
 	if(nodePos == AI_WEST){
 		if(node->west != NULL)
 		{
-			return node->west->rating + CHILD_PENALTY * (1 + numChildren(node->west, compass)); 
+			return node->west->rating + CHILD_PENALTY * (1 + numChildren(node->west, AI_EAST)); 
 		}
 		else{
 			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
@@ -324,7 +326,7 @@ unsigned char AI::rateVisitedNode(NavNode* node, int compass, int turnDir){
 	else if(nodePos == AI_NORTH){
 		if(node->north != NULL)
 		{
-			return node->north->rating + CHILD_PENALTY * (1 + numChildren(node->north, compass)); 
+			return node->north->rating + CHILD_PENALTY * (1 + numChildren(node->north, AI_SOUTH)); 
 		}
 		else{
 			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
@@ -333,7 +335,7 @@ unsigned char AI::rateVisitedNode(NavNode* node, int compass, int turnDir){
 	else if(nodePos == AI_EAST){
 		if(node->east != NULL)
 		{
-			return node->east->rating + CHILD_PENALTY * (1 + numChildren(node->east, compass)); 
+			return node->east->rating + CHILD_PENALTY * (1 + numChildren(node->east, AI_WEST)); 
 		}
 		else{
 			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
@@ -342,7 +344,7 @@ unsigned char AI::rateVisitedNode(NavNode* node, int compass, int turnDir){
 	else if(nodePos == AI_SOUTH){
 		if(node->south != NULL)
 		{
-			return node->south->rating + CHILD_PENALTY * (1 + numChildren(node->south, compass)); 
+			return node->south->rating + CHILD_PENALTY * (1 + numChildren(node->south, AI_NORTH)); 
 		}
 		else{
 			return rateDir(compass, turnDir, node->xOffset, node->yOffset);	
