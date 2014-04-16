@@ -1,3 +1,3 @@
-This file is a test file to allow members of the project to manipulate a the repository
+This is the repository for Team Excelsior's Micromouse code that will be run on the Minituar Micromouse.
 
-Later this file will contain information relevant to the development of Micromouse software
+Currently there are sections for a virtual sim where testing for the AI is done, and a section for some of the code used to communicate between the microcontroller and the I/O devices.

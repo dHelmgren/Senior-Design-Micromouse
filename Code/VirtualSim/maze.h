@@ -28,6 +28,11 @@
 #define DIMENSION 17
 #define PIXELS_PER_SQUARE 72
 
+// ***** In order to change which maze we are currently building,
+// change this constant. 
+// OPTIONS: 1, 2, 3
+#define WHICH_MAZE 3
+
 #define PI 3.14159265
 
 #define WEST 0
@@ -51,7 +56,12 @@ public:
 	// Ctor
 	Maze();
 	// Initialize first configuration of maze by updating the 2D arrays
-	void initMazeArray();
+	void initMazeArrayTop1(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n);
+	void initMazeArrayLeft1(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n);
+	void initMazeArrayTop2(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n);
+	void initMazeArrayLeft2(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n);
+	void initMazeArrayTop3(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n);
+	void initMazeArrayLeft3(bool (&mazeArray)[DIMENSION][DIMENSION], int m, int n);
 	// Initializes where tuples are located in the maze
 	void initIsTuple();
 	// Determines if the mouse had entered into a tuple zone

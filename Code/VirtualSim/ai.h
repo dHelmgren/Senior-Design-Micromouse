@@ -17,6 +17,8 @@
 #define NODE_RIGHT 1
 #define NODE_BACK 2
 #define NODE_LEFT 3
+
+#define CHILD_PENALTY 5
 typedef struct NavNode
 {
 	int rating;
@@ -36,6 +38,7 @@ private:
 	NavNode* mazeArray[16][16];
 	int memIndex;
 	bool sawDeadEndLastTime;
+	bool newLocation;
 
 public:
 
@@ -43,6 +46,7 @@ public:
 	NavNode* currentNode;
 	NavNode* prevNode;
 	NavNode emptyNodes[100];
+	unsigned char lastDecisions[3];
 	// Default constructor initializes all of the above variables. See ai.cpp for more info
 	AI();
 	// TRUE = YES WALL
@@ -51,7 +55,11 @@ public:
 	// Just FYI, this method is called in drawScene() in main.cpp
 	int makeDecision(int deltaDist, bool left, bool straight, bool right, bool back);
 	int rateNode(int x, int y);
-	NavNode* buildNode(int turnDir, int currX, int currY);
+	unsigned char rateDir(int compass, int turnDir, int xx, int yy);
+	unsigned char rateVisitedNode(NavNode* node, int compass, int turnDir);
+	NavNode* buildNode(int currX, int currY);
 	int modFour(int val);
+	int numChildren(NavNode* check, int compass);
+	int pickPath(int left, int forward, int right);
 	unsigned char checkChildren(NavNode* node);
 };
